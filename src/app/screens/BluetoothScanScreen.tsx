@@ -1,125 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
+import { PeerViewModel, useBluetoothScreenViewModel } from './bluetooth-screen.viewmodel';
 
-interface LoRaDevice {
-  id: string;
-  name: string;
-  macAddress: string;
-  signalStrength: number;
-  batteryLevel?: number;
-  firmware?: string;
-  distance: string;
-  lastSeen: string;
-  isSecured: boolean;
-  deviceType: 'lora_transceiver' | 'lora_gateway' | 'lora_node';
-}
 
 export default function BluetoothScanScreen() {
   const navigation = useNavigation();
-  const [isScanning, setIsScanning] = useState(false);
-  const [discoveredDevices, setDiscoveredDevices] = useState<LoRaDevice[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<LoRaDevice | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<PeerViewModel | null>(null);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
-  const [scanDuration, setScanDuration] = useState(0);
+  const viewmodel = useBluetoothScreenViewModel();
 
-  // Simulated LoRa devices for demo
-  const mockDevices: LoRaDevice[] = [
-    {
-      id: 'lora_001',
-      name: 'LoRa Émetteur Pro v2.1',
-      macAddress: 'AA:BB:CC:DD:EE:01',
-      signalStrength: 85,
-      batteryLevel: 78,
-      firmware: '2.1.3',
-      distance: '12m',
-      lastSeen: 'Maintenant',
-      isSecured: true,
-      deviceType: 'lora_transceiver'
-    },
-    {
-      id: 'lora_002',
-      name: 'LoRa Gateway Mesh',
-      macAddress: 'AA:BB:CC:DD:EE:02',
-      signalStrength: 92,
-      batteryLevel: 95,
-      firmware: '1.8.2',
-      distance: '8m',
-      lastSeen: 'Il y a 5s',
-      isSecured: true,
-      deviceType: 'lora_gateway'
-    },
-    {
-      id: 'lora_003',
-      name: 'LoRa Node Basic',
-      macAddress: 'AA:BB:CC:DD:EE:03',
-      signalStrength: 67,
-      distance: '25m',
-      lastSeen: 'Il y a 12s',
-      isSecured: false,
-      deviceType: 'lora_node'
-    },
-    {
-      id: 'lora_004',
-      name: 'LoRa Emergency Unit',
-      macAddress: 'AA:BB:CC:DD:EE:04',
-      signalStrength: 43,
-      batteryLevel: 23,
-      firmware: '2.0.1',
-      distance: '45m',
-      lastSeen: 'Il y a 30s',
-      isSecured: true,
-      deviceType: 'lora_transceiver'
-    }
-  ];
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (isScanning) {
-      interval = setInterval(() => {
-        setScanDuration(prev => prev + 1);
-        
-        // Simulate device discovery over time
-        if (scanDuration < 15) {
-          const deviceIndex = Math.floor(scanDuration / 3);
-          if (deviceIndex < mockDevices.length && !discoveredDevices.find(d => d.id === mockDevices[deviceIndex].id)) {
-            setDiscoveredDevices(prev => [...prev, mockDevices[deviceIndex]]);
-            toast.success(`Émetteur détecté: ${mockDevices[deviceIndex].name}`);
-          }
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isScanning, scanDuration, discoveredDevices]);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const startScan = () => {
-    setIsScanning(true);
-    setScanDuration(0);
-    setDiscoveredDevices([]);
+    viewmodel.startScan();
     toast.loading('Recherche d\'émetteurs LoRa...');
   };
 
-  const stopScan = () => {
-    setIsScanning(false);
-    setScanDuration(0);
-    toast.success(`Scan terminé - ${discoveredDevices.length} appareils trouvés`);
-  };
 
-  const handleDeviceConnect = (device: LoRaDevice) => {
+  const handleDeviceConnect = (device: PeerViewModel) => {
     setSelectedDevice(device);
     if (device.isSecured) {
       setShowPinModal(true);
@@ -128,7 +37,7 @@ export default function BluetoothScanScreen() {
     }
   };
 
-  const connectToDevice = (device: LoRaDevice) => {
+  const connectToDevice = (device: PeerViewModel) => {
     setIsConnecting(true);
     toast.loading(`Connexion à ${device.name}...`);
 
@@ -136,11 +45,11 @@ export default function BluetoothScanScreen() {
       setIsConnecting(false);
       setShowPinModal(false);
       setPinCode('');
-      
+
       toast.success('Connexion établie avec succès!', {
-        description: `Connecté à ${device.name}`
+        description: `Connecté à ${device.name}`,
       });
-      
+
       // Navigate back to settings with connection established
       navigation.goBack();
     }, 3000);
@@ -157,7 +66,7 @@ export default function BluetoothScanScreen() {
     }
   };
 
-  const getDeviceIcon = (deviceType: LoRaDevice['deviceType']) => {
+  const getDeviceIcon = (deviceType: PeerViewModel['deviceType']) => {
     switch (deviceType) {
       case 'lora_transceiver': return 'radio';
       case 'lora_gateway': return 'wifi';
@@ -167,8 +76,8 @@ export default function BluetoothScanScreen() {
   };
 
   const getSignalColor = (strength: number) => {
-    if (strength >= 80) return '#10b981';
-    if (strength >= 60) return '#f59e0b';
+    if (strength >= 80) {return '#10b981';}
+    if (strength >= 60) {return '#f59e0b';}
     return '#ef4444';
   };
 
@@ -177,21 +86,21 @@ export default function BluetoothScanScreen() {
     return Math.min(4, Math.max(1, bars));
   };
 
-  const renderDevice = ({ item }: { item: LoRaDevice }) => (
-    <TouchableOpacity 
+  const renderDevice = ({ item }: { item: PeerViewModel }) => (
+    <TouchableOpacity
       style={styles.deviceCard}
       onPress={() => handleDeviceConnect(item)}
       disabled={isConnecting}
     >
       <View style={styles.deviceHeader}>
         <View style={styles.deviceIcon}>
-          <Ionicons 
-            name={getDeviceIcon(item.deviceType)} 
-            size={24} 
-            color="#4f46e5" 
+          <Ionicons
+            name={getDeviceIcon(item.deviceType)}
+            size={24}
+            color="#4f46e5"
           />
         </View>
-        
+
         <View style={styles.deviceInfo}>
           <View style={styles.deviceNameRow}>
             <Text style={styles.deviceName}>{item.name}</Text>
@@ -205,7 +114,7 @@ export default function BluetoothScanScreen() {
             <Text style={styles.deviceLastSeen}>🕒 {item.lastSeen}</Text>
           </View>
         </View>
-        
+
         <View style={styles.deviceStats}>
           {/* Signal Strength */}
           <View style={styles.signalContainer}>
@@ -216,32 +125,32 @@ export default function BluetoothScanScreen() {
                   style={[
                     styles.signalBar,
                     {
-                      backgroundColor: bar <= getSignalBars(item.signalStrength) 
-                        ? getSignalColor(item.signalStrength) 
+                      backgroundColor: bar <= getSignalBars(item.signalStrength)
+                        ? getSignalColor(item.signalStrength)
                         : '#e5e7eb',
-                      height: bar * 3 + 2
-                    }
+                      height: bar * 3 + 2,
+                    },
                   ]}
                 />
               ))}
             </View>
             <Text style={styles.signalText}>{item.signalStrength}%</Text>
           </View>
-          
+
           {/* Battery Level */}
           {item.batteryLevel && (
             <View style={styles.batteryContainer}>
-              <Ionicons 
-                name="battery-half" 
-                size={16} 
-                color={item.batteryLevel > 30 ? '#10b981' : '#ef4444'} 
+              <Ionicons
+                name="battery-half"
+                size={16}
+                color={item.batteryLevel > 30 ? '#10b981' : '#ef4444'}
               />
               <Text style={styles.batteryText}>{item.batteryLevel}%</Text>
             </View>
           )}
         </View>
       </View>
-      
+
       {/* Device Footer */}
       <View style={styles.deviceFooter}>
         <View style={styles.deviceDetails}>
@@ -254,7 +163,7 @@ export default function BluetoothScanScreen() {
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.connectButton}>
           <Ionicons name="add-circle" size={20} color="#4f46e5" />
           <Text style={styles.connectText}>Connecter</Text>
@@ -271,12 +180,12 @@ export default function BluetoothScanScreen() {
           <Ionicons name="arrow-back" size={24} color="#111827" />
         </TouchableOpacity>
         <Text style={styles.title}>Émetteurs LoRa</Text>
-        <TouchableOpacity 
-          style={styles.scanButton} 
-          onPress={isScanning ? stopScan : startScan}
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={startScan}
           disabled={isConnecting}
         >
-          {isScanning ? (
+          {viewmodel.isScanning ? (
             <ActivityIndicator size="small" color="#4f46e5" />
           ) : (
             <Ionicons name="search" size={24} color="#4f46e5" />
@@ -286,22 +195,22 @@ export default function BluetoothScanScreen() {
 
       {/* Scan Status */}
       <View style={styles.scanStatus}>
-        {isScanning ? (
+        {viewmodel.isScanning ? (
           <View style={styles.scanningIndicator}>
             <View style={styles.scanningPulse} />
             <Text style={styles.scanningText}>
-              Recherche en cours... ({scanDuration}s)
+              Recherche en cours...
             </Text>
             <Text style={styles.scanSubtext}>
-              {discoveredDevices.length} appareil{discoveredDevices.length !== 1 ? 's' : ''} trouvé{discoveredDevices.length !== 1 ? 's' : ''}
+              {viewmodel.peers.length} appareil{viewmodel.peers.length !== 1 ? 's' : ''} trouvé{viewmodel.peers.length !== 1 ? 's' : ''}
             </Text>
           </View>
         ) : (
           <View style={styles.idleIndicator}>
             <Ionicons name="bluetooth" size={20} color="#6b7280" />
             <Text style={styles.idleText}>
-              {discoveredDevices.length > 0 
-                ? `${discoveredDevices.length} émetteur${discoveredDevices.length !== 1 ? 's' : ''} disponible${discoveredDevices.length !== 1 ? 's' : ''}`
+              {viewmodel.peers.length > 0
+                ? `${viewmodel.peers.length} émetteur${viewmodel.peers.length !== 1 ? 's' : ''} disponible${viewmodel.peers.length !== 1 ? 's' : ''}`
                 : 'Appuyez sur rechercher pour scanner'
               }
             </Text>
@@ -311,7 +220,7 @@ export default function BluetoothScanScreen() {
 
       {/* Devices List */}
       <View style={styles.devicesContainer}>
-        {discoveredDevices.length === 0 && !isScanning ? (
+        {viewmodel.peers.length === 0 && !viewmodel.isScanning ? (
           <View style={styles.emptyState}>
             <Ionicons name="radio-outline" size={64} color="#d1d5db" />
             <Text style={styles.emptyTitle}>Aucun émetteur détecté</Text>
@@ -324,7 +233,7 @@ export default function BluetoothScanScreen() {
           </View>
         ) : (
           <FlatList
-            data={discoveredDevices}
+            data={viewmodel.peers}
             keyExtractor={(item) => item.id}
             renderItem={renderDevice}
             showsVerticalScrollIndicator={false}
@@ -341,11 +250,11 @@ export default function BluetoothScanScreen() {
               <Ionicons name="shield-checkmark" size={24} color="#f59e0b" />
               <Text style={styles.modalTitle}>Appareil sécurisé</Text>
             </View>
-            
+
             <Text style={styles.modalSubtitle}>
               {selectedDevice?.name} nécessite un code PIN pour se connecter
             </Text>
-            
+
             <TextInput
               style={styles.pinInput}
               value={pinCode}
@@ -356,10 +265,10 @@ export default function BluetoothScanScreen() {
               secureTextEntry
               autoFocus
             />
-            
+
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={styles.modalCancelButton} 
+              <TouchableOpacity
+                style={styles.modalCancelButton}
                 onPress={() => {
                   setShowPinModal(false);
                   setPinCode('');
@@ -369,9 +278,9 @@ export default function BluetoothScanScreen() {
               >
                 <Text style={styles.modalCancelText}>Annuler</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.modalConfirmButton, isConnecting && styles.modalButtonDisabled]} 
+
+              <TouchableOpacity
+                style={[styles.modalConfirmButton, isConnecting && styles.modalButtonDisabled]}
                 onPress={handlePinSubmit}
                 disabled={isConnecting || pinCode.length !== 4}
               >

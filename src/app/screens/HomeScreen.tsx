@@ -25,13 +25,13 @@ interface BroadcastMessage {
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [isLoRaConnected, setIsLoRaConnected] = useState(false);
-  const [contacts, setContacts] = useState<Contact[]>([
+  const [contacts] = useState<Contact[]>([
     { id: '1', name: 'Alice Dupont', lastSeen: 'Il y a 2 min', unreadCount: 2, status: 'online' },
     { id: '2', name: 'Marc Lefèvre', lastSeen: 'Il y a 15 min', unreadCount: 0, status: 'offline' },
     { id: '3', name: 'Sophie Martin', lastSeen: 'Il y a 1h', unreadCount: 1, status: 'online' },
   ]);
 
-  const [recentBroadcasts, setRecentBroadcasts] = useState<BroadcastMessage[]>([
+  const [recentBroadcasts] = useState<BroadcastMessage[]>([
     { id: '1', sender: 'Jean Petit', message: 'Quelqu\'un près du parc municipal ?', timestamp: '14:32', distance: '250m' },
     { id: '2', sender: 'Marie Claire', message: 'Urgent: recherche médecin dans le secteur', timestamp: '14:15', distance: '180m' },
   ]);

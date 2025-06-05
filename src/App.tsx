@@ -3,16 +3,17 @@
   import { StyleSheet } from 'react-native';
   import { SafeAreaProvider } from 'react-native-safe-area-context';
   import { Toaster } from 'sonner-native';
-  import HomeScreen from './screens/HomeScreen';
-  import ContactsScreen from './screens/ContactsScreen';
-  import ChatScreen from './screens/ChatScreen';
-  import QRScannerScreen from './screens/QRScannerScreen';
-  import MyQRCodeScreen from './screens/MyQRCodeScreen';
-  import BroadcastScreen from './screens/BroadcastScreen';
-  import SettingsScreen from './screens/SettingsScreen';
+  import HomeScreen from './app/screens/HomeScreen';
+  import ContactsScreen from './app/screens/ContactsScreen';
+  import ChatScreen from './app/screens/ChatScreen';
+  import QRScannerScreen from './app/screens/QRScannerScreen';
+  import MyQRCodeScreen from './app/screens/MyQRCodeScreen';
+  import BroadcastScreen from './app/screens/BroadcastScreen';
+  import SettingsScreen from './app/screens/SettingsScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BluetoothScanScreen from './screens/BluetoothScanScreen';
-import PublicMessagesScreen from './screens/PublicMessagesScreen';
+import BluetoothScanScreen from './app/screens/BluetoothScanScreen';
+import PublicMessagesScreen from './app/screens/PublicMessagesScreen';
+import { StoreProvider } from './app/store/store.context';
 
   const Stack = createNativeStackNavigator();
 
@@ -37,14 +38,16 @@ import PublicMessagesScreen from './screens/PublicMessagesScreen';
 
   export default function App() {
     return (
-      <GestureHandlerRootView>
-        <SafeAreaProvider style={styles.container}>
-          <NavigationContainer>
-              <RootStack />
-          </NavigationContainer>
-          <Toaster />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
+      <StoreProvider>
+        <GestureHandlerRootView>
+          <SafeAreaProvider style={styles.container}>
+            <NavigationContainer>
+                <RootStack />
+            </NavigationContainer>
+            <Toaster />
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
+      </StoreProvider>
     );
   }
 
