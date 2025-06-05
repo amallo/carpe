@@ -10,10 +10,18 @@ export type EntityAdapter<T extends { id: string }> = {
     removeMany: (state: EntityState<T>, ids: string[]) => EntityState<T>;
     updateOne: (state: EntityState<T>, update: { id: string; changes: Partial<T> }) => EntityState<T>;
     setAll: (state: EntityState<T>, entities: T[]) => EntityState<T>;
+    getInitialState: () => EntityState<T>;
 }
 
 export function createEntityAdapter<T extends { id: string }>(): EntityAdapter<T> {
     return {
+        getInitialState: (): EntityState<T> => {
+            return {
+                byId: {},
+                ids: [],
+            };
+        },
+
         addOne: (state: EntityState<T>, entity: T): EntityState<T> => {
             // Éviter les doublons
             if (state.ids.includes(entity.id)) {
