@@ -1,10 +1,11 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '../../../store/create-store';
 import { EntityState, createEntityAdapter, getInitialEntityState } from '../../store/entity.state';
+import { Dependencies } from '../../dependencies';
 
 type PeerState = EntityState<PeerEntity>
 
-type PeerEntity = {
+export type PeerEntity = {
     id: string;
     name: string;
 }
@@ -12,11 +13,11 @@ type PeerEntity = {
 
 
 // Créer l'adapter pour les entités Peer
-const peerAdapter = createEntityAdapter<PeerEntity>();
+export const peerAdapter = createEntityAdapter<PeerEntity>();
 
-export const createPeerModel = ()=>{
+export const createPeerModel = ({ peerProvider}: Dependencies, initialState: PeerState = getInitialEntityState<PeerEntity>() as PeerState)=>{
     const model = createModel<RootModel>()({
-        state: getInitialEntityState<PeerEntity>() as PeerState,
+        state: initialState,
         reducers: {
             add: (state, payload: PeerEntity) => {
               return peerAdapter.addOne(state, {
@@ -27,8 +28,10 @@ export const createPeerModel = ()=>{
           },
         effects: () => ({
             async scan() {
-              this.add({id: 'dev0', name: 'carpe-001'});
-              return Promise.resolve();
+              peerProvider.onPeerScanned((peer)=>{
+                this.add({id: peer.id, name: 'carpe-001'});
+              });
+              return peerProvider.scan();
             },
         }),
     });
