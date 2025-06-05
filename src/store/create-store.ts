@@ -1,13 +1,13 @@
 import { init, Models, RematchDispatch, RematchRootState } from '@rematch/core';
-import { createActionModel } from '../core/store/actions.model';
+import { createPeerModel } from '../core/connection/store/peers.model';
 
 export interface RootModel extends Models<RootModel> {
-    action: ReturnType<typeof createActionModel>;
+    peer: ReturnType<typeof createPeerModel>;
 }
 
 export const createStore = ()=>{
-    const actionModel = createActionModel();
-    const models: RootModel = { action: actionModel };
+    const peerModel = createPeerModel();
+    const models: RootModel = {  peer: peerModel };
 
     const store = init({
         models,

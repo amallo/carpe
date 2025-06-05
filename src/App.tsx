@@ -38,14 +38,12 @@ import PublicMessagesScreen from './screens/PublicMessagesScreen';
   export default function App() {
     return (
       <GestureHandlerRootView>
-      <SafeAreaProvider style={styles.container}>
-        <NavigationContainer>
-         
-            <RootStack />
-         
-        </NavigationContainer>
-        <Toaster />
-      </SafeAreaProvider>
+        <SafeAreaProvider style={styles.container}>
+          <NavigationContainer>
+              <RootStack />
+          </NavigationContainer>
+          <Toaster />
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     );
   }
