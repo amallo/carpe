@@ -13,7 +13,7 @@ export default function MyQRCodeScreen() {
   const [userInfo] = useState({
     name: 'Mon Profil',
     id: 'LoRa_User_' + Math.random().toString(36).substring(2, 8).toUpperCase(),
-    publicKey: 'pk_' + Math.random().toString(36).substring(2, 15)
+    publicKey: 'pk_' + Math.random().toString(36).substring(2, 15),
   });
 
   const handleBack = () => {
@@ -24,7 +24,7 @@ export default function MyQRCodeScreen() {
     try {
       await Share.share({
         message: `Ajoutez-moi sur LoRa Mesh!\nID: ${userInfo.id}\nClé: ${userInfo.publicKey}`,
-        title: 'Mon contact LoRa Mesh'
+        title: 'Mon contact LoRa Mesh',
       });
     } catch (error) {
       toast.error('Erreur lors du partage');
@@ -63,19 +63,19 @@ export default function MyQRCodeScreen() {
                 {Array.from({ length: 12 }, (_, i) => (
                   <View key={i} style={styles.qrRow}>
                     {Array.from({ length: 12 }, (_, j) => (
-                      <View 
-                        key={j} 
+                      <View
+                        key={j}
                         style={[
-                          styles.qrPixel, 
-                          { backgroundColor: (i + j) % 3 === 0 ? '#111827' : '#ffffff' }
-                        ]} 
+                          styles.qrPixel,
+                          { backgroundColor: (i + j) % 3 === 0 ? '#111827' : '#ffffff' },
+                        ]}
                       />
                     ))}
                   </View>
                 ))}
               </View>
             </View>
-            
+
             {/* LoRa Logo in center */}
             <View style={styles.qrCenter}>
               <View style={styles.logoContainer}>
@@ -83,7 +83,7 @@ export default function MyQRCodeScreen() {
               </View>
             </View>
           </View>
-          
+
           <Text style={styles.qrInstruction}>
             Faites scanner ce code pour vous ajouter comme contact
           </Text>
@@ -96,9 +96,9 @@ export default function MyQRCodeScreen() {
               {userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase()}
             </Text>
           </View>
-          
+
           <Text style={styles.userName}>{userInfo.name}</Text>
-          
+
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>ID Utilisateur</Text>
@@ -107,7 +107,7 @@ export default function MyQRCodeScreen() {
                 <Ionicons name="copy-outline" size={16} color="#6b7280" />
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Clé Publique</Text>
               <Text style={styles.infoValue} numberOfLines={1}>
@@ -123,7 +123,7 @@ export default function MyQRCodeScreen() {
             <Ionicons name="share" size={20} color="#ffffff" />
             <Text style={styles.primaryButtonText}>Partager</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.secondaryButton} onPress={handleRegenerateQR}>
             <Ionicons name="refresh" size={20} color="#4f46e5" />
             <Text style={styles.secondaryButtonText}>Régénérer</Text>

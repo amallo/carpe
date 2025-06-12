@@ -33,7 +33,7 @@ export default function SettingsScreen() {
     signalStrength: 85,
     lastSeen: 'Il y a 30 sec',
     publicKey: 'pk_a7b8c9d0e1f2g3h4i5j6k7l8m9n0o1p2',
-    firmware: '2.1.3'
+    firmware: '2.1.3',
   });
 
   const [settings, setSettings] = useState({
@@ -41,7 +41,7 @@ export default function SettingsScreen() {
     autoReconnect: true,
     lowPowerMode: false,
     debugMode: false,
-    encryptionEnabled: true
+    encryptionEnabled: true,
   });
 
   const [showPinModal, setShowPinModal] = useState(false);
@@ -56,7 +56,7 @@ export default function SettingsScreen() {
     { id: '3', timestamp: '15:30:12', level: 'warning', message: 'Signal LoRa faible détecté (65%)' },
     { id: '4', timestamp: '15:28:33', level: 'info', message: 'Message diffusé avec succès (12 destinataires)' },
     { id: '5', timestamp: '15:25:17', level: 'error', message: 'Échec de transmission - retry automatique' },
-    { id: '6', timestamp: '15:20:45', level: 'info', message: 'Health check: Tous systèmes opérationnels' }
+    { id: '6', timestamp: '15:20:45', level: 'info', message: 'Health check: Tous systèmes opérationnels' },
   ]);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function SettingsScreen() {
         ...prev,
         batteryLevel: Math.max(20, prev.batteryLevel + (Math.random() > 0.5 ? 1 : -1)),
         signalStrength: Math.max(30, Math.min(100, prev.signalStrength + (Math.random() > 0.5 ? 2 : -2))),
-        lastSeen: 'Il y a ' + Math.floor(Math.random() * 60) + ' sec'
+        lastSeen: 'Il y a ' + Math.floor(Math.random() * 60) + ' sec',
       }));
     }, 5000);
 
@@ -88,8 +88,8 @@ export default function SettingsScreen() {
             onPress: () => {
               setLoraDevice(prev => ({ ...prev, status: 'disconnected' }));
               toast.success('Émetteur déconnecté');
-            }
-          }
+            },
+          },
         ]
       );
     } else {
@@ -111,13 +111,13 @@ export default function SettingsScreen() {
     setTimeout(() => {
       setLoraDevice(prev => ({ ...prev, status: 'connected' }));
       toast.success('Connexion établie avec l\'émetteur LoRa');
-      
+
       // Add connection log
       const newLog: LogEntry = {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString('fr-FR'),
         level: 'info',
-        message: 'Connexion Bluetooth sécurisée établie'
+        message: 'Connexion Bluetooth sécurisée établie',
       };
       setLogs(prev => [newLog, ...prev]);
     }, 2000);
@@ -130,14 +130,14 @@ export default function SettingsScreen() {
     setTimeout(() => {
       const isHealthy = Math.random() > 0.3;
       setHealthStatus(isHealthy ? 'healthy' : 'warning');
-      
+
       const newLog: LogEntry = {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString('fr-FR'),
         level: isHealthy ? 'info' : 'warning',
-        message: isHealthy 
-          ? 'Health check: Tous systèmes opérationnels' 
-          : 'Health check: Attention - Signal faible détecté'
+        message: isHealthy
+          ? 'Health check: Tous systèmes opérationnels'
+          : 'Health check: Attention - Signal faible détecté',
       };
       setLogs(prev => [newLog, ...prev]);
 
@@ -209,18 +209,18 @@ export default function SettingsScreen() {
                 <Text style={styles.deviceStatus}>{getDeviceStatusText()}</Text>
                 <Text style={styles.deviceLastSeen}>{loraDevice.lastSeen}</Text>
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
                   styles.connectButton,
-                  { backgroundColor: loraDevice.status === 'connected' ? '#ef4444' : '#10b981' }
+                  { backgroundColor: loraDevice.status === 'connected' ? '#ef4444' : '#10b981' },
                 ]}
                 onPress={handleConnectDevice}
                 disabled={loraDevice.status === 'connecting'}
               >
-                <Ionicons 
-                  name={loraDevice.status === 'connected' ? 'close' : 'bluetooth'} 
-                  size={20} 
-                  color="#ffffff" 
+                <Ionicons
+                  name={loraDevice.status === 'connected' ? 'close' : 'bluetooth'}
+                  size={20}
+                  color="#ffffff"
                 />
               </TouchableOpacity>
             </View>
@@ -269,12 +269,12 @@ export default function SettingsScreen() {
               <Ionicons name="document-text" size={24} color="#4f46e5" />
               <Text style={styles.actionTitle}>Logs</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.actionCard} onPress={() => setShowPublicKeyModal(true)}>
               <Ionicons name="key" size={24} color="#10b981" />
               <Text style={styles.actionTitle}>Clé publique</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.actionCard} onPress={handleHealthCheck}>
               <Ionicons name="pulse" size={24} color="#f59e0b" />
               <Text style={styles.actionTitle}>Diagnostic</Text>
@@ -370,7 +370,7 @@ export default function SettingsScreen() {
             <Text style={styles.modalSubtitle}>
               Entrez le code PIN à 4 chiffres de votre émetteur LoRa
             </Text>
-            
+
             <TextInput
               style={styles.pinInput}
               value={pinCode}
@@ -380,10 +380,10 @@ export default function SettingsScreen() {
               maxLength={4}
               secureTextEntry
             />
-            
+
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={styles.modalCancelButton} 
+              <TouchableOpacity
+                style={styles.modalCancelButton}
                 onPress={() => { setShowPinModal(false); setPinCode(''); }}
               >
                 <Text style={styles.modalCancelText}>Annuler</Text>
@@ -406,7 +406,7 @@ export default function SettingsScreen() {
                 <Ionicons name="close" size={24} color="#6b7280" />
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.logsContainer}>
               {logs.map((log) => (
                 <View key={log.id} style={styles.logEntry}>
@@ -435,12 +435,12 @@ export default function SettingsScreen() {
                 <Ionicons name="close" size={24} color="#6b7280" />
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.keyContainer}>
               <Text style={styles.keyLabel}>Clé publique de l'émetteur:</Text>
               <View style={styles.keyValue}>
                 <Text style={styles.keyText}>{loraDevice.publicKey}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.copyKeyButton}
                   onPress={() => toast.success('Clé copiée dans le presse-papier')}
                 >

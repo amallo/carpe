@@ -26,7 +26,7 @@ export default function ContactsScreen() {
     { id: '5', name: 'Emma Bernard', lastSeen: 'Hier', unreadCount: 3, status: 'online', publicKey: 'mno345' },
   ]);
 
-  const filteredContacts = contacts.filter(contact => 
+  const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -57,7 +57,7 @@ export default function ContactsScreen() {
           onPress: () => {
             setContacts(contacts.filter(c => c.id !== contactId));
             toast.success('Contact supprimé', {
-              description: `${contactName} a été retiré de vos contacts`
+              description: `${contactName} a été retiré de vos contacts`,
             });
           },
         },
@@ -67,7 +67,7 @@ export default function ContactsScreen() {
 
   const renderContact = ({ item }: { item: Contact }) => (
     <View style={styles.contactContainer}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.contactCard}
         onPress={() => handleContactPress(item)}
       >
@@ -76,31 +76,31 @@ export default function ContactsScreen() {
             {item.name.split(' ').map(n => n[0]).join('').toUpperCase()}
           </Text>
         </View>
-        
+
         <View style={styles.contactInfo}>
           <View style={styles.contactHeader}>
             <Text style={styles.contactName}>{item.name}</Text>
-            <View style={[styles.statusIndicator, { 
-              backgroundColor: item.status === 'online' ? '#22c55e' : '#94a3b8' 
+            <View style={[styles.statusIndicator, {
+              backgroundColor: item.status === 'online' ? '#22c55e' : '#94a3b8',
             }]} />
           </View>
           <Text style={styles.contactLastSeen}>{item.lastSeen}</Text>
           <Text style={styles.contactId}>ID: {item.publicKey.substring(0, 8)}...</Text>
         </View>
-        
+
         <View style={styles.contactActions}>
           {item.unreadCount > 0 && (
             <View style={styles.unreadBadge}>
               <Text style={styles.unreadText}>{item.unreadCount}</Text>
             </View>
           )}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => handleContactPress(item)}
           >
             <Ionicons name="chatbubble" size={20} color="#4f46e5" />
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.deleteButton]}
             onPress={() => handleDeleteContact(item.id, item.name)}
           >
@@ -151,8 +151,8 @@ export default function ContactsScreen() {
           </View>
           <Text style={styles.quickActionText}>Scanner QR</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
           onPress={() => navigation.navigate('MyQRCode' as never)}
         >
@@ -172,7 +172,7 @@ export default function ContactsScreen() {
               {searchQuery ? 'Aucun contact trouvé' : 'Aucun contact'}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {searchQuery 
+              {searchQuery
                 ? 'Essayez un autre terme de recherche'
                 : 'Commencez par scanner le QR code d\'un ami'
               }

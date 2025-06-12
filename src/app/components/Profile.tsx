@@ -13,7 +13,7 @@ export const Profile = () => {
   };
 
   const [isConnecting, setIsConnecting] = useState(false);
- 
+
   const tryToConnectEmitter = () => {
     setIsConnecting(true);
     // Lancer la connexion BLE ici

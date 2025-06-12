@@ -31,29 +31,29 @@ export default function ChatScreen() {
       text: 'Salut ! Comment ça va ?',
       timestamp: '14:30',
       isMe: false,
-      status: 'read'
+      status: 'read',
     },
     {
       id: '2',
       text: 'Ça va bien ! Et toi ?',
       timestamp: '14:32',
       isMe: true,
-      status: 'delivered'
+      status: 'delivered',
     },
     {
       id: '3',
       text: 'Parfait ! Tu es où en ce moment ?',
       timestamp: '14:33',
       isMe: false,
-      status: 'read'
+      status: 'read',
     },
     {
       id: '4',
       text: 'Je suis au parc, la connexion LoRa fonctionne parfaitement !',
       timestamp: '14:35',
       isMe: true,
-      status: 'sent'
-    }
+      status: 'sent',
+    },
   ]);
 
   const flatListRef = useRef<FlatList>(null);
@@ -70,14 +70,14 @@ export default function ChatScreen() {
   };
 
   const handleSendMessage = () => {
-    if (message.trim().length === 0) return;
+    if (message.trim().length === 0) {return;}
 
     const newMessage: Message = {
       id: Date.now().toString(),
       text: message.trim(),
       timestamp: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       isMe: true,
-      status: 'sending'
+      status: 'sending',
     };
 
     setMessages(prev => [...prev, newMessage]);
@@ -85,13 +85,13 @@ export default function ChatScreen() {
 
     // Simulate message status progression
     setTimeout(() => {
-      setMessages(prev => prev.map(msg => 
+      setMessages(prev => prev.map(msg =>
         msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
       ));
     }, 1000);
 
     setTimeout(() => {
-      setMessages(prev => prev.map(msg => 
+      setMessages(prev => prev.map(msg =>
         msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg
       ));
     }, 2000);
@@ -141,7 +141,7 @@ export default function ChatScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color="#111827" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerInfo}>
           <View style={styles.contactAvatar}>
             <Text style={styles.avatarText}>
@@ -151,8 +151,8 @@ export default function ChatScreen() {
           <View style={styles.contactDetails}>
             <Text style={styles.contactName}>{contact.name}</Text>
             <View style={styles.statusContainer}>
-              <View style={[styles.statusDot, { 
-                backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8' 
+              <View style={[styles.statusDot, {
+                backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8',
               }]} />
               <Text style={styles.statusText}>
                 {contact.status === 'online' ? 'En ligne' : 'Hors ligne'}
@@ -178,7 +178,7 @@ export default function ChatScreen() {
       />
 
       {/* Input */}
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.inputContainer}
       >
@@ -192,19 +192,19 @@ export default function ChatScreen() {
             maxLength={500}
             placeholderTextColor="#9ca3af"
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.sendButton, message.trim().length === 0 && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
             disabled={message.trim().length === 0}
           >
-            <Ionicons 
-              name="send" 
-              size={20} 
-              color={message.trim().length === 0 ? '#94a3b8' : '#ffffff'} 
+            <Ionicons
+              name="send"
+              size={20}
+              color={message.trim().length === 0 ? '#94a3b8' : '#ffffff'}
             />
           </TouchableOpacity>
         </View>
-        
+
         {/* Connection Status */}
         <View style={styles.connectionStatus}>
           <Ionicons name="radio" size={16} color="#22c55e" />

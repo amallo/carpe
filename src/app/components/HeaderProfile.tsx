@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 export const HeaderProfile = ()=>{
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
       fontStyle: 'italic',
     },
   });
-  
+

@@ -1,4 +1,6 @@
-import { useStore } from '../store/store.context';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { selectScanLoading, selectAllPeers, scanPeers } from '../../core/connection/store/peers.slice';
+import { selectIsScanPeersGranted } from '../../core/permission/store/permission.slice';
 
 export type PeerViewModel = {
   id: string;
@@ -14,30 +16,34 @@ export type PeerViewModel = {
 };
 
 export const useBluetoothScreenViewModel = () => {
-  const store = useStore();
-  const isScanning = store.select.peer.selectScanLoading(store.getState());
-  const peers = store.select.peer.selectAll(store.getState());
-  const isScanPeersGranted = store.select.permission.selectIsScanPeersGranted(store.getState());
-  console.log("isScanPeersGranted", isScanPeersGranted);
-  const peersVM : PeerViewModel[] = peers.map((peer)=>({
+  const dispatch = useAppDispatch();
+  const isScanning = useAppSelector(selectScanLoading);
+  const peers = useAppSelector(selectAllPeers);
+  const isScanPeersGranted = useAppSelector(selectIsScanPeersGranted);
+
+  console.log('isScanPeersGranted', isScanPeersGranted);
+
+  const peersVM: PeerViewModel[] = peers.map((peer) => ({
     id: peer.id,
     name: peer.name,
     macAddress: 'AA:BB:CC:DD:EE:04',
-    signalStrength:  85,
-    batteryLevel:  90,
+    signalStrength: 85,
+    batteryLevel: 90,
     firmware: '1.0.0',
     distance: '10m',
     lastSeen: 'Il y a 10s',
     isSecured: false,
     deviceType: 'lora_transceiver',
   }));
+
   console.log(peersVM);
+
   return {
     isScanning,
     peers: peersVM,
     startScan: () => {
-      console.log("startScan");
-      return store.dispatch.peer.scan({timeout: 10000});
+      console.log('startScan');
+      return dispatch(scanPeers({ timeout: 10000 }));
     },
     isScanPeersGranted,
   };

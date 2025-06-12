@@ -26,7 +26,7 @@ export default function BroadcastScreen() {
       timestamp: '14:30',
       range: 'Moyenne (2km)',
       recipients: 12,
-      status: 'sent'
+      status: 'sent',
     },
     {
       id: '2',
@@ -34,8 +34,8 @@ export default function BroadcastScreen() {
       timestamp: '13:45',
       range: 'Locale (500m)',
       recipients: 5,
-      status: 'sent'
-    }
+      status: 'sent',
+    },
   ]);
 
   const handleBack = () => {
@@ -72,7 +72,7 @@ export default function BroadcastScreen() {
       timestamp: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       range: `${currentRange.power} (${currentRange.distance})`,
       recipients: Math.floor(Math.random() * 10) + 5,
-      status: 'sending'
+      status: 'sending',
     };
 
     setRecentBroadcasts(prev => [newBroadcast, ...prev]);
@@ -80,11 +80,11 @@ export default function BroadcastScreen() {
 
     // Simulate sending process
     setTimeout(() => {
-      setRecentBroadcasts(prev => prev.map(broadcast => 
+      setRecentBroadcasts(prev => prev.map(broadcast =>
         broadcast.id === newBroadcast.id ? { ...broadcast, status: 'sent' } : broadcast
       ));
       toast.success(`Message diffusé à ${newBroadcast.recipients} destinataires`, {
-        description: `Portée: ${currentRange.distance}`
+        description: `Portée: ${currentRange.distance}`,
       });
     }, 2000);
   };
@@ -119,13 +119,13 @@ export default function BroadcastScreen() {
             {(['local', 'medium', 'long'] as const).map((range) => {
               const settings = getRangeSettings(range);
               const isSelected = broadcastRange === range;
-              
+
               return (
                 <TouchableOpacity
                   key={range}
                   style={[
                     styles.rangeOption,
-                    isSelected && { borderColor: settings.color, backgroundColor: `${settings.color}15` }
+                    isSelected && { borderColor: settings.color, backgroundColor: `${settings.color}15` },
                   ]}
                   onPress={() => setBroadcastRange(range)}
                 >
@@ -168,11 +168,11 @@ export default function BroadcastScreen() {
           </View>
 
           {/* Send Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
               styles.sendButton,
               { backgroundColor: currentRange.color },
-              message.trim().length === 0 && styles.sendButtonDisabled
+              message.trim().length === 0 && styles.sendButtonDisabled,
             ]}
             onPress={handleSendBroadcast}
             disabled={message.trim().length === 0}
@@ -220,16 +220,16 @@ export default function BroadcastScreen() {
                   {getStatusIcon(broadcast.status)}
                   <Text style={[
                     styles.broadcastStatusText,
-                    { color: broadcast.status === 'sent' ? '#10b981' : '#f59e0b' }
+                    { color: broadcast.status === 'sent' ? '#10b981' : '#f59e0b' },
                   ]}>
                     {broadcast.status === 'sending' ? 'Envoi...' : 'Envoyé'}
                   </Text>
                 </View>
                 <Text style={styles.broadcastTime}>{broadcast.timestamp}</Text>
               </View>
-              
+
               <Text style={styles.broadcastMessage}>{broadcast.message}</Text>
-              
+
               <View style={styles.broadcastFooter}>
                 <Text style={styles.broadcastRange}>{broadcast.range}</Text>
                 <Text style={styles.broadcastRecipients}>

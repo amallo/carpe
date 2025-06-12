@@ -41,7 +41,7 @@ export default function HomeScreen() {
     const timer = setTimeout(() => {
       setIsLoRaConnected(true);
       toast.success('Émetteur LoRa connecté', {
-        description: 'Prêt à communiquer'
+        description: 'Prêt à communiquer',
       });
     }, 2000);
 
@@ -69,7 +69,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -82,7 +82,7 @@ export default function HomeScreen() {
           </View>
         </View>        <View style={styles.headerActions}>
           <TouchableOpacity style={styles.iconButton} onPress={handleBluetoothScan}>
-            <Ionicons name="bluetooth" size={24} color={isLoRaConnected ? "#10b981" : "#6b7280"} />
+            <Ionicons name="bluetooth" size={24} color={isLoRaConnected ? '#10b981' : '#6b7280'} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleAddContact}>
             <Ionicons name="qr-code-outline" size={24} color="#4f46e5" />
@@ -94,7 +94,7 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        
+
         {/* Quick Actions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Actions rapides</Text>
@@ -106,7 +106,7 @@ export default function HomeScreen() {
               <Text style={styles.actionTitle}>Diffuser</Text>
               <Text style={styles.actionSubtitle}>Message général</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={styles.actionCard} onPress={handleAddContact}>
               <View style={[styles.actionIcon, { backgroundColor: '#10b981' }]}>
                 <Ionicons name="person-add" size={24} color="#ffffff" />
@@ -125,7 +125,7 @@ export default function HomeScreen() {
               <Text style={styles.seeAllText}>Tout voir</Text>
             </TouchableOpacity>
           </View>
-          
+
           {recentBroadcasts.map((broadcast) => (
             <View key={broadcast.id} style={styles.broadcastCard}>
               <View style={styles.broadcastHeader}>
@@ -147,10 +147,10 @@ export default function HomeScreen() {
               <Text style={styles.seeAllText}>Tout voir</Text>
             </TouchableOpacity>
           </View>
-          
+
           {contacts.map((contact) => (
-            <TouchableOpacity 
-              key={contact.id} 
+            <TouchableOpacity
+              key={contact.id}
               style={styles.contactCard}
               onPress={() => handleContactPress(contact)}
             >
@@ -159,17 +159,17 @@ export default function HomeScreen() {
                   {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                 </Text>
               </View>
-              
+
               <View style={styles.contactInfo}>
                 <View style={styles.contactHeader}>
                   <Text style={styles.contactName}>{contact.name}</Text>
-                  <View style={[styles.statusIndicator, { 
-                    backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8' 
+                  <View style={[styles.statusIndicator, {
+                    backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8',
                   }]} />
                 </View>
                 <Text style={styles.contactLastSeen}>{contact.lastSeen}</Text>
               </View>
-              
+
               <View style={styles.contactMeta}>
                 {contact.unreadCount > 0 && (
                   <View style={styles.unreadBadge}>

@@ -58,7 +58,7 @@ export function createEntityAdapter<T extends { id: string }>(): EntityAdapter<T
         removeOne: (state: EntityState<T>, id: string): EntityState<T> => {
             const newById = { ...state.byId };
             delete newById[id];
-            
+
             return {
                 ...state,
                 byId: newById,
@@ -69,7 +69,7 @@ export function createEntityAdapter<T extends { id: string }>(): EntityAdapter<T
         removeMany: (state: EntityState<T>, ids: string[]): EntityState<T> => {
             const newById = { ...state.byId };
             ids.forEach(id => delete newById[id]);
-            
+
             return {
                 ...state,
                 byId: newById,

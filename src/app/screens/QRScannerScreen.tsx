@@ -18,9 +18,9 @@ export default function QRScannerScreen() {
     // Simulate QR code scan
     setIsScanning(false);
     toast.success('Contact ajouté !', {
-      description: 'Pierre Durand a été ajouté à vos contacts'
+      description: 'Pierre Durand a été ajouté à vos contacts',
     });
-    
+
     setTimeout(() => {
       navigation.goBack();
     }, 1500);
@@ -50,14 +50,14 @@ export default function QRScannerScreen() {
               <View style={styles.corner} style={[styles.corner, styles.topRight]} />
               <View style={styles.corner} style={[styles.corner, styles.bottomLeft]} />
               <View style={styles.corner} style={[styles.corner, styles.bottomRight]} />
-              
+
               {isScanning && (
                 <View style={styles.scanLine} />
               )}
             </View>
           </View>
         </View>
-        
+
         <Text style={styles.instruction}>
           Placez le QR code dans le cadre pour ajouter un contact
         </Text>
@@ -69,7 +69,7 @@ export default function QRScannerScreen() {
           <Ionicons name="camera" size={24} color="#ffffff" />
           <Text style={styles.actionButtonText}>Scanner</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.secondaryButton} onPress={handleGenerateQR}>
           <Ionicons name="qr-code" size={24} color="#4f46e5" />
           <Text style={styles.secondaryButtonText}>Mon QR Code</Text>
