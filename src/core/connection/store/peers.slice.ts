@@ -1,9 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { EntityState, createEntityAdapter, getInitialEntityState } from '../../store/entity.state';
+import { createSlice, createAsyncThunk, PayloadAction, createSelector, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
-import { setPermission } from '../../permission/store/permission.slice';
+import { PermissionEntity, setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
 
-type PeerState = EntityState<PeerEntity> & { scanLoading: boolean }
+type PeerState = EntityState<PeerEntity, string> & { scanLoading: boolean }
 
 export type PeerEntity = {
     id: string;
@@ -12,8 +11,8 @@ export type PeerEntity = {
 
 export const peerAdapter = createEntityAdapter<PeerEntity>();
 
-const getInitialState = (): PeerState => ({
-    ...getInitialEntityState<PeerEntity>(),
+export const getPeerInitialState = (): PeerState => ({
+    ...peerAdapter.getInitialState(),
     scanLoading: false,
 });
 
@@ -28,13 +27,15 @@ export const scanPeers = createAsyncThunk<
         /**
          * Request permission to scan for peers
          */
-        const permission = await permissionProvider.requestPermission(['scan-peers']);
-        console.log('permission', permission);
-        dispatch(setPermission(permission));
+        const permissionResult = await permissionProvider.requestFeaturedPermission('scan-peers');
+        const permission : PermissionEntity[] = Object.keys(permissionResult).reduce((acc, p) => {
+            return [...acc, {id: p, status: permissionResult[p]}];
+        }, [] as PermissionEntity[]);
+        dispatch(setMultiplePermissionForFeature( {permission, feature: 'scan-peers'}));
 
-        if (permission['scan-peers'] !== 'granted') {
-            return;
-        }
+       if (permission.some((p)=>p.status !== 'granted')) {
+        return;
+       }
 
         /**
          * Register callbacks to the peer provider
@@ -65,14 +66,14 @@ export const scanPeers = createAsyncThunk<
 
 const peerSlice = createSlice({
     name: 'peer',
-    initialState: getInitialState(),
+    initialState: getPeerInitialState(),
     reducers: {
         scanHit: (state, action: PayloadAction<PeerEntity>) => {
-            const entities = peerAdapter.addOne(state, {
+            const newState = peerAdapter.addOne(state, {
                 id: action.payload.id,
                 name: action.payload.name,
             });
-            return { ...state, ...entities };
+            return newState;
         },
         setScanLoading: (state, action: PayloadAction<boolean>) => {
             state.scanLoading = action.payload;
@@ -82,9 +83,16 @@ const peerSlice = createSlice({
 
 export const { scanHit, setScanLoading } = peerSlice.actions;
 
-// Selectors
-export const selectScanLoading = (state: { peer: PeerState }) => state.peer.scanLoading;
-export const selectAllPeers = (state: { peer: PeerState }) =>
-    state.peer.ids.map((id) => state.peer.byId[id]);
+// Base selectors
+const selectPeerState = (state: { peer: PeerState }) => state.peer;
+const selectPeerIds = createSelector([selectPeerState], (peerState) => peerState.ids);
+const selectPeerById = createSelector([selectPeerState], (peerState) => peerState.entities);
+
+// Memoized selectors
+export const selectScanLoading = createSelector([selectPeerState], (peerState) => peerState.scanLoading);
+export const selectAllPeers = createSelector(
+    [selectPeerIds, selectPeerById],
+    (ids, byId) => ids.map((id) => byId[id])
+);
 
 export default peerSlice.reducer;

@@ -4,13 +4,16 @@ import { InMemoryPeerProvider } from '../../core/connection/providers/test/in-me
 import { Dependencies } from '../../core/dependencies';
 import { useMemo } from 'react';
 import { createStore } from './store';
-import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import { Provider } from 'react-redux';
+import { NativePermissionProvider, requiredAndroidPermissionByFeature, requiredIOSPermissionByFeature } from '../../core/permission/providers/native/native-permission.provider';
+import { Platform } from 'react-native';
+
+const isIOS = Platform.OS === 'ios';
 
 const createDependencies = (): Dependencies => {
     return {
         peerProvider: new InMemoryPeerProvider(1000),
-        permissionProvider: new GrantedPermissionProvider(),
+        permissionProvider: new NativePermissionProvider(isIOS ? requiredIOSPermissionByFeature : requiredAndroidPermissionByFeature),
     };
 };
 

@@ -1,12 +1,12 @@
-import { PermissionProvider, PermissionRequest, RequestedPermissionStatus } from '../permission.provider';
+import { PermissionProvider, FeatureRequest, FeaturedPermissionResult, PermissionStatus } from '../permission.provider';
 
 export class GrantedPermissionProvider implements PermissionProvider{
-    requestPermission(permission: PermissionRequest[]): Promise<RequestedPermissionStatus> {
+    requestFeaturedPermission(_: FeatureRequest): Promise<FeaturedPermissionResult> {
         return Promise.resolve({
-            ...permission.reduce((acc, curr) => {
-                acc[curr] = 'granted';
-                return acc;
-            }, {} as RequestedPermissionStatus),
+                'scan-bluetooth': 'granted',
         });
+    }
+    requestSinglePermission(_: string): Promise<PermissionStatus> {
+        return Promise.resolve('granted');
     }
 }

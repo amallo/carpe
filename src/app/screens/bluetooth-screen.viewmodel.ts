@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectScanLoading, selectAllPeers, scanPeers } from '../../core/connection/store/peers.slice';
-import { selectIsScanPeersGranted } from '../../core/permission/store/permission.slice';
+import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
+import { requestPermission } from '../../core/permission/store/request-permission';
 
 export type PeerViewModel = {
   id: string;
@@ -15,14 +16,17 @@ export type PeerViewModel = {
   deviceType: 'lora_transceiver' | 'lora_gateway' | 'lora_node';
 };
 
+export type PermissionViewModel = {
+  permissionId: string;
+  permissionStatus: PermissionStatus;
+  request: () => void;
+}
+
 export const useBluetoothScreenViewModel = () => {
   const dispatch = useAppDispatch();
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
-  const isScanPeersGranted = useAppSelector(selectIsScanPeersGranted);
-
-  console.log('isScanPeersGranted', isScanPeersGranted);
-
+  const missingPermission = useAppSelector((state)=>selectMissingPermissionForFeature(state, 'scan-peers'));
   const peersVM: PeerViewModel[] = peers.map((peer) => ({
     id: peer.id,
     name: peer.name,
@@ -36,8 +40,6 @@ export const useBluetoothScreenViewModel = () => {
     deviceType: 'lora_transceiver',
   }));
 
-  console.log(peersVM);
-
   return {
     isScanning,
     peers: peersVM,
@@ -45,6 +47,10 @@ export const useBluetoothScreenViewModel = () => {
       console.log('startScan');
       return dispatch(scanPeers({ timeout: 10000 }));
     },
-    isScanPeersGranted,
+    missingPermission: missingPermission.map((p)=>({
+      permissionId: p.id,
+      permissionStatus: p.status,
+      request: () => dispatch(requestPermission({permissionId: p.id})),
+    })),
   };
 };

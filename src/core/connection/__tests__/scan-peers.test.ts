@@ -18,7 +18,7 @@ describe('FEATURE: Audie connects to a BLE device', () => {
         jest.useRealTimers();
     });
     test('Scan peers and found device carpe-001', async () => {
-        permissionProvider.schedulePermissionGranted('scan-peers');
+        permissionProvider.schedulePermissionGranted({forFeature: 'scan-peers', permission: 'scan-bluetooth'});
         peerProvider.schedulePeerFound({
             id: 'peer0',
             name: 'carpe-001',
@@ -30,24 +30,26 @@ describe('FEATURE: Audie connects to a BLE device', () => {
             name: 'carpe-001',
         })
             .withScanLoading(false)
-            .withPermission({
-                'scan-peers': 'granted',
+            .withPermissionByFeature('scan-peers', {
+                id: 'scan-bluetooth',
+                status: 'granted',
             })
             .build();
         expect(store.getState()).toEqual(expectedState);
     });
-    test('Fail to scan peers without permission', async () => {
-        permissionProvider.schedulePermissionDenied('scan-peers');
+    test('Fail to scan peers when not enough permission', async () => {
+        permissionProvider.schedulePermissionDenied({forFeature: 'scan-peers', permission: 'scan-bluetooth'});
         await store.dispatch(scanPeers({ timeout: 100000 }));
         jest.advanceTimersByTime(100000);
-        const expectedStateAfterScan = createStateBuilder()
-            .withPermission({
-                'scan-peers': 'denied',
+        const expectedState = createStateBuilder()
+            .withPermissionByFeature('scan-peers', {
+                id: 'scan-bluetooth',
+                status: 'denied',
             })
             .withScanLoading(false)
             .build();
         expect(peerProvider.scanWasCalled()).toBe(false);
-        expect(store.getState()).toEqual(expectedStateAfterScan);
+        expect(store.getState()).toEqual(expectedState);
     });
 
 });

@@ -1,25 +1,28 @@
-import { PermissionProvider, PermissionRequest, RequestedPermissionStatus } from '../permission.provider';
+import { PermissionProvider, FeatureRequest, FeaturedPermissionResult, PermissionStatus } from '../permission.provider';
 
 
 
 
 export class FakePermissionProvider implements PermissionProvider{
-    private _currentPermissions: RequestedPermissionStatus = {
-            'scan-peers': 'not-requested',
+    private _currentPermissionsByFeature: Record<FeatureRequest, FeaturedPermissionResult> = {
+        'scan-peers': {
+            'scan-bluetooth': 'not-requested',
+        },
     };
-    requestPermission(permission: [PermissionRequest]): Promise<RequestedPermissionStatus> {
-        const result : RequestedPermissionStatus = permission.reduce((acc, p )=>{
-            return {
-                ...acc,
-                [p]: this._currentPermissions[p],
-            };
-        }, this._currentPermissions);
+    requestFeaturedPermission(feature: FeatureRequest): Promise<FeaturedPermissionResult> {
+        const result = this._currentPermissionsByFeature[feature];
         return Promise.resolve(result);
     }
-    schedulePermissionGranted(permission: PermissionRequest): void {
-        this._currentPermissions[permission] = 'granted';
+    schedulePermissionGranted({forFeature, permission}: {forFeature: FeatureRequest, permission: string}): void {
+        this._currentPermissionsByFeature[forFeature][permission] = 'granted';
     }
-    schedulePermissionDenied(permission: PermissionRequest): void {
-        this._currentPermissions[permission] = 'denied';
+    schedulePermissionDenied({forFeature, permission}: {forFeature: FeatureRequest, permission: string}): void {
+        this._currentPermissionsByFeature[forFeature] = {
+            ...this._currentPermissionsByFeature[forFeature],
+            [permission]: 'denied',
+        };
+    }
+    requestSinglePermission(permissionId: string): Promise<PermissionStatus> {
+        return Promise.resolve(this._currentPermissionsByFeature['scan-peers'][permissionId]);
     }
 }

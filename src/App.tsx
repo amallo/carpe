@@ -1,6 +1,5 @@
   import { NavigationContainer } from '@react-navigation/native';
   import { createNativeStackNavigator } from '@react-navigation/native-stack';
-  import { StyleSheet } from 'react-native';
   import { SafeAreaProvider } from 'react-native-safe-area-context';
   import { Toaster } from 'sonner-native';
   import HomeScreen from './app/screens/HomeScreen';
@@ -38,22 +37,18 @@ import { StoreProvider } from './app/store/store.context';
 
   export default function App() {
     return (
-      <StoreProvider>
         <GestureHandlerRootView>
-          <SafeAreaProvider style={styles.container}>
-            <NavigationContainer>
-                <RootStack />
-            </NavigationContainer>
-            <Toaster />
+          <SafeAreaProvider>
+              <NavigationContainer>
+
+            <StoreProvider>
+                  <RootStack />
+
+            </StoreProvider>
+              </NavigationContainer>
+              <Toaster />
           </SafeAreaProvider>
+
         </GestureHandlerRootView>
-      </StoreProvider>
     );
   }
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      userSelect: 'none',
-    },
-  });

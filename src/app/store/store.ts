@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/connection/providers/test/fake-peer.provider';
-import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import peerReducer from '../../core/connection/store/peers.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
+import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 
 export const createStore = (dependencies: Dependencies) => {
     const store = configureStore({

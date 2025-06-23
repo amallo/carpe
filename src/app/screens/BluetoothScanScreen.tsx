@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
 import { PeerViewModel, useBluetoothScreenViewModel } from './bluetooth-screen.viewmodel';
-
+import { Permission } from '../components/Permission';
 
 export default function BluetoothScanScreen() {
   const navigation = useNavigation();
@@ -14,9 +14,8 @@ export default function BluetoothScanScreen() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
+
   const viewmodel = useBluetoothScreenViewModel();
-
-
 
   const handleBack = () => {
     navigation.goBack();
@@ -26,7 +25,6 @@ export default function BluetoothScanScreen() {
     viewmodel.startScan();
     toast.loading('Recherche d\'émetteurs LoRa...');
   };
-
 
   const handleDeviceConnect = (device: PeerViewModel) => {
     setSelectedDevice(device);
@@ -85,6 +83,22 @@ export default function BluetoothScanScreen() {
     const bars = Math.ceil(strength / 25);
     return Math.min(4, Math.max(1, bars));
   };
+
+  // Si les permissions sont refusées, afficher l'écran de permissions
+  if (viewmodel.missingPermission.length > 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Ionicons name="arrow-back" size={24} color="#111827" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Émetteurs</Text>
+          <View style={{ width: 40 }} />
+        </View>
+        {viewmodel.missingPermission.map((p)=><Permission key={p.permissionId} permission={p} />)}
+      </SafeAreaView>
+    );
+  }
 
   const renderDevice = ({ item }: { item: PeerViewModel }) => (
     <TouchableOpacity
@@ -618,5 +632,61 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#ffffff',
     fontWeight: '600',
+  },
+  permissionsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  permissionIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#f0f0ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  permissionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  permissionText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  permissionNote: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 16,
+  },
+  permissionButton: {
+    backgroundColor: '#4f46e5',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  permissionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#111827',
+    fontWeight: '600',
+    marginTop: 16,
   },
 });

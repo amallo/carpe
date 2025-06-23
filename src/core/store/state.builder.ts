@@ -1,9 +1,10 @@
 // Construct the state with an initial state
 // following builder pattern
-import { PeerEntity } from '../connection/store/peers.slice';
+import { getPeerInitialState, PeerEntity } from '../connection/store/peers.slice';
 import { peerAdapter } from '../connection/store/peers.slice';
+import { Feature, permissionAdapter, PermissionEntity } from '../permission/store/permission.slice';
 import { RootState } from '../../app/store/store';
-import { RequestedPermissionStatus } from '../permission/providers/permission.provider';
+import { getPermissionInitialState } from '../permission/store/permission.slice';
 
 
 export class StateBuilder {
@@ -18,11 +19,12 @@ export class StateBuilder {
         this._state.peer = {...this._state.peer, ...peerAdapter.addOne(this._state.peer, peer)};
         return this;
     }
-    withPermission(permission: RequestedPermissionStatus) {
-        this._state.permission = {
-            ...this._state.permission,
-            ...permission,
-        };
+    withPermissionByFeature(feature: Feature, permission: PermissionEntity) {
+        this._state.permission = {...this._state.permission, ...permissionAdapter.addOne(this._state.permission, permission)};
+        this._state.permission[feature] = [
+            ...this._state.permission[feature],
+            permission.id,
+        ];
         return this;
     }
     withScanLoading(loading: boolean) {
@@ -36,10 +38,8 @@ export class StateBuilder {
 }
 
 export const createStateBuilder = (initialState: RootState = {
-    peer: {...peerAdapter.getInitialState(), scanLoading: false},
-    permission: {
-        'scan-peers': 'not-requested',
-    },
+    peer: getPeerInitialState(),
+    permission: getPermissionInitialState(),
 }) => {
     return new StateBuilder(initialState);
 };
