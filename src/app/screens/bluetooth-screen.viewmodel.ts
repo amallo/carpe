@@ -45,7 +45,7 @@ export const useBluetoothScreenViewModel = () => {
     peers: peersVM,
     startScan: () => {
       console.log('startScan');
-      return dispatch(scanPeers({ timeout: 10000 }));
+      return dispatch(scanPeers({ timeout: 30000 }));
     },
     missingPermission: missingPermission.map((p)=>({
       permissionId: p.id,

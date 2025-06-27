@@ -8,9 +8,8 @@ export const requiredIOSPermissionByFeature: NativePermissionByFeature = {
 } as const;
 
 export const requiredAndroidPermissionByFeature: NativePermissionByFeature = {
-    'scan-peers': [PERMISSIONS.ANDROID.BLUETOOTH_SCAN],
+    'scan-peers': [PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
 } as const;
-
 
 export class NativePermissionProvider implements PermissionProvider{
     constructor(private readonly nativePermissionByFeature: NativePermissionByFeature) {}

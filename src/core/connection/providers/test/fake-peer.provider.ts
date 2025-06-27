@@ -11,11 +11,15 @@ export class FakePeerProvider implements PeerProvider{
     schedulePeerFound(peer: PeerFound){
         this._peerScaaned.push(peer);
     }
-    scan(): Promise<void> {
+    async scan(): Promise<void> {
         this._scanStartedCallback?.();
         this._peerScaaned.forEach(peer => this._callback?.(peer));
         this._scanCallTracker.recordCall();
-        return Promise.resolve();
+        return Promise.resolve().then(()=>{
+            if (this._scanStoppedCallback) {
+                this._scanStoppedCallback();
+            }
+        });
     }
     stopScan(): Promise<void> {
         this._stopScanCallTracker.recordCall();

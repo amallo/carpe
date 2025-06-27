@@ -34,6 +34,7 @@ export const scanPeers = createAsyncThunk<
         dispatch(setMultiplePermissionForFeature( {permission, feature: 'scan-peers'}));
 
        if (permission.some((p)=>p.status !== 'granted')) {
+        console.log('permission not granted');
         return;
        }
 
@@ -46,19 +47,15 @@ export const scanPeers = createAsyncThunk<
         });
 
         peerProvider.onScanStopped(() => {
+            console.log('scanStopped');
             dispatch(setScanLoading(false));
         });
 
         peerProvider.onScanStarted(() => {
+            console.log('scanStarted');
             dispatch(setScanLoading(true));
         });
 
-        /**
-         * Start scanning for peers
-         */
-        setTimeout(() => {
-            peerProvider.stopScan();
-        }, timeout);
 
         return peerProvider.scan();
     }
