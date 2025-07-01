@@ -57,7 +57,7 @@ export const scanPeers = createAsyncThunk<
         });
 
 
-        return peerProvider.scan();
+        return peerProvider.scan({ timeout },);
     }
 );
 

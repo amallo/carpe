@@ -15,7 +15,6 @@ export class InMemoryPeerProvider implements PeerProvider{
     private _callback: ((peer: PeerFound) => void) | null = null;
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
-    constructor(private _timeout: number){}
     scan(): Promise<void> {
         this._peerScanned = PEERS;
         this._scanStartedCallback?.();

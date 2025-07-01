@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
@@ -95,7 +95,11 @@ export default function BluetoothScanScreen() {
           <Text style={styles.title}>Émetteurs</Text>
           <View style={{ width: 40 }} />
         </View>
-        {viewmodel.missingPermission.map((p)=><Permission key={p.permissionId} permission={p} />)}
+        <ScrollView style={styles.permissionsContainer} showsVerticalScrollIndicator={false}>
+          {viewmodel.missingPermission.map((p) => (
+            <Permission key={p.permissionId} permission={p} />
+          ))}
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -635,9 +639,8 @@ const styles = StyleSheet.create({
   },
   permissionsContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   permissionIcon: {
     width: 64,

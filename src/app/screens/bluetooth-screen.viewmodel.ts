@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectScanLoading, selectAllPeers, scanPeers } from '../../core/connection/store/peers.slice';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
 import { requestPermission } from '../../core/permission/store/request-permission';
+import { permissionConfig } from '../../core/permission/providers/native/permission.config';
 
 export type PeerViewModel = {
   id: string;
@@ -19,6 +20,8 @@ export type PeerViewModel = {
 export type PermissionViewModel = {
   permissionId: string;
   permissionStatus: PermissionStatus;
+  message: string;
+  icon: string;
   request: () => void;
 }
 
@@ -50,6 +53,8 @@ export const useBluetoothScreenViewModel = () => {
     missingPermission: missingPermission.map((p)=>({
       permissionId: p.id,
       permissionStatus: p.status,
+      message: permissionConfig[p.id]?.message || 'Permission requise',
+      icon: permissionConfig[p.id]?.icon || 'help',
       request: () => dispatch(requestPermission({permissionId: p.id})),
     })),
   };

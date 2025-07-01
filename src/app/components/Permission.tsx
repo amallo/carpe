@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { StyleSheet } from 'react-native';
@@ -10,10 +10,10 @@ type Props = {
 }
 
 export const Permission = ({permission}: Props) => {
-    
+
     return (<View style={styles.permissionsContainer}>
       <View style={styles.permissionIcon}>
-        <Ionicons name="bluetooth" size={64} color="#4f46e5" />
+        <Ionicons name={permission.icon as any} size={64} color="#4f46e5" />
       </View>
 
       <Text style={styles.permissionTitle}>
@@ -21,7 +21,7 @@ export const Permission = ({permission}: Props) => {
       </Text>
 
       <Text style={styles.permissionText}>
-        Pour connecter votre émetteur LoRa, cette application a besoin de l'accès au Bluetooth
+        {permission.message}
       </Text>
 
 
@@ -29,7 +29,7 @@ export const Permission = ({permission}: Props) => {
         style={styles.permissionButton}
         onPress={() => {
           permission.request();
-          toast.success('Permissions accordées');
+         
         }}
       >
         <Text style={styles.permissionButtonText}>
