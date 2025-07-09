@@ -4,7 +4,7 @@ import {Permission, PERMISSIONS, PermissionStatus as RNPermissionStatus, request
 type NativePermissionByFeature = Record<FeatureRequest, Permission[]>;
 
 export const requiredIOSPermissionByFeature: NativePermissionByFeature = {
-    'scan-peers': [PERMISSIONS.IOS.BLUETOOTH],
+    'scan-peers': [PERMISSIONS.IOS.BLUETOOTH, PERMISSIONS.IOS.LOCATION_WHEN_IN_USE],
 } as const;
 
 export const requiredAndroidPermissionByFeature: NativePermissionByFeature = {

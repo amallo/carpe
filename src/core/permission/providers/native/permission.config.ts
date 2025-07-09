@@ -13,6 +13,10 @@ export const permissionConfig: PermissionConfigMap = {
     icon: 'bluetooth',
     message: 'Pour connecter votre émetteur LoRa, cette application a besoin de l\'accès au Bluetooth'
   },
+  [PERMISSIONS.IOS.LOCATION_WHEN_IN_USE]: {
+    icon: 'location',
+    message: 'Pour connecter votre émetteur LoRa, cette application a besoin de l\'accès au GPS'
+  },
   
   // Android Permissions
   [PERMISSIONS.ANDROID.BLUETOOTH_SCAN]: {

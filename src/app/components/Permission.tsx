@@ -1,9 +1,8 @@
-import React, { use, useEffect } from 'react';
+import React, {  } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { StyleSheet } from 'react-native';
 import { PermissionViewModel } from '../screens/bluetooth-screen.viewmodel';
-import { toast } from 'sonner-native';
 
 type Props = {
     permission: PermissionViewModel
