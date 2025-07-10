@@ -1,7 +1,7 @@
 import { createTestStore } from '../../../app/store/store';
 import { createStateBuilder } from '../../store/state.builder';
 import { FakePermissionProvider } from '../providers/test/fake-permission.provider';
-import { requestPermission } from '../store/request-permission';
+import { requestPermission } from '../store/request-permission.usecase';
 
 describe('Audie request permissions', () => {
     test('Audie accept request to scan bluetooth', async () => {

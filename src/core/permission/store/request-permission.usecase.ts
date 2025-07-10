@@ -13,9 +13,7 @@ export const requestPermission = createAsyncThunk<
         /**
          * Request permission to scan for peers
          */
-        console.log('requestPermission', permissionId);
         const permissionStatus = await permissionProvider.requestSinglePermission(permissionId);
-        console.log('permissionStatus', permissionStatus);
         const permission : PermissionEntity = {
             id: permissionId,
             status: permissionStatus,

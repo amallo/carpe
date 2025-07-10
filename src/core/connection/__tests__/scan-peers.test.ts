@@ -2,7 +2,7 @@ import { createTestStore, Store } from '../../../app/store/store';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
 import { createStateBuilder } from '../../store/state.builder';
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
-import { scanPeers } from '../store/peers.slice';
+import { scanPeers } from '../store/scan-peers.usecase';
 
 describe('FEATURE: Audie connects to a BLE device', () => {
     let peerProvider: FakePeerProvider;

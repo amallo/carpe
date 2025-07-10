@@ -1,7 +1,8 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { selectScanLoading, selectAllPeers, scanPeers } from '../../core/connection/store/peers.slice';
+import { selectScanLoading, selectAllPeers } from '../../core/connection/store/peers.slice';
+import { scanPeers } from '../../core/connection/store/scan-peers.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
-import { requestPermission } from '../../core/permission/store/request-permission';
+import { requestPermission } from '../../core/permission/store/request-permission.usecase';
 import { permissionConfig } from '../../core/permission/providers/native/permission.config';
 
 export type PeerViewModel = {
