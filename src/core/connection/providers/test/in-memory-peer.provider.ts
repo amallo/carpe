@@ -3,12 +3,33 @@ import { PeerFound, PeerProvider } from '../peer.provider';
 const PEERS: PeerFound[] = [{
     id: 'lora_001',
     name: 'LoRa Émetteur Pro v2.1',
+    rssi: -60,
+    deviceType: 'lora_transceiver',
+    firmware: '2.1.0',
+    batteryLevel: 90,
+    isSecured: true,
+    lastSeen: new Date(),
+    signalStrength: 85,
 }, {
     id: 'lora_002',
     name: 'LoRa Gateway Mesh',
+    rssi: -70,
+    deviceType: 'lora_gateway',
+    firmware: '1.5.2',
+    batteryLevel: 75,
+    isSecured: false,
+    lastSeen: new Date(),
+    signalStrength: 65,
 }, {
     id: '3',
     name: 'Peer 3',
+    rssi: -80,
+    deviceType: 'lora_node',
+    firmware: '1.0.0',
+    batteryLevel: 60,
+    isSecured: false,
+    lastSeen: new Date(),
+    signalStrength: 45,
 }];
 export class InMemoryPeerProvider implements PeerProvider{
     private _peerScanned: PeerFound[] = [];

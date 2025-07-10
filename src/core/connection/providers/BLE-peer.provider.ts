@@ -12,7 +12,22 @@ export class BLEPeerProvider implements PeerProvider{
     });
     private onDidDiscoverPeri = BleManager.onDiscoverPeripheral((p) => {
         if (this.peerFoundCallback) {
-            this.peerFoundCallback({id: p.id, name: p.name ?? p.localName ?? 'Inconnu'});
+            this.peerFoundCallback({
+                id: p.id, 
+                name: p.name ?? p.localName ?? 'Inconnu',
+                rssi: p.rssi,
+                advertising: p.advertising,
+                manufacturerData: p.manufacturerData,
+                serviceUUIDs: p.serviceUUIDs,
+                txPowerLevel: p.txPowerLevel,
+                isConnectable: p.isConnectable,
+                localName: p.localName,
+                txPower: p.txPower,
+                overflowServiceUUIDs: p.overflowServiceUUIDs,
+                solicitedServiceUUIDs: p.solicitedServiceUUIDs,
+                serviceData: p.serviceData,
+                lastSeen: new Date(),
+            });
         }
     });
     onScanStarted(callback: () => void): void {

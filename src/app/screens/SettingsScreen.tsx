@@ -1,40 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-
-interface LoRaDevice {
-  id: string;
-  name: string;
-  status: 'connected' | 'connecting' | 'disconnected' | 'error';
-  batteryLevel: number;
-  signalStrength: number;
-  lastSeen: string;
-  publicKey: string;
-  firmware: string;
-}
-
-interface LogEntry {
-  id: string;
-  timestamp: string;
-  level: 'info' | 'warning' | 'error';
-  message: string;
-}
+import { useSettingsScreenViewModel, type LogEntry } from './settings-screen.viewmodel';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const [loraDevice, setLoraDevice] = useState<LoRaDevice>({
-    id: 'lora_device_001',
-    name: 'LoRa Émetteur v2.1',
-    status: 'connected',
-    batteryLevel: 78,
-    signalStrength: 85,
-    lastSeen: 'Il y a 30 sec',
-    publicKey: 'pk_a7b8c9d0e1f2g3h4i5j6k7l8m9n0o1p2',
-    firmware: '2.1.3',
-  });
+  const { loraDevice } = useSettingsScreenViewModel();
 
   const [settings, setSettings] = useState({
     allowConnections: true,
@@ -59,20 +33,6 @@ export default function SettingsScreen() {
     { id: '6', timestamp: '15:20:45', level: 'info', message: 'Health check: Tous systèmes opérationnels' },
   ]);
 
-  useEffect(() => {
-    // Simulate device status updates
-    const interval = setInterval(() => {
-      setLoraDevice(prev => ({
-        ...prev,
-        batteryLevel: Math.max(20, prev.batteryLevel + (Math.random() > 0.5 ? 1 : -1)),
-        signalStrength: Math.max(30, Math.min(100, prev.signalStrength + (Math.random() > 0.5 ? 2 : -2))),
-        lastSeen: 'Il y a ' + Math.floor(Math.random() * 60) + ' sec',
-      }));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleBack = () => {
     navigation.goBack();
   };  const handleConnectDevice = () => {
@@ -86,7 +46,6 @@ export default function SettingsScreen() {
             text: 'Déconnecter',
             style: 'destructive',
             onPress: () => {
-              setLoraDevice(prev => ({ ...prev, status: 'disconnected' }));
               toast.success('Émetteur déconnecté');
             },
           },
@@ -106,10 +65,8 @@ export default function SettingsScreen() {
 
     setShowPinModal(false);
     setPinCode('');
-    setLoraDevice(prev => ({ ...prev, status: 'connecting' }));
 
     setTimeout(() => {
-      setLoraDevice(prev => ({ ...prev, status: 'connected' }));
       toast.success('Connexion établie avec l\'émetteur LoRa');
 
       // Add connection log

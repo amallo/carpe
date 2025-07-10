@@ -18,6 +18,13 @@ describe('FEATURE: Audie connects to a BLE device', () => {
         peerProvider.schedulePeerFound({
             id: 'peer0',
             name: 'carpe-001',
+            rssi: -65,
+            deviceType: 'lora_transceiver',
+            firmware: '1.0.0',
+            batteryLevel: 85,
+            isSecured: false,
+            lastSeen: new Date(),
+            signalStrength: 75,
         });
         await store.dispatch(scanPeers({ timeout: 100000 }));
         const expectedState = createStateBuilder().withPeer({
