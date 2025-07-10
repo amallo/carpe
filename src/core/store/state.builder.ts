@@ -1,7 +1,7 @@
 // Construct the state with an initial state
 // following builder pattern
-import { getPeerInitialState, PeerEntity } from '../connection/store/peers.slice';
-import { peerAdapter } from '../connection/store/peers.slice';
+import { getPeerInitialState, PeerEntity } from '../peers/store/peers.slice';
+import { peerAdapter } from '../peers/store/peers.slice';
 import { Feature, permissionAdapter, PermissionEntity } from '../permission/store/permission.slice';
 import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';

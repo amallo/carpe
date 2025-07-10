@@ -5,7 +5,7 @@ import { createStore } from './store';
 import { Provider } from 'react-redux';
 import { NativePermissionProvider, requiredAndroidPermissionByFeature, requiredIOSPermissionByFeature } from '../../core/permission/providers/native/native-permission.provider';
 import { Platform } from 'react-native';
-import { BLEPeerProvider } from '../../core/connection/providers/BLE-peer.provider';
+import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 
 const isIOS = Platform.OS === 'ios';
 

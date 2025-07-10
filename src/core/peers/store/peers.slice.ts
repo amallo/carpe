@@ -23,7 +23,7 @@ export type PeerEntity = {
     firmware?: string;                // Firmware version
     batteryLevel?: number;            // Battery level (0-100)
     isSecured?: boolean;              // Whether the device requires PIN
-    lastSeen?: Date;                  // Last time the device was seen
+    lastSeen?: string;                // Last time the device was seen (ISO string)
     // Propriétés calculées
     distance?: number;                // Calculated distance in meters
     signalStrength?: number;          // Calculated signal strength (0-100)
@@ -43,10 +43,7 @@ const peerSlice = createSlice({
     initialState: getPeerInitialState(),
     reducers: {
         scanHit: (state, action: PayloadAction<PeerEntity>) => {
-            const newState = peerAdapter.addOne(state, {
-                id: action.payload.id,
-                name: action.payload.name,
-            });
+            const newState = peerAdapter.addOne(state, action.payload);
             return newState;
         },
         setScanLoading: (state, action: PayloadAction<boolean>) => {

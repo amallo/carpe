@@ -18,7 +18,7 @@ export type PeerFound = {
     firmware?: string;                // Firmware version
     batteryLevel?: number;            // Battery level (0-100)
     isSecured?: boolean;              // Whether the device requires PIN
-    lastSeen?: Date;                  // Last time the device was seen
+    lastSeen?: Date;                  // Last time the device was seen (will be converted to ISO string)
     // Propriétés calculées
     distance?: number;                // Calculated distance in meters
     signalStrength?: number;          // Calculated signal strength (0-100)

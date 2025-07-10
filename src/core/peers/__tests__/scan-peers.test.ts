@@ -23,13 +23,20 @@ describe('FEATURE: Audie connects to a BLE device', () => {
             firmware: '1.0.0',
             batteryLevel: 85,
             isSecured: false,
-            lastSeen: new Date(),
+            lastSeen: new Date('2024-01-15T10:30:00.000Z'),
             signalStrength: 75,
         });
         await store.dispatch(scanPeers({ timeout: 100000 }));
         const expectedState = createStateBuilder().withPeer({
             id: 'peer0',
             name: 'carpe-001',
+            rssi: -65,
+            deviceType: 'lora_transceiver',
+            firmware: '1.0.0',
+            batteryLevel: 85,
+            isSecured: false,
+            lastSeen: '2024-01-15T10:30:00.000Z',
+            signalStrength: 75,
         })
             .withScanLoading(false)
             .withPermissionByFeature('scan-peers', {

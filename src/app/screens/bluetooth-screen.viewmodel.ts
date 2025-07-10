@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { selectScanLoading, selectAllPeers } from '../../core/connection/store/peers.slice';
-import { scanPeers } from '../../core/connection/store/scan-peers.usecase';
+import { selectScanLoading, selectAllPeers } from '../../core/peers/store/peers.slice';
+import { scanPeers } from '../../core/peers/store/scan-peers.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
 import { requestPermission } from '../../core/permission/store/request-permission.usecase';
 import { permissionConfig } from '../../core/permission/providers/native/permission.config';
@@ -53,10 +53,11 @@ export const useBluetoothScreenViewModel = () => {
     };
 
     // Formater la dernière fois vue
-    const formatLastSeen = (lastSeen?: Date): string => {
+    const formatLastSeen = (lastSeen?: string): string => {
       if (!lastSeen) {return 'Jamais vu';}
+      const lastSeenDate = new Date(lastSeen);
       const now = new Date();
-      const diffMs = now.getTime() - lastSeen.getTime();
+      const diffMs = now.getTime() - lastSeenDate.getTime();
       const diffSec = Math.floor(diffMs / 1000);
       const diffMin = Math.floor(diffSec / 60);
 

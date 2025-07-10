@@ -1,5 +1,5 @@
 import { useAppSelector } from '../store/hooks';
-import { selectAllPeers } from '../../core/connection/store/peers.slice';
+import { selectAllPeers } from '../../core/peers/store/peers.slice';
 
 export interface LoRaDevice {
   id: string;
@@ -32,7 +32,7 @@ export const useSettingsScreenViewModel = () => {
     batteryLevel: connectedDevice.batteryLevel || 0,
     signalStrength: connectedDevice.signalStrength || 50,
     lastSeen: connectedDevice.lastSeen ? 
-      `Il y a ${Math.floor((new Date().getTime() - connectedDevice.lastSeen.getTime()) / 1000)} sec` : 
+      `Il y a ${Math.floor((new Date().getTime() - new Date(connectedDevice.lastSeen).getTime()) / 1000)} sec` : 
       'Jamais vu',
     publicKey: `pk_${connectedDevice.id}`, // Générer une clé basée sur l'ID
     firmware: connectedDevice.firmware || 'Inconnu',
