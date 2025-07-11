@@ -126,18 +126,22 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          {recentBroadcasts.map((broadcast) => (
-            <View key={broadcast.id} style={styles.broadcastCard}>
-              <View style={styles.broadcastHeader}>
-                <Text style={styles.broadcastSender}>{broadcast.sender}</Text>
-                <View style={styles.broadcastMeta}>
-                  <Text style={styles.broadcastDistance}>{broadcast.distance}</Text>
-                  <Text style={styles.broadcastTime}>{broadcast.timestamp}</Text>
+          {recentBroadcasts.length === 0 ? (
+            <Text style={styles.broadcastMessage}>Aucune diffusion récente</Text>
+          ) : (
+            recentBroadcasts.map((broadcast) => (
+              <View key={broadcast.id} style={styles.broadcastCard}>
+                <View style={styles.broadcastHeader}>
+                  <Text style={styles.broadcastSender}>{broadcast.sender}</Text>
+                  <View style={styles.broadcastMeta}>
+                    <Text style={styles.broadcastDistance}>{broadcast.distance}</Text>
+                    <Text style={styles.broadcastTime}>{broadcast.timestamp}</Text>
+                  </View>
                 </View>
+                <Text style={styles.broadcastMessage}>{broadcast.message}</Text>
               </View>
-              <Text style={styles.broadcastMessage}>{broadcast.message}</Text>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
         {/* Contacts */}
@@ -148,38 +152,42 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          {contacts.map((contact) => (
-            <TouchableOpacity
-              key={contact.id}
-              style={styles.contactCard}
-              onPress={() => handleContactPress(contact)}
-            >
-              <View style={styles.contactAvatar}>
-                <Text style={styles.avatarText}>
-                  {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </Text>
-              </View>
-
-              <View style={styles.contactInfo}>
-                <View style={styles.contactHeader}>
-                  <Text style={styles.contactName}>{contact.name}</Text>
-                  <View style={[styles.statusIndicator, {
-                    backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8',
-                  }]} />
+          {contacts.length === 0 ? (
+            <Text style={styles.contactLastSeen}>Aucun contact</Text>
+          ) : (
+            contacts.map((contact) => (
+              <TouchableOpacity
+                key={contact.id}
+                style={styles.contactCard}
+                onPress={() => handleContactPress(contact)}
+              >
+                <View style={styles.contactAvatar}>
+                  <Text style={styles.avatarText}>
+                    {contact.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </Text>
                 </View>
-                <Text style={styles.contactLastSeen}>{contact.lastSeen}</Text>
-              </View>
 
-              <View style={styles.contactMeta}>
-                {contact.unreadCount > 0 && (
-                  <View style={styles.unreadBadge}>
-                    <Text style={styles.unreadText}>{contact.unreadCount}</Text>
+                <View style={styles.contactInfo}>
+                  <View style={styles.contactHeader}>
+                    <Text style={styles.contactName}>{contact.name}</Text>
+                    <View style={[styles.statusIndicator, {
+                      backgroundColor: contact.status === 'online' ? '#22c55e' : '#94a3b8',
+                    }]} />
                   </View>
-                )}
-                <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-              </View>
-            </TouchableOpacity>
-          ))}
+                  <Text style={styles.contactLastSeen}>{contact.lastSeen}</Text>
+                </View>
+
+                <View style={styles.contactMeta}>
+                  {contact.unreadCount > 0 && (
+                    <View style={styles.unreadBadge}>
+                      <Text style={styles.unreadText}>{contact.unreadCount}</Text>
+                    </View>
+                  )}
+                  <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
         </View>
 
         <View style={{ height: 100 }} />

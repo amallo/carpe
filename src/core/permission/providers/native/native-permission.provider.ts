@@ -5,11 +5,13 @@ type NativePermissionByFeature = Record<FeatureRequest, Permission[]>;
 
 export const requiredIOSPermissionByFeature: NativePermissionByFeature = {
     'scan-peers': [PERMISSIONS.IOS.BLUETOOTH, PERMISSIONS.IOS.LOCATION_WHEN_IN_USE],
-} as const;
+    'connect-peers': [PERMISSIONS.IOS.BLUETOOTH],
+};
 
 export const requiredAndroidPermissionByFeature: NativePermissionByFeature = {
     'scan-peers': [PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
-} as const;
+    'connect-peers': [PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
+};
 
 export class NativePermissionProvider implements PermissionProvider{
     constructor(private readonly nativePermissionByFeature: NativePermissionByFeature) {}

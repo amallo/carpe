@@ -31,6 +31,14 @@ export class StateBuilder {
         this._state.peer.scanLoading = loading;
         return this;
     }
+    withError(error: string | null) {
+        this._state.peer.error = error;
+        return this;
+    }
+    withConnectedPeer(peerId: string){
+        this._state.peer.connectionIds = [...this._state.peer.connectionIds, peerId];
+        return this;
+    }
 
     build() {
         return this._state;

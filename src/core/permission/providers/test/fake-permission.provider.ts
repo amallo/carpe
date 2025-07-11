@@ -1,12 +1,12 @@
 import { PermissionProvider, FeatureRequest, FeaturedPermissionResult, PermissionStatus } from '../permission.provider';
 
-
-
-
 export class FakePermissionProvider implements PermissionProvider{
     private _currentPermissionsByFeature: Record<FeatureRequest, FeaturedPermissionResult> = {
         'scan-peers': {
             'scan-bluetooth': 'not-requested',
+        },
+        'connect-peers': {
+            'connect-bluetooth': 'granted', // Par défaut accordé
         },
     };
     requestFeaturedPermission(feature: FeatureRequest): Promise<FeaturedPermissionResult> {
@@ -23,6 +23,12 @@ export class FakePermissionProvider implements PermissionProvider{
         };
     }
     requestSinglePermission(permissionId: string): Promise<PermissionStatus> {
-        return Promise.resolve(this._currentPermissionsByFeature['scan-peers'][permissionId]);
+        // Chercher dans tous les features
+        for (const feature of Object.keys(this._currentPermissionsByFeature)) {
+            if (this._currentPermissionsByFeature[feature as FeatureRequest][permissionId]) {
+                return Promise.resolve(this._currentPermissionsByFeature[feature as FeatureRequest][permissionId]);
+            }
+        }
+        return Promise.resolve('not-requested');
     }
 }

@@ -1,8 +1,9 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { selectScanLoading, selectAllPeers } from '../../core/peers/store/peers.slice';
-import { scanPeers } from '../../core/peers/store/scan-peers.usecase';
+import { selectScanLoading, selectAllPeers, selectError } from '../../core/peers/store/peers.slice';
+import { scanPeers } from '../../core/peers/usecases/scan-peers.usecase';
+import { connectToPeer } from '../../core/peers/usecases/connect-to-peer.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
-import { requestPermission } from '../../core/permission/store/request-permission.usecase';
+import { requestPermission } from '../../core/permission/usecases/request-permission.usecase';
 import { permissionConfig } from '../../core/permission/providers/native/permission.config';
 
 export type PeerViewModel = {
@@ -29,11 +30,15 @@ export type PermissionViewModel = {
   request: () => void;
 }
 
-export const useBluetoothScreenViewModel = () => {
+export const useBluetoothScannerViewModel = () => {
   const dispatch = useAppDispatch();
+
+  // Consommation du state via des selectors uniquement
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
-  const missingPermission = useAppSelector((state)=>selectMissingPermissionForFeature(state, 'scan-peers'));
+  const error = useAppSelector(selectError);
+  const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
+
   const peersVM: PeerViewModel[] = peers.map((peer) => {
     // Calculer la distance basée sur le RSSI si disponible
     const calculateDistance = (rssi?: number): string => {
@@ -85,13 +90,23 @@ export const useBluetoothScreenViewModel = () => {
   });
 
   return {
+    // Données du state via selectors
     isScanning,
     peers: peersVM,
+    error,
+
+    // Actions via dispatch de thunks
     startScan: () => {
       console.log('startScan');
       return dispatch(scanPeers({ timeout: 30000 }));
     },
-    missingPermission: missingPermission.map((p)=>({
+    connectToPeer: (peerId: string) => {
+      console.log('connectToPeer', peerId);
+      return dispatch(connectToPeer({ peerId }));
+    },
+
+    // Permissions via selectors
+    missingPermission: missingPermission.map((p) => ({
       permissionId: p.id,
       permissionStatus: p.status,
       message: permissionConfig[p.id]?.message || 'Permission requise',

@@ -1,4 +1,4 @@
-import { PeerFound, PeerProvider } from '../peer.provider';
+import { PeerFound, PeerProvider, PeerError } from '../peer.provider';
 
 const PEERS: PeerFound[] = [{
     id: 'lora_001',
@@ -21,7 +21,7 @@ const PEERS: PeerFound[] = [{
     lastSeen: new Date(),
     signalStrength: 65,
 }, {
-    id: '3',
+    id: 'lora_003',
     name: 'Peer 3',
     rssi: -80,
     deviceType: 'lora_node',
@@ -44,6 +44,16 @@ export class InMemoryPeerProvider implements PeerProvider{
     }
     stopScan(): Promise<void> {
         this._scanStoppedCallback?.();
+        return Promise.resolve();
+    }
+    async connectToPeer(peerId: string): Promise<void> {
+        // Vérifier si le peer existe dans la liste
+        const peer = PEERS.find(p => p.id === peerId);
+        if (!peer) {
+            throw new Error(PeerError.PEER_NOT_FOUND);
+        }
+
+        // Simuler une connexion réussie
         return Promise.resolve();
     }
     onPeerFound(callback: (peer: PeerFound) => void): void {

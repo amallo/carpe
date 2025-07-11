@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
@@ -46,10 +46,10 @@ export default function QRScannerScreen() {
         <View style={styles.scannerArea}>
           <View style={styles.scannerOverlay}>
             <View style={styles.scannerFrame}>
-              <View style={styles.corner} style={[styles.corner, styles.topLeft]} />
-              <View style={styles.corner} style={[styles.corner, styles.topRight]} />
-              <View style={styles.corner} style={[styles.corner, styles.bottomLeft]} />
-              <View style={styles.corner} style={[styles.corner, styles.bottomRight]} />
+              <View style={[styles.corner, styles.topLeft]} />
+              <View style={[styles.corner, styles.topRight]} />
+              <View style={[styles.corner, styles.bottomLeft]} />
+              <View style={[styles.corner, styles.bottomRight]} />
 
               {isScanning && (
                 <View style={styles.scanLine} />

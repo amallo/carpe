@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
-import { PermissionEntity, setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
-import { scanHit, setScanLoading, PeerEntity } from './peers.slice';
+import { setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
+import { scanHit, setScanLoading, PeerEntity } from '../store/peers.slice';
 import { PeerFound } from '../providers/peer.provider';
+import { checkPermission } from '../../permission/services/check-permission.service';
 
 // Mapping function to convert PeerFound to PeerEntity
 const mapPeerFoundToPeerEntity = (peerFound: PeerFound): PeerEntity => {
@@ -40,21 +41,23 @@ export const scanPeers = createAsyncThunk<
     { extra: Dependencies }
 >(
     'peer/scan',
-    async ({ timeout: _timeout }, { dispatch, extra: { peerProvider, permissionProvider } }) => {
+        async ({ timeout: _timeout }, { dispatch, extra }) => {
         /**
-         * Request permission to scan for peers
+         * Check permissions for scanning peers
          */
-        const permissionResult = await permissionProvider.requestFeaturedPermission('scan-peers');
-        const permission: PermissionEntity[] = Object.keys(permissionResult).reduce((acc, p) => {
-            return [...acc, { id: p, status: permissionResult[p] }];
-        }, [] as PermissionEntity[]);
-        
-        dispatch(setMultiplePermissionForFeature({ permission, feature: 'scan-peers' }));
+        const permissionCheck = await checkPermission('scan-peers', extra);
 
-        if (permission.some((p) => p.status !== 'granted')) {
+        dispatch(setMultiplePermissionForFeature({
+            permission: permissionCheck.permissions,
+            feature: 'scan-peers',
+        }));
+
+        if (!permissionCheck.hasPermission) {
             console.log('permission not granted');
             return;
         }
+
+        const { peerProvider } = extra;
 
         /**
          * Register callbacks to the peer provider
@@ -80,4 +83,4 @@ export const scanPeers = createAsyncThunk<
          */
         await peerProvider.scan();
     }
-); 
+);

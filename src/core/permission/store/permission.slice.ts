@@ -1,7 +1,7 @@
 import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 
-export type Feature = 'scan-peers';
+export type Feature = 'scan-peers' | 'connect-peers';
 type PermissionState = EntityState<PermissionEntity, string> & Record<Feature, string[]>;
 
 export type PermissionStatus = 'granted' | 'denied' | 'not-requested';
@@ -13,7 +13,11 @@ export type PermissionEntity = {
 }
 
 export const getPermissionInitialState = (): PermissionState => {
-    return {...permissionAdapter.getInitialState(), 'scan-peers': []};
+    return {
+        ...permissionAdapter.getInitialState(), 
+        'scan-peers': [],
+        'connect-peers': []
+    };
 };
 
 const permissionSlice = createSlice({
@@ -22,8 +26,8 @@ const permissionSlice = createSlice({
     reducers: {
         setMultiplePermissionForFeature: (state, action: PayloadAction<{feature: Feature, permission: PermissionEntity[]}>) => {
             action.payload.permission.forEach((p)=>{
-                state['scan-peers'] = state['scan-peers'].filter((pId)=>p.id !== pId);
-                state['scan-peers'].push(p.id);
+                state[action.payload.feature] = state[action.payload.feature].filter((pId)=>p.id !== pId);
+                state[action.payload.feature].push(p.id);
             })
             return permissionAdapter.addMany(state, action.payload.permission);
         },

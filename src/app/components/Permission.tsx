@@ -2,7 +2,7 @@ import React, {  } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { StyleSheet } from 'react-native';
-import { PermissionViewModel } from '../screens/bluetooth-screen.viewmodel';
+import { PermissionViewModel } from '../screens/BluetoothScanner.viewmodel';
 
 type Props = {
     permission: PermissionViewModel

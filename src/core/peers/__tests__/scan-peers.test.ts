@@ -2,7 +2,7 @@ import { createTestStore, Store } from '../../../app/store/store';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
 import { createStateBuilder } from '../../store/state.builder';
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
-import { scanPeers } from '../store/scan-peers.usecase';
+import { scanPeers } from '../usecases/scan-peers.usecase';
 
 describe('FEATURE: Audie connects to a BLE device', () => {
     let peerProvider: FakePeerProvider;
@@ -22,7 +22,7 @@ describe('FEATURE: Audie connects to a BLE device', () => {
             deviceType: 'lora_transceiver',
             firmware: '1.0.0',
             batteryLevel: 85,
-            isSecured: false,
+            isSecured: false, // Pas de sécurité pour commencer
             lastSeen: new Date('2024-01-15T10:30:00.000Z'),
             signalStrength: 75,
         });

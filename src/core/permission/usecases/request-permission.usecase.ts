@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
-import { PermissionEntity, setPermission } from './permission.slice';
+import { PermissionEntity, setPermission } from '../store/permission.slice';
 
 // Async thunk for scanning peers
 export const requestPermission = createAsyncThunk<

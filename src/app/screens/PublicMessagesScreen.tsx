@@ -303,7 +303,7 @@ export default function PublicMessagesScreen() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color="#111827" />
         </TouchableOpacity>
-
+ 
         <Text style={styles.title}>Messages publics</Text>
 
         <TouchableOpacity style={styles.viewToggle} onPress={toggleViewMode}>

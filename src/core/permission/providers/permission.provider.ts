@@ -1,7 +1,7 @@
 /**
  * PermissionRequest is a type that represents the request for a permission.
  */
-export type FeatureRequest = 'scan-peers'
+export type FeatureRequest = 'scan-peers' | 'connect-peers'
 
 /**
  * PermissionStatus is a type that represents the status of a permission.

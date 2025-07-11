@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, Platform, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { PeerViewModel, useBluetoothScreenViewModel } from './bluetooth-screen.viewmodel';
+import { PeerViewModel, useBluetoothScannerViewModel } from './BluetoothScanner.viewmodel';
 import { Permission } from '../components/Permission';
 
 export default function BluetoothScanScreen() {
@@ -15,7 +15,16 @@ export default function BluetoothScanScreen() {
   const [pinCode, setPinCode] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const viewmodel = useBluetoothScreenViewModel();
+  const viewmodel = useBluetoothScannerViewModel();
+
+  // Gestion des erreurs via le viewmodel
+  useEffect(() => {
+    if (viewmodel.error) {
+      toast.error('Erreur de connexion', {
+        description: viewmodel.error,
+      });
+    }
+  }, [viewmodel.error]);
 
   const handleBack = () => {
     navigation.goBack();
@@ -35,11 +44,13 @@ export default function BluetoothScanScreen() {
     }
   };
 
-  const connectToDevice = (device: PeerViewModel) => {
+  const connectToDevice = async (device: PeerViewModel) => {
     setIsConnecting(true);
     toast.loading(`Connexion à ${device.name}...`);
 
-    setTimeout(() => {
+    try {
+      await viewmodel.connectToPeer(device.id);
+
       setIsConnecting(false);
       setShowPinModal(false);
       setPinCode('');
@@ -50,7 +61,10 @@ export default function BluetoothScanScreen() {
 
       // Navigate back to settings with connection established
       navigation.goBack();
-    }, 3000);
+    } catch (error) {
+      setIsConnecting(false);
+      // L'erreur est déjà gérée par le useEffect ci-dessus
+    }
   };
 
   const handlePinSubmit = () => {
