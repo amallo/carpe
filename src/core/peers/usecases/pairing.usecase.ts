@@ -26,6 +26,6 @@ export const connectToPeer = createAsyncThunk<
         }
 
         const { peerProvider } = extra;
-        await peerProvider.connectToPeer(peerId);
+        await peerProvider.pairing(peerId);
     }
 ); 

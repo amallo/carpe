@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { selectScanLoading, selectAllPeers, selectError } from '../../core/peers/store/peers.slice';
+import { selectScanLoading, selectAllPeers, selectPeerScanningError } from '../../core/peers/store/peers.slice';
 import { scanPeers } from '../../core/peers/usecases/scan-peers.usecase';
-import { connectToPeer } from '../../core/peers/usecases/connect-to-peer.usecase';
+import { connectToPeer } from '../../core/peers/usecases/pairing.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
 import { requestPermission } from '../../core/permission/usecases/request-permission.usecase';
 import { permissionConfig } from '../../core/permission/providers/native/permission.config';
@@ -36,7 +36,7 @@ export const useBluetoothScannerViewModel = () => {
   // Consommation du state via des selectors uniquement
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
-  const error = useAppSelector(selectError);
+  const error = useAppSelector(selectPeerScanningError);
   const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
 
   const peersVM: PeerViewModel[] = peers.map((peer) => {

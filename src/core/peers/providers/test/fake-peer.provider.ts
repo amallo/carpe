@@ -23,7 +23,7 @@ export class FakePeerProvider implements PeerProvider{
         this._scanStoppedCallback?.();
         return Promise.resolve();
     }
-    async connectToPeer(peerId: string): Promise<void> {
+    async pairing(peerId: string): Promise<void> {
         this._connectToPeerCallTracker.recordCall();
         
         // Simuler les erreurs possibles selon l'interface

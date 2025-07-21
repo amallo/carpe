@@ -52,9 +52,14 @@ export default function HomeScreen() {
 
   const handleContactPress = (contact: Contact) => {
     navigation.navigate('Chat' as never, { contact } as never);
-  };  const handleBroadcast = () => {
+  };  
+  const handlePublicMessage = () => {
     navigation.navigate('PublicMessages' as never);
-  };  const handleSettings = () => {
+  };
+  const handleWritePublicMessage = () => {
+    navigation.navigate('Broadcast' as never);
+  };  
+  const handleSettings = () => {
     navigation.navigate('Settings' as never);
   };
 
@@ -99,7 +104,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Actions rapides</Text>
           <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.actionCard} onPress={handleBroadcast}>
+            <TouchableOpacity style={styles.actionCard} onPress={handlePublicMessage}>
               <View style={styles.actionIcon}>
                 <Ionicons name="megaphone" size={24} color="#ffffff" />
               </View>
@@ -121,7 +126,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Messages publics récents</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>handlePublicMessage()}>
               <Text style={styles.seeAllText}>Tout voir</Text>
             </TouchableOpacity>
           </View>
@@ -194,7 +199,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={handleBroadcast}>
+      <TouchableOpacity style={styles.fab} onPress={handleWritePublicMessage}>
         <Ionicons name="megaphone" size={24} color="#ffffff" />
       </TouchableOpacity>
     </SafeAreaView>

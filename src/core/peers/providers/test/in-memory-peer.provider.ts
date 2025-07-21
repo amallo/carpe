@@ -46,7 +46,7 @@ export class InMemoryPeerProvider implements PeerProvider{
         this._scanStoppedCallback?.();
         return Promise.resolve();
     }
-    async connectToPeer(peerId: string): Promise<void> {
+    async pairing(peerId: string): Promise<void> {
         // Vérifier si le peer existe dans la liste
         const peer = PEERS.find(p => p.id === peerId);
         if (!peer) {

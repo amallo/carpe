@@ -27,7 +27,7 @@ describe('FEATURE: Audie connects to a BLE device', () => {
             signalStrength: 75,
         });
         await store.dispatch(scanPeers({ timeout: 100000 }));
-        const expectedState = createStateBuilder().withPeer({
+        const expectedState = createStateBuilder().withAvailablePeerPeer({
             id: 'peer0',
             name: 'carpe-001',
             rssi: -65,
@@ -38,7 +38,7 @@ describe('FEATURE: Audie connects to a BLE device', () => {
             lastSeen: '2024-01-15T10:30:00.000Z',
             signalStrength: 75,
         })
-            .withScanLoading(false)
+            .withScanningPeer(false)
             .withPermissionByFeature('scan-peers', {
                 id: 'scan-bluetooth',
                 status: 'granted',
@@ -54,7 +54,7 @@ describe('FEATURE: Audie connects to a BLE device', () => {
                 id: 'scan-bluetooth',
                 status: 'denied',
             })
-            .withScanLoading(false)
+            .withScanningPeer(false)
             .build();
         expect(peerProvider.scanWasCalled()).toBe(false);
         expect(store.getState()).toEqual(expectedState);

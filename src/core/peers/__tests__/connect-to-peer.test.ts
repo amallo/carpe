@@ -1,6 +1,6 @@
 import { createTestStore, Store } from '../../../app/store/store';
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
-import { connectToPeer } from '../usecases/connect-to-peer.usecase';
+import { connectToPeer } from '../usecases/pairing.usecase';
 import { createStateBuilder } from '../../store/state.builder';
 import { PeerError } from '../providers/peer.provider';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
@@ -35,7 +35,7 @@ describe('FEATURE: Audie connects to a peer', () => {
         const nonExistentPeerId = 'non-existent-peer';
         await store.dispatch(connectToPeer({ peerId: nonExistentPeerId }));
         const expectedState = createStateBuilder()
-            .withError(PeerError.PEER_NOT_FOUND)
+            .withPairingError(PeerError.PEER_NOT_FOUND)
             .withPermissionByFeature('connect-peers', {
                 id: 'connect-bluetooth',
                 status: 'granted',
@@ -48,7 +48,7 @@ describe('FEATURE: Audie connects to a peer', () => {
         permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
         await store.dispatch(connectToPeer({ peerId: 'timeout-peer' }));
         const expectedState = createStateBuilder()
-            .withError(PeerError.CONNECTION_TIMEOUT)
+            .withPairingError(PeerError.CONNECTION_TIMEOUT)
             .withPermissionByFeature('connect-peers', {
                 id: 'connect-bluetooth',
                 status: 'granted',
@@ -64,7 +64,7 @@ describe('FEATURE: Audie connects to a peer', () => {
         await store.dispatch(connectToPeer({ peerId: 'peer-001' }));
         // Assert: Vérifier que l'erreur de permission est gérée
         const expectedState = createStateBuilder()
-            .withError(PeerError.PERMISSION_DENIED)
+            .withPairingError(PeerError.PERMISSION_DENIED)
             .withPermissionByFeature('connect-peers', {
                 id: 'connect-bluetooth',
                 status: 'denied',

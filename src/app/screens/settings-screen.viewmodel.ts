@@ -1,43 +1,107 @@
 import { useAppSelector } from '../store/hooks';
-import { selectFirstConnectedDevice, selectError } from '../../core/peers/store/peers.slice';
-import { DeviceStatusService } from '../../core/peers/services/device-status.service';
+import { selectPeerById } from '../../core/peers/store/peers.slice';
+import { PairingStatus, selectActivePairing, selectPairingError } from '../../core/peers/store/pairing.slice';
+import { createSelector } from '@reduxjs/toolkit';
 
-export interface LoRaDevice {
+export interface ActivePairingViewModel {
   id: string;
   name: string;
-  status: 'connected' | 'connecting' | 'disconnected' | 'error';
+  statusText: string
+  isConnected: Readonly<boolean>;
+  statusColor: string;
+  statusIcon: 'bluetooth' | 'close';
   batteryLevel: number;
   signalStrength: number;
   lastSeen: string;
   publicKey: string;
   firmware: string;
+  closePairingStatusButtonColor: string;
 }
 
-export interface LogEntry {
+export interface LogEntryViewModel {
   id: string;
   timestamp: string;
   level: 'info' | 'warning' | 'error';
   message: string;
 }
 
-export const useSettingsScreenViewModel = () => {
-  // Consommation du state via des selectors spécialisés
-  const connectedDevice = useAppSelector(selectFirstConnectedDevice);
-  const error = useAppSelector(selectError);
+const getActivePairingStatusText = (activePairingStatus: PairingStatus) => {
+  switch (activePairingStatus) {
+    case 'connected': return 'Connecté';
+    case 'pending': return 'Connexion...';
+    //case 'error': return 'Erreur';
+    default: return 'Inconnu';
+  }
+};
 
-  // Mapping via le service de logique métier
-  const loraDevice: LoRaDevice = DeviceStatusService.mapPeerToDeviceInfo(connectedDevice);
+const getActivePairingStatusColor = (activePairingStatus: PairingStatus) => {
+  switch (activePairingStatus) {
+    case 'connected': return '#10b981';
+    case 'pending': return '#f59e0b';
+    case 'disconnected': return '#6b7280';
+    //case 'error': return '#ef4444';
+    default: return '#6b7280';
+  }
+};
+
+
+const getClosePairingStatusButtonColor = (activePairingStatus: PairingStatus) => {
+  switch (activePairingStatus) {
+    case 'connected': return '#ef4444';
+    default: return '#10b981';
+  }
+};
+
+const getActivePairingStatusIcon = (activePairingStatus: PairingStatus) => {
+  switch (activePairingStatus) {
+    case 'connected': return 'close';
+    default: return 'bluetooth';
+  }
+};
+
+const selectActivePairingViewModel = createSelector(
+  [selectActivePairing, selectPeerById],
+  (activePairing, peerById) : ActivePairingViewModel[] => {
+    return activePairing.map((pairing) => {
+      return {
+        statusText: getActivePairingStatusText(pairing.status),
+        statusColor: getActivePairingStatusColor(pairing.status),
+        id: pairing.id,
+        name: peerById[pairing.id]?.name || 'Inconnu',
+        batteryLevel: peerById[pairing.id]?.batteryLevel || 0,
+        signalStrength: peerById[pairing.id]?.signalStrength || 0,
+        lastSeen: peerById[pairing.id]?.lastSeen || 'Jamais connecté',
+        publicKey:  '',
+        firmware: peerById[pairing.id]?.firmware || 'Inconnu2',
+        statusIcon: getActivePairingStatusIcon(pairing.status),
+        isConnected: pairing.status === 'connected',
+        closePairingStatusButtonColor: getClosePairingStatusButtonColor(pairing.status),
+      };
+    });
+  }
+);
+
+export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null} => {
+  // Consommation du state via des selectors spécialisés
+  const activePairing = useAppSelector(selectActivePairingViewModel);
+  const error = useAppSelector(selectPairingError);
 
   return {
     // Données du state via selectors
-    loraDevice,
+    activePairing : activePairing.length > 0 ? activePairing[0] :  {
+      id: 'no_device',
+      name: 'Aucun appareil connecté',
+      statusText: getActivePairingStatusText('disconnected'),
+      batteryLevel: 0,
+      signalStrength: 0,
+      lastSeen: 'Jamais connecté',
+      publicKey: '',
+      firmware: 'Inconnu',
+      statusColor: getActivePairingStatusColor('disconnected'),
+      statusIcon: 'bluetooth',
+      isConnected: false,
+      closePairingStatusButtonColor: '#10b981',
+    },
     error,
-
-    // États calculés
-    isConnected: loraDevice.status === 'connected',
-    hasDevice: connectedDevice !== null,
-    isConnecting: loraDevice.status === 'connecting',
-    isDisconnected: loraDevice.status === 'disconnected',
-
   };
 };

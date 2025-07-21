@@ -92,7 +92,7 @@ export class BLEPeerProvider implements PeerProvider{
         this.isScanning = false;
         return BleManager.stopScan();
     }
-    async connectToPeer(peerId: string): Promise<void> {
+    async pairing(peerId: string): Promise<void> {
         try {
             // Vérifier si un scan est en cours
             if (this.isScanning) {

@@ -4,11 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useSettingsScreenViewModel, type LogEntry } from './settings-screen.viewmodel';
+import { useSettingsViewModel, type LogEntryViewModel } from './settings-screen.viewmodel';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const { loraDevice } = useSettingsScreenViewModel();
+  const { activePairing } = useSettingsViewModel();
 
   const [settings, setSettings] = useState({
     allowConnections: true,
@@ -24,7 +24,7 @@ export default function SettingsScreen() {
   const [pinCode, setPinCode] = useState('');
   const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'warning' | 'error'>('healthy');
 
-  const [logs, setLogs] = useState<LogEntry[]>([
+  const [logs, setLogs] = useState<LogEntryViewModel[]>([
     { id: '1', timestamp: '15:32:45', level: 'info', message: 'Connexion Bluetooth établie avec succès' },
     { id: '2', timestamp: '15:32:40', level: 'info', message: 'Authentification PIN réussie' },
     { id: '3', timestamp: '15:30:12', level: 'warning', message: 'Signal LoRa faible détecté (65%)' },
@@ -36,7 +36,7 @@ export default function SettingsScreen() {
   const handleBack = () => {
     navigation.goBack();
   };  const handleConnectDevice = () => {
-    if (loraDevice.status === 'connected') {
+    if (activePairing.statusText === 'connected') {
       Alert.alert(
         'Déconnecter l\'émetteur',
         'Êtes-vous sûr de vouloir vous déconnecter de l\'émetteur LoRa ?',
@@ -70,7 +70,7 @@ export default function SettingsScreen() {
       toast.success('Connexion établie avec l\'émetteur LoRa');
 
       // Add connection log
-      const newLog: LogEntry = {
+      const newLog: LogEntryViewModel = {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString('fr-FR'),
         level: 'info',
@@ -88,7 +88,7 @@ export default function SettingsScreen() {
       const isHealthy = Math.random() > 0.3;
       setHealthStatus(isHealthy ? 'healthy' : 'warning');
 
-      const newLog: LogEntry = {
+      const newLog: LogEntryViewModel = {
         id: Date.now().toString(),
         timestamp: new Date().toLocaleTimeString('fr-FR'),
         level: isHealthy ? 'info' : 'warning',
@@ -102,26 +102,6 @@ export default function SettingsScreen() {
     }, 3000);
   };
 
-  const getDeviceStatusColor = () => {
-    switch (loraDevice.status) {
-      case 'connected': return '#10b981';
-      case 'connecting': return '#f59e0b';
-      case 'disconnected': return '#6b7280';
-      case 'error': return '#ef4444';
-      default: return '#6b7280';
-    }
-  };
-
-  const getDeviceStatusText = () => {
-    switch (loraDevice.status) {
-      case 'connected': return 'Connecté';
-      case 'connecting': return 'Connexion...';
-      case 'disconnected': return 'Déconnecté';
-      case 'error': return 'Erreur';
-      default: return 'Inconnu';
-    }
-  };
-
   const getHealthStatusColor = () => {
     switch (healthStatus) {
       case 'healthy': return '#10b981';
@@ -132,7 +112,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const getLevelColor = (level: LogEntry['level']) => {
+  const getLevelColor = (level: LogEntryViewModel['level']) => {
     switch (level) {
       case 'info': return '#10b981';
       case 'warning': return '#f59e0b';
@@ -160,45 +140,45 @@ export default function SettingsScreen() {
             <View style={styles.deviceHeader}>
               <View style={styles.deviceInfo}>
                 <View style={styles.deviceTitleRow}>
-                  <Text style={styles.deviceName}>{loraDevice.name}</Text>
-                  <View style={[styles.statusDot, { backgroundColor: getDeviceStatusColor() }]} />
+                  <Text style={styles.deviceName}>{activePairing.name}</Text>
+                  <View style={[styles.statusDot, { backgroundColor: activePairing.statusColor }]} />
                 </View>
-                <Text style={styles.deviceStatus}>{getDeviceStatusText()}</Text>
-                <Text style={styles.deviceLastSeen}>{loraDevice.lastSeen}</Text>
+                <Text style={styles.deviceStatus}>{activePairing.statusText}</Text>
+                <Text style={styles.deviceLastSeen}>{activePairing.lastSeen}</Text>
               </View>
               <TouchableOpacity
                 style={[
                   styles.connectButton,
-                  { backgroundColor: loraDevice.status === 'connected' ? '#ef4444' : '#10b981' },
+                  { backgroundColor: activePairing.closePairingStatusButtonColor },
                 ]}
                 onPress={handleConnectDevice}
-                disabled={loraDevice.status === 'connecting'}
+                disabled={activePairing.statusText === ''}
               >
                 <Ionicons
-                  name={loraDevice.status === 'connected' ? 'close' : 'bluetooth'}
+                  name={activePairing.statusIcon}
                   size={20}
                   color="#ffffff"
                 />
               </TouchableOpacity>
             </View>
 
-            {loraDevice.status === 'connected' && (
+            {activePairing.isConnected && (
               <>
                 {/* Device Stats */}
                 <View style={styles.deviceStats}>
                   <View style={styles.statItem}>
                     <Ionicons name="battery-half" size={20} color="#10b981" />
-                    <Text style={styles.statValue}>{loraDevice.batteryLevel}%</Text>
+                    <Text style={styles.statValue}>{activePairing.batteryLevel}%</Text>
                     <Text style={styles.statLabel}>Batterie</Text>
                   </View>
                   <View style={styles.statItem}>
                     <Ionicons name="radio" size={20} color="#4f46e5" />
-                    <Text style={styles.statValue}>{loraDevice.signalStrength}%</Text>
+                    <Text style={styles.statValue}>{activePairing.signalStrength}%</Text>
                     <Text style={styles.statLabel}>Signal</Text>
                   </View>
                   <View style={styles.statItem}>
                     <Ionicons name="code-working" size={20} color="#f59e0b" />
-                    <Text style={styles.statValue}>{loraDevice.firmware}</Text>
+                    <Text style={styles.statValue}>{activePairing.firmware}</Text>
                     <Text style={styles.statLabel}>Firmware</Text>
                   </View>
                 </View>
@@ -396,7 +376,7 @@ export default function SettingsScreen() {
             <View style={styles.keyContainer}>
               <Text style={styles.keyLabel}>Clé publique de l'émetteur:</Text>
               <View style={styles.keyValue}>
-                <Text style={styles.keyText}>{loraDevice.publicKey}</Text>
+                <Text style={styles.keyText}>{'activePairing.publicKey'}</Text>
                 <TouchableOpacity
                   style={styles.copyKeyButton}
                   onPress={() => toast.success('Clé copiée dans le presse-papier')}

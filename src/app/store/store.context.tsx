@@ -15,7 +15,7 @@ const isIOS = Platform.OS === 'ios';
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     const peerProvider = useMemo(() => {
         //return new BLEPeerProvider();
-        return new InMemoryPeerProvider()
+        return new InMemoryPeerProvider();
     }, []);
     const store = useMemo(() => {
         //const permissionProvider =  new NativePermissionProvider(isIOS ? requiredIOSPermissionByFeature : requiredAndroidPermissionByFeature);

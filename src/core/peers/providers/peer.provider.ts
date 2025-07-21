@@ -55,7 +55,6 @@ export interface PeerProvider{
      * Stop the current scan
      */
     stopScan(): Promise<void>;
-    
     /**
      * Connect to a specific peer
      * @param peerId - The ID of the peer to connect to
@@ -69,8 +68,7 @@ export interface PeerProvider{
      * @throws {Error} BLUETOOTH_DISABLED - When Bluetooth is disabled
      * @throws {Error} PERMISSION_DENIED - When permission is denied
      */
-    connectToPeer(peerId: string): Promise<void>;
-    
+    pairing(peerId: string): Promise<void>;
     onScanStopped(callback: () => void): void;
     onScanStarted(callback: () => void): void;
     onPeerFound(callback: (peer: PeerFound) => void): void;

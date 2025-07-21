@@ -5,6 +5,7 @@ import { peerAdapter } from '../peers/store/peers.slice';
 import { Feature, permissionAdapter, PermissionEntity } from '../permission/store/permission.slice';
 import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
+import { getPairingInitialState, pairingAdapter } from '../peers/store/pairing.slice';
 
 
 export class StateBuilder {
@@ -15,7 +16,7 @@ export class StateBuilder {
     }
 
     // should return a new state
-    withPeer(peer: PeerEntity) {
+    withAvailablePeerPeer(peer: PeerEntity) {
         this._state.peer = {...this._state.peer, ...peerAdapter.addOne(this._state.peer, peer)};
         return this;
     }
@@ -27,16 +28,19 @@ export class StateBuilder {
         ];
         return this;
     }
-    withScanLoading(loading: boolean) {
-        this._state.peer.scanLoading = loading;
+    withScanningPeer(isScanning: boolean) {
+        this._state.peer.scanLoading = isScanning;
         return this;
     }
-    withError(error: string | null) {
-        this._state.peer.error = error;
+    withPairingError(error: string | null) {
+        this._state.pairing.error = error;
         return this;
     }
     withConnectedPeer(peerId: string){
-        this._state.peer.connectionIds = [...this._state.peer.connectionIds, peerId];
+        this._state.pairing = pairingAdapter.addOne(this._state.pairing, {
+            id: peerId,
+            status: 'connected',
+        });
         return this;
     }
 
@@ -48,6 +52,7 @@ export class StateBuilder {
 export const createStateBuilder = (initialState: RootState = {
     peer: getPeerInitialState(),
     permission: getPermissionInitialState(),
+    pairing: getPairingInitialState(),
 }) => {
     return new StateBuilder(initialState);
 };

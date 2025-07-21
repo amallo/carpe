@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
 import { setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
-import { scanHit, setScanLoading, PeerEntity } from '../store/peers.slice';
+import { scanHit, setPeerScanning, PeerEntity } from '../store/peers.slice';
 import { PeerFound } from '../providers/peer.provider';
 import { checkPermission } from '../../permission/services/check-permission.service';
 
@@ -53,7 +53,7 @@ export const scanPeers = createAsyncThunk<
         }));
 
         if (!permissionCheck.hasPermission) {
-            console.log('permission not granted');
+            console.error('permission not granted');
             return;
         }
 
@@ -63,19 +63,16 @@ export const scanPeers = createAsyncThunk<
          * Register callbacks to the peer provider
          */
         peerProvider.onPeerFound((peer) => {
-            console.log('peerFound', peer);
             const peerEntity = mapPeerFoundToPeerEntity(peer);
             dispatch(scanHit(peerEntity));
         });
 
         peerProvider.onScanStopped(() => {
-            console.log('scanStopped');
-            dispatch(setScanLoading(false));
+            dispatch(setPeerScanning(false));
         });
 
         peerProvider.onScanStarted(() => {
-            console.log('scanStarted');
-            dispatch(setScanLoading(true));
+            dispatch(setPeerScanning(true));
         });
 
         /**

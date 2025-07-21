@@ -1,14 +1,15 @@
+import { Platform } from 'react-native';
 import { PermissionProvider, FeatureRequest, FeaturedPermissionResult, PermissionStatus } from '../permission.provider';
 import {Permission, PERMISSIONS, PermissionStatus as RNPermissionStatus, requestMultiple, request} from 'react-native-permissions';
 
 type NativePermissionByFeature = Record<FeatureRequest, Permission[]>;
 
-export const requiredIOSPermissionByFeature: NativePermissionByFeature = {
+const requiredIOSPermissionByFeature: NativePermissionByFeature = {
     'scan-peers': [PERMISSIONS.IOS.BLUETOOTH, PERMISSIONS.IOS.LOCATION_WHEN_IN_USE],
     'connect-peers': [PERMISSIONS.IOS.BLUETOOTH],
 };
 
-export const requiredAndroidPermissionByFeature: NativePermissionByFeature = {
+const requiredAndroidPermissionByFeature: NativePermissionByFeature = {
     'scan-peers': [PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION],
     'connect-peers': [PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
 };
@@ -47,5 +48,10 @@ export class NativePermissionProvider implements PermissionProvider{
         return request(permissionId).then((r)=>{
             return this.fromRNPermissionStatus(r);
         });
+    }
+
+    static create(os: typeof Platform.OS){
+        const isIOS = os === 'ios';
+        return new NativePermissionProvider(isIOS ? requiredIOSPermissionByFeature : requiredAndroidPermissionByFeature);
     }
 }
