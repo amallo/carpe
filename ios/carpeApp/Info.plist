@@ -32,11 +32,11 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Scan for peers</string>
+	<string>Cette app utilise le Bluetooth pour se connecter à des appareils LoRa.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Scan for peers</string>
+	<string>Cette app utilise le Bluetooth pour communiquer avec des périphériques LoRa.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Cette app a besoin de la localisation pour scanner les appareils Bluetooth à proximité.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
