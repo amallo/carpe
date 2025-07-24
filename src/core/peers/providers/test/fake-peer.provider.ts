@@ -9,6 +9,7 @@ export class FakePeerProvider implements PeerProvider{
     private _connectToPeerCallTracker = new CallTracker();
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
+    private _unpairCallTracker = new CallTracker();
     schedulePeerFound(peer: PeerFound){
         this._peerScaaned.push(peer);
     }
@@ -48,6 +49,19 @@ export class FakePeerProvider implements PeerProvider{
         }
         
         return Promise.resolve();
+    }
+    unpair(peerId: string): Promise<void> {
+        this._unpairCallTracker.recordCall(peerId);
+        return Promise.resolve();
+    }
+    unpairWasCalledWithPeerId(peerId: string): boolean {
+        return this._unpairCallTracker.wasCalledWith(peerId);
+    }
+    unpairWasCalled(): boolean {
+        return this._unpairCallTracker.methodWasCalled();
+    }
+    unpairWasNotCalled(): boolean {
+        return !this._unpairCallTracker.methodWasCalled();
     }
     scanWasCalled(): boolean {
         return this._scanCallTracker.methodWasCalled();

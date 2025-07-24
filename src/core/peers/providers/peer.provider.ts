@@ -72,4 +72,8 @@ export interface PeerProvider{
     onScanStopped(callback: () => void): void;
     onScanStarted(callback: () => void): void;
     onPeerFound(callback: (peer: PeerFound) => void): void;
+    /**
+     * Unpair/disconnect a peer physically (must be implemented)
+     */
+    unpair(peerId: string): Promise<void>;
 }

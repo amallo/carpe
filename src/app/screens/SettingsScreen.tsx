@@ -8,7 +8,7 @@ import { useSettingsViewModel, type LogEntryViewModel } from './settings-screen.
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const { activePairing } = useSettingsViewModel();
+  const { activePairing, disconnectPeer, disconnecting, disconnectError } = useSettingsViewModel();
 
   const [settings, setSettings] = useState({
     allowConnections: true,
@@ -43,11 +43,17 @@ export default function SettingsScreen() {
         [
           { text: 'Annuler', style: 'cancel' },
           {
-            text: 'Déconnecter',
+            text: disconnecting ? 'Déconnexion...' : 'Déconnecter',
             style: 'destructive',
-            onPress: () => {
-              toast.success('Émetteur déconnecté');
+            onPress: async () => {
+              try {
+                await disconnectPeer(activePairing.id);
+                toast.success('Émetteur déconnecté');
+              } catch (e) {
+                toast.error('Erreur lors de la déconnexion');
+              }
             },
+            disabled: disconnecting,
           },
         ]
       );
@@ -391,6 +397,7 @@ export default function SettingsScreen() {
           </View>
         </View>
       </Modal>
+      {disconnectError && <Text style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>{disconnectError}</Text>}
     </SafeAreaView>
   );
 }

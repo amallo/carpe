@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createSelector, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { scanPeers } from '../usecases/scan-peers.usecase';
+import { unpairPeer } from '../usecases/unpair-peer.usecase';
 
 
 type PeerState = EntityState<PeerEntity, string> & { 
@@ -67,6 +68,14 @@ const peerSlice = createSlice({
         });
         builder.addCase(scanPeers.rejected, (state) => {
             state.scanLoading = false;
+        });
+        builder.addCase(unpairPeer.fulfilled, (state, action) => {
+            // Supprime uniquement le peer correspondant à l'id fourni
+            const peerId = action.meta.arg;
+            if (state.ids.includes(peerId)) {
+                state.ids = state.ids.filter(id => id !== peerId);
+                delete state.entities[peerId];
+            }
         });
     },
 });

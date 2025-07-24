@@ -139,6 +139,13 @@ export class BLEPeerProvider implements PeerProvider{
             throw new Error(PeerError.CONNECTION_FAILED);
         }
     }
+    async unpair(peerId: string): Promise<void> {
+        const isPeripheralConnected= await BleManager.isPeripheralConnected(peerId);
+        if (isPeripheralConnected){
+            throw new Error(PeerError.PEER_NOT_FOUND);
+        }
+        await BleManager.disconnect(peerId);
+    }
     onScanStopped(callback: () => void): void {
         this.scanStoppedCallback = callback;
     }

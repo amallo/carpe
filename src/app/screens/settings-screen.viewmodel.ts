@@ -1,7 +1,9 @@
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectPeerById } from '../../core/peers/store/peers.slice';
 import { PairingStatus, selectActivePairing, selectPairingError } from '../../core/peers/store/pairing.slice';
 import { createSelector } from '@reduxjs/toolkit';
+import { disconnectPeer } from '../../core/peers/usecases/disconnect-peer.usecase';
+import { useState, useCallback } from 'react';
 
 export interface ActivePairingViewModel {
   id: string;
@@ -81,10 +83,25 @@ const selectActivePairingViewModel = createSelector(
   }
 );
 
-export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null} => {
+export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null} => {
   // Consommation du state via des selectors spécialisés
   const activePairing = useAppSelector(selectActivePairingViewModel);
   const error = useAppSelector(selectPairingError);
+  const dispatch = useAppDispatch();
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [disconnectError, setDisconnectError] = useState<string | null>(null);
+
+  const handleDisconnectPeer = useCallback(async (peerId: string) => {
+    setDisconnecting(true);
+    setDisconnectError(null);
+    try {
+      await dispatch(disconnectPeer(peerId)).unwrap();
+    } catch (e: any) {
+      setDisconnectError(e.message || 'Erreur lors de la déconnexion');
+    } finally {
+      setDisconnecting(false);
+    }
+  }, [dispatch]);
 
   return {
     // Données du state via selectors
@@ -103,5 +120,8 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
       closePairingStatusButtonColor: '#10b981',
     },
     error,
+    disconnectPeer: handleDisconnectPeer,
+    disconnecting,
+    disconnectError,
   };
 };

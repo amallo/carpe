@@ -24,10 +24,10 @@ export const getPairingInitialState = (): PairingState => ({
 const pairingSlice = createSlice({
     name: 'pairing',
     initialState: getPairingInitialState(),
-    reducers: {
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(connectToPeer.pending, (state, action) => {
+            state.error = null;
             pairingAdapter.addOne(state, {
                 id: action.meta.arg.peerId,
                 status: 'pending',

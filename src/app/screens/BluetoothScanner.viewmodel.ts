@@ -5,6 +5,7 @@ import { connectToPeer } from '../../core/peers/usecases/pairing.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
 import { requestPermission } from '../../core/permission/usecases/request-permission.usecase';
 import { permissionConfig } from '../../core/permission/providers/native/permission.config';
+import errorMessageMap from '../config/errorMessages';
 
 export type PeerViewModel = {
   id: string;
@@ -37,6 +38,8 @@ export const useBluetoothScannerViewModel = () => {
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
   const error = useAppSelector(selectPeerScanningError);
+  // Remonter un message utilisateur friendly si possible
+  const errorFriendly = error ? (errorMessageMap[error] || "Une erreur inattendue est survenue. Veuillez réessayer.") : null;
   const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
 
   const peersVM: PeerViewModel[] = peers.map((peer) => {
@@ -93,7 +96,7 @@ export const useBluetoothScannerViewModel = () => {
     // Données du state via selectors
     isScanning,
     peers: peersVM,
-    error,
+    error: errorFriendly,
 
     // Actions via dispatch de thunks
     startScan: () => {

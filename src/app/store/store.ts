@@ -6,13 +6,14 @@ import pairingReducer from '../../core/peers/store/pairing.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 
-export const createStore = (dependencies: Dependencies) => {
+export const createStore = (dependencies: Dependencies, initialState?: object) => {
     const store = configureStore({
         reducer: {
             peer: peerReducer,
             permission: permissionReducer,
             pairing: pairingReducer,
         },
+        preloadedState: initialState,
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware({
                 thunk: {
@@ -25,12 +26,13 @@ export const createStore = (dependencies: Dependencies) => {
     return store;
 };
 
-export const createTestStore = (dependencies: Partial<Dependencies>) => {
-    const store = createStore({
+export const createTestStore = (dependencies: Partial<Dependencies>, initialState?: object) => {
+    const deps: Dependencies = {
         peerProvider: new FakePeerProvider(),
         permissionProvider: new GrantedPermissionProvider(),
         ...dependencies,
-    });
+    };
+    const store = createStore(deps, initialState);
     return store;
 };
 

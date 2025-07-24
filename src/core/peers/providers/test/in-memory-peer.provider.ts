@@ -36,6 +36,7 @@ export class InMemoryPeerProvider implements PeerProvider{
     private _callback: ((peer: PeerFound) => void) | null = null;
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
+    private _pairedPeerIds: Set<string> = new Set();
     scan(): Promise<void> {
         this._peerScanned = PEERS;
         this._scanStartedCallback?.();
@@ -52,8 +53,17 @@ export class InMemoryPeerProvider implements PeerProvider{
         if (!peer) {
             throw new Error(PeerError.PEER_NOT_FOUND);
         }
-
-        // Simuler une connexion réussie
+        if (this._pairedPeerIds.has(peerId)) {
+            throw new Error(PeerError.PEER_ALREADY_CONNECTED);
+        }
+        this._pairedPeerIds.add(peerId);
+        return Promise.resolve();
+    }
+    async unpair(peerId: string): Promise<void> {
+        if (!this._pairedPeerIds.has(peerId)) {
+            throw new Error(PeerError.PEER_NOT_FOUND);
+        }
+        this._pairedPeerIds.delete(peerId);
         return Promise.resolve();
     }
     onPeerFound(callback: (peer: PeerFound) => void): void {

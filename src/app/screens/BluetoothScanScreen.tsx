@@ -20,7 +20,7 @@ export default function BluetoothScanScreen() {
   // Gestion des erreurs via le viewmodel
   useEffect(() => {
     if (viewmodel.error) {
-      toast.error('Erreur de connexion', {
+      toast.error('Impossible de se connecter à l\'émetteur', {
         description: viewmodel.error,
       });
     }
