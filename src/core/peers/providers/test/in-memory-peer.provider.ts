@@ -37,6 +37,18 @@ export class InMemoryPeerProvider implements PeerProvider{
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
     private _pairedPeerIds: Set<string> = new Set();
+    
+    // Méthodes pour compatibilité avec BLEPeerProvider
+    start(): Promise<void> {
+        console.log('🔧 [DEV] InMemoryPeerProvider started');
+        return Promise.resolve();
+    }
+    
+    destroy(): void {
+        console.log('🔧 [DEV] InMemoryPeerProvider destroyed');
+        // Cleanup si nécessaire
+    }
+    
     scan(): Promise<void> {
         this._peerScanned = PEERS;
         this._scanStartedCallback?.();

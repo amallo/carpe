@@ -1,5 +1,35 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+# CarpeApp
+
+Application React Native pour la gestion des émetteurs LoRa avec fonctionnalités Bluetooth.
+
+## Configuration des Environnements
+
+L'application supporte différents environnements de développement et de production :
+
+### Développement (par défaut)
+- **Providers simulés** : `InMemoryPeerProvider` et `GrantedPermissionProvider`
+- **Logs de débogage** activés
+- **Permissions automatiques** accordées
+
+### Production
+- **Providers réels** : `BLEPeerProvider` et `NativePermissionProvider`
+- **Logs de débogage** désactivés
+- **Gestion native des permissions**
+
+### Basculement rapide entre environnements
+
+```bash
+# Mode développement (providers simulés)
+./scripts/switch-env.sh dev
+
+# Mode production (providers réels)
+./scripts/switch-env.sh prod
+```
+
+Pour plus de détails, consultez la [documentation des environnements](docs/ENVIRONMENT.md).
+
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
@@ -66,12 +96,16 @@ This is one way to run your app — you can also build it directly from Android 
 
 Now that you have successfully run the app, let's make changes!
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
 
 When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
 - **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
 - **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+
+## Déploiement
+
+Pour déployer l'application sur TestFlight (iOS) ou Play Store (Android), consultez le [guide de déploiement](DEPLOYMENT.md).
 
 ## Congratulations! :tada:
 

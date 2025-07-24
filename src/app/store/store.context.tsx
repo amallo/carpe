@@ -8,25 +8,42 @@ import { Platform } from 'react-native';
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-peer.provider';
+import { useMockProviders, debugLog, prodLog } from '../config/environment';
 
 const isIOS = Platform.OS === 'ios';
 
-
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
+    const shouldUseMockProviders = useMockProviders();
+    
     const peerProvider = useMemo(() => {
-        //return new BLEPeerProvider();
-        return new InMemoryPeerProvider();
-    }, []);
-    const store = useMemo(() => {
-        //const permissionProvider =  new NativePermissionProvider(isIOS ? requiredIOSPermissionByFeature : requiredAndroidPermissionByFeature);
-        const permissionProvider = new GrantedPermissionProvider();
-        return createStore({peerProvider, permissionProvider});
-    }, [peerProvider]);
-    /*useEffect(()=>{
-        peerProvider.start();
-        return () => {
-            peerProvider.destroy();
+        if (shouldUseMockProviders) {
+            debugLog('Using InMemoryPeerProvider for development');
+            return new InMemoryPeerProvider();
+        } else {
+            prodLog('Using BLEPeerProvider for production');
+            return new BLEPeerProvider();
         }
-    }, [peerProvider]);*/
+    }, [shouldUseMockProviders]);
+
+    const store = useMemo(() => {
+        const permissionProvider = shouldUseMockProviders 
+            ? new GrantedPermissionProvider()
+            : new NativePermissionProvider(isIOS ? requiredIOSPermissionByFeature : requiredAndroidPermissionByFeature);
+        
+        return createStore({peerProvider, permissionProvider});
+    }, [peerProvider, shouldUseMockProviders]);
+
+    // Gestion du cycle de vie du peerProvider en production
+    useEffect(() => {
+        if (!shouldUseMockProviders && peerProvider) {
+            prodLog('Starting BLE peer provider');
+            peerProvider.start();
+            return () => {
+                prodLog('Destroying BLE peer provider');
+                peerProvider.destroy();
+            };
+        }
+    }, [peerProvider, shouldUseMockProviders]);
+
     return <Provider store={store}>{children}</Provider>;
 };
