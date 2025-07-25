@@ -1,6 +1,6 @@
 import { createTestStore, Store } from '../../../app/store/store';
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
-import { connectToPeer } from '../usecases/pairing.usecase';
+import { pairPeer } from '../usecases/pair-peer.usecase';
 import { createStateBuilder } from '../../store/state.builder';
 import { PeerError } from '../providers/peer.provider';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
@@ -18,7 +18,7 @@ describe('FEATURE: Audie connects to a peer', () => {
 
     test('should connect to peer successfully', async () => {
         permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        await store.dispatch(connectToPeer({ peerId: 'peer-001' }));
+        await store.dispatch(pairPeer({ peerId: 'peer-001' }));
         expect(peerProvider.connectToPeerWasCalled()).toBe(true);
         const expectedState = createStateBuilder()
             .withPermissionByFeature('connect-peers', {
@@ -33,7 +33,7 @@ describe('FEATURE: Audie connects to a peer', () => {
     test('should fail when peer is not found', async () => {
         permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
         const nonExistentPeerId = 'non-existent-peer';
-        await store.dispatch(connectToPeer({ peerId: nonExistentPeerId }));
+        await store.dispatch(pairPeer({ peerId: nonExistentPeerId }));
         const expectedState = createStateBuilder()
             .withPairingError(PeerError.PEER_NOT_FOUND)
             .withPermissionByFeature('connect-peers', {
@@ -46,7 +46,7 @@ describe('FEATURE: Audie connects to a peer', () => {
 
     test('should fail when connection times out', async () => {
         permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        await store.dispatch(connectToPeer({ peerId: 'timeout-peer' }));
+        await store.dispatch(pairPeer({ peerId: 'timeout-peer' }));
         const expectedState = createStateBuilder()
             .withPairingError(PeerError.CONNECTION_TIMEOUT)
             .withPermissionByFeature('connect-peers', {
@@ -61,7 +61,7 @@ describe('FEATURE: Audie connects to a peer', () => {
         // Arrange: Permission refusée
         permissionProvider.schedulePermissionDenied({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
         // Act: Tentative de connexion
-        await store.dispatch(connectToPeer({ peerId: 'peer-001' }));
+        await store.dispatch(pairPeer({ peerId: 'peer-001' }));
         // Assert: Vérifier que l'erreur de permission est gérée
         const expectedState = createStateBuilder()
             .withPairingError(PeerError.PERMISSION_DENIED)

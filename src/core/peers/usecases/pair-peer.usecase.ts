@@ -4,7 +4,7 @@ import { setMultiplePermissionForFeature } from '../../permission/store/permissi
 import { checkPermission } from '../../permission/services/check-permission.service';
 import { PeerError } from '../providers/peer.provider';
 
-export const connectToPeer = createAsyncThunk<
+export const pairPeer = createAsyncThunk<
     void,
     { peerId: string },
     { extra: Dependencies }

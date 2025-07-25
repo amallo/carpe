@@ -40,11 +40,11 @@ export default function BluetoothScanScreen() {
     if (device.isSecured) {
       setShowPinModal(true);
     } else {
-      connectToDevice(device);
+      pairing(device);
     }
   };
 
-  const connectToDevice = async (device: PeerViewModel) => {
+  const pairing = async (device: PeerViewModel) => {
     setIsConnecting(true);
     toast.loading(`Connexion à ${device.name}...`);
 
@@ -59,8 +59,6 @@ export default function BluetoothScanScreen() {
         description: `Connecté à ${device.name}`,
       });
 
-      // Navigate back to settings with connection established
-      navigation.goBack();
     } catch (error) {
       setIsConnecting(false);
       // L'erreur est déjà gérée par le useEffect ci-dessus
@@ -74,7 +72,7 @@ export default function BluetoothScanScreen() {
     }
 
     if (selectedDevice) {
-      connectToDevice(selectedDevice);
+      pairing(selectedDevice);
     }
   };
 

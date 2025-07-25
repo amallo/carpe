@@ -1,5 +1,5 @@
 import { createSlice, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
-import { connectToPeer } from '../usecases/pairing.usecase';
+import { pairPeer } from '../usecases/pair-peer.usecase';
 
 export type PairingStatus = 'pending' | 'connected' | 'disconnected'
 
@@ -26,14 +26,14 @@ const pairingSlice = createSlice({
     initialState: getPairingInitialState(),
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(connectToPeer.pending, (state, action) => {
+        builder.addCase(pairPeer.pending, (state, action) => {
             state.error = null;
             pairingAdapter.addOne(state, {
                 id: action.meta.arg.peerId,
                 status: 'pending',
             });
         });
-        builder.addCase(connectToPeer.fulfilled, (state, action) => {
+        builder.addCase(pairPeer.fulfilled, (state, action) => {
             pairingAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {
@@ -41,7 +41,7 @@ const pairingSlice = createSlice({
                 }
             });
         });
-        builder.addCase(connectToPeer.rejected, (state, action) => {
+        builder.addCase(pairPeer.rejected, (state, action) => {
             state.error = action.error.message || 'Connection failed';
             pairingAdapter.removeOne(state, action.meta.arg.peerId);
         });
