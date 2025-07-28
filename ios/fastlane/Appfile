@@ -1,7 +1,7 @@
 # The Appfile is a specification of your app that can be shared across your team
 # https://docs.fastlane.tools/advanced/#appfile
 
-app_identifier("com.io.decentapp.carpeapp.dev") # The bundle identifier of your app
+app_identifier("io.decentapp.carpeapp.dev") # The bundle identifier of your app
 apple_id("audie@tutamail.com") # Your Apple email address
 
 itc_team_id("22480450300") # App Store Connect Team ID
