@@ -51,13 +51,12 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
+          bundler-cache: false
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Install CocoaPods
-        run: sudo gem install cocoapods
+      - name: Install gems directly
+        run: |
+          gem install fastlane
+          gem install cocoapods
 
       - name: Install iOS pods
         run: cd ios && pod install
