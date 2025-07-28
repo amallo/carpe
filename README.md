@@ -21,23 +21,40 @@ L'application supporte différents environnements de développement et de produc
 ### Basculement rapide entre environnements
 
 ```bash
-# Initialiser l'environnement (première fois)
-./scripts/init-env.sh
-
 # Mode développement (providers simulés)
 ./scripts/switch-env.sh dev
 
 # Mode production (providers réels)
 ./scripts/switch-env.sh prod
-
 ```
 
-**IMPORTANT** : Pour Xcode, après avoir changé d'environnement, vous devez :
-1. Nettoyer le build (Product > Clean Build Folder ou Cmd+Shift+K)
-2. Redémarrer Xcode
-3. Rebuild le projet (Product > Build ou Cmd+B)
-
 Pour plus de détails, consultez la [documentation des environnements](docs/ENVIRONMENT.md).
+
+## CI/CD Automatique
+
+Le projet inclut un système de CI/CD complet avec GitHub Actions :
+
+### Fonctionnalités
+- **Tests automatiques** à chaque push
+- **Build automatique** en mode production
+- **Déploiement automatique** sur TestFlight
+- **Notifications** Slack (optionnel)
+
+### Configuration
+```bash
+# Initialiser Fastlane et les certificats
+./scripts/setup-fastlane.sh
+
+# Configurer les secrets GitHub (voir docs/GITHUB_CI_CD_SETUP.md)
+```
+
+### Workflow
+1. Push sur `main` ou `master`
+2. Tests unitaires automatiques
+3. Build en mode production
+4. Upload automatique vers TestFlight
+
+Pour plus de détails, consultez le [guide de configuration CI/CD](docs/GITHUB_CI_CD_SETUP.md).
 
 # Getting Started
 

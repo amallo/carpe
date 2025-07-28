@@ -108,11 +108,6 @@ export class BLEPeerProvider implements PeerProvider{
     async pairing(peerId: string): Promise<void> {
         this.logger?.debug('BLE', `pairing() called with peerId=${peerId}`);
         try {
-            // Vérifier si un scan est en cours
-            if (this.isScanning) {
-                this.logger?.debug('BLE', 'pairing() aborted: scan in progress');
-                throw new Error(PeerError.SCAN_IN_PROGRESS);
-            }
 
             // Tenter la connexion BLE
             await BleManager.connect(peerId);
