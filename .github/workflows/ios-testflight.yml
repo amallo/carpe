@@ -51,15 +51,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: false
-
-      - name: Install gems directly
-        run: |
-          gem install fastlane
-          gem install cocoapods
+          bundler-cache: true
 
       - name: Install iOS pods
-        run: cd ios && pod install
+        run: cd ios && bundle exec pod install
 
       - name: Configure environment for production
         run: ./scripts/switch-env.sh prod
@@ -76,4 +71,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
           cd ios
-          fastlane beta 
+          bundle exec fastlane beta 
