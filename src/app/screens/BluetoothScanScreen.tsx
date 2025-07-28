@@ -118,24 +118,41 @@ export default function BluetoothScanScreen() {
 
   const renderDevice = ({ item }: { item: PeerViewModel }) => (
     <TouchableOpacity
-      style={styles.deviceCard}
+      style={[
+        styles.deviceCard,
+        item.isConnected && styles.deviceCardConnected
+      ]}
       onPress={() => handleDeviceConnect(item)}
       disabled={isConnecting}
     >
       <View style={styles.deviceHeader}>
-        <View style={styles.deviceIcon}>
+        <View style={[
+          styles.deviceIcon,
+          item.isConnected && styles.deviceIconConnected
+        ]}>
           <Ionicons
             name={getDeviceIcon(item.deviceType)}
             size={24}
-            color="#4f46e5"
+            color={item.isConnected ? "#ffffff" : "#4f46e5"}
           />
         </View>
 
         <View style={styles.deviceInfo}>
           <View style={styles.deviceNameRow}>
-            <Text style={styles.deviceName}>{item.name}</Text>
+            <Text style={[
+              styles.deviceName,
+              item.isConnected && styles.deviceNameConnected
+            ]}>
+              {item.name}
+            </Text>
             {item.isSecured && (
               <Ionicons name="lock-closed" size={14} color="#f59e0b" />
+            )}
+            {item.isConnected && (
+              <View style={styles.connectedBadge}>
+                <Ionicons name="checkmark-circle" size={14} color="#10b981" />
+                <Text style={styles.connectedText}>Connecté</Text>
+              </View>
             )}
           </View>
           <Text style={styles.deviceMac}>{item.macAddress}</Text>
@@ -187,16 +204,34 @@ export default function BluetoothScanScreen() {
           {item.firmware && (
             <Text style={styles.firmwareText}>FW: {item.firmware}</Text>
           )}
-          <View style={styles.deviceTypeTag}>
-            <Text style={styles.deviceTypeText}>
+          <View style={[
+            styles.deviceTypeTag,
+            item.isConnected && styles.deviceTypeTagConnected
+          ]}>
+            <Text style={[
+              styles.deviceTypeText,
+              item.isConnected && styles.deviceTypeTextConnected
+            ]}>
               {item.deviceType.replace('lora_', '').toUpperCase()}
             </Text>
           </View>
         </View>
 
-        <View style={styles.connectButton}>
-          <Ionicons name="add-circle" size={20} color="#4f46e5" />
-          <Text style={styles.connectText}>Connecter</Text>
+        <View style={[
+          styles.connectButton,
+          item.isConnected && styles.connectButtonConnected
+        ]}>
+          {item.isConnected ? (
+            <>
+              <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+              <Text style={styles.connectTextConnected}>Connecté</Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="add-circle" size={20} color="#4f46e5" />
+              <Text style={styles.connectText}>Connecter</Text>
+            </>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -453,6 +488,11 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: '#4f46e5',
   },
+  deviceCardConnected: {
+    borderLeftColor: '#10b981',
+    borderLeftWidth: 4,
+    backgroundColor: '#f0fdf4',
+  },
   deviceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -467,6 +507,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
+  deviceIconConnected: {
+    backgroundColor: '#10b981',
+  },
   deviceInfo: {
     flex: 1,
   },
@@ -480,6 +523,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
     marginRight: 8,
+  },
+  deviceNameConnected: {
+    color: '#10b981',
   },
   deviceMac: {
     fontSize: 12,
@@ -555,10 +601,16 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 8,
   },
+  deviceTypeTagConnected: {
+    backgroundColor: '#d1fae5',
+  },
   deviceTypeText: {
     fontSize: 10,
     color: '#4f46e5',
     fontWeight: '600',
+  },
+  deviceTypeTextConnected: {
+    color: '#065f46',
   },
   connectButton: {
     flexDirection: 'row',
@@ -568,10 +620,34 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
+  connectButtonConnected: {
+    backgroundColor: '#d1fae5',
+  },
   connectText: {
     fontSize: 12,
     color: '#4f46e5',
     fontWeight: '500',
+    marginLeft: 4,
+  },
+  connectTextConnected: {
+    fontSize: 12,
+    color: '#065f46',
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  connectedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#d1fae5',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  connectedText: {
+    fontSize: 10,
+    color: '#065f46',
+    fontWeight: '600',
     marginLeft: 4,
   },
   modalOverlay: {

@@ -21,12 +21,21 @@ L'application supporte différents environnements de développement et de produc
 ### Basculement rapide entre environnements
 
 ```bash
+# Initialiser l'environnement (première fois)
+./scripts/init-env.sh
+
 # Mode développement (providers simulés)
 ./scripts/switch-env.sh dev
 
 # Mode production (providers réels)
 ./scripts/switch-env.sh prod
+
 ```
+
+**IMPORTANT** : Pour Xcode, après avoir changé d'environnement, vous devez :
+1. Nettoyer le build (Product > Clean Build Folder ou Cmd+Shift+K)
+2. Redémarrer Xcode
+3. Rebuild le projet (Product > Build ou Cmd+B)
 
 Pour plus de détails, consultez la [documentation des environnements](docs/ENVIRONMENT.md).
 

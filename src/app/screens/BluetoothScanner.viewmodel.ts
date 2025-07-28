@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectScanLoading, selectAllPeers, selectPeerScanningError } from '../../core/peers/store/peers.slice';
+import { selectActivePairing } from '../../core/peers/store/pairing.slice';
 import { scanPeers } from '../../core/peers/usecases/scan-peers.usecase';
 import { pairPeer } from '../../core/peers/usecases/pair-peer.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
@@ -21,6 +22,9 @@ export type PeerViewModel = {
   // Propriétés supplémentaires pour l'affichage
   rssi?: number;
   isConnectable?: boolean;
+  // Propriété pour indiquer si le device est connecté
+  isConnected: boolean;
+  connectionStatus: 'pending' | 'connected' | 'disconnected' | null;
 };
 
 export type PermissionViewModel = {
@@ -38,6 +42,7 @@ export const useBluetoothScannerViewModel = () => {
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
   const error = useAppSelector(selectPeerScanningError);
+  const activePairings = useAppSelector(selectActivePairing);
   // Remonter un message utilisateur friendly si possible
   const errorFriendly = error ? (errorMessageMap[error] || 'Une erreur inattendue est survenue. Veuillez réessayer.') : null;
   const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
@@ -76,6 +81,11 @@ export const useBluetoothScannerViewModel = () => {
       return `Il y a ${Math.floor(diffHour / 24)}j`;
     };
 
+    // Vérifier si le device est connecté
+    const pairing = activePairings.find(p => p.id === peer.id);
+    const isConnected = pairing?.status === 'connected';
+    const connectionStatus = pairing?.status || null;
+
     return {
       id: peer.id,
       name: peer.name,
@@ -89,6 +99,8 @@ export const useBluetoothScannerViewModel = () => {
       deviceType: peer.deviceType || 'lora_transceiver',
       rssi: peer.rssi,
       isConnectable: peer.isConnectable,
+      isConnected,
+      connectionStatus,
     };
   });
 

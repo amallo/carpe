@@ -1,150 +1,111 @@
 # Configuration des Environnements
 
-Ce document décrit les variables d'environnement disponibles pour configurer l'application CarpeApp.
+Ce document explique comment configurer et utiliser les différents environnements dans l'application CarpeApp.
 
-## Variables d'Environnement Disponibles
+## Vue d'ensemble
 
-### Configuration des Providers
+L'application utilise un système de configuration basé sur des variables d'environnement pour basculer entre les modes développement et production. Cela permet de :
 
-#### `USE_MOCK_PROVIDERS`
-- **Type**: `boolean`
-- **Valeurs**: `true` | `false`
-- **Défaut**: `true` en mode `__DEV__`, `false` en mode production
-- **Description**: Contrôle l'utilisation des providers simulés vs réels
+- Utiliser des providers simulés en développement
+- Utiliser des providers réels en production
+- Contrôler les logs de débogage
+- Configurer les URLs d'API
 
-**Comportement**:
-- `true` : Utilise `InMemoryPeerProvider` et `GrantedPermissionProvider`
-- `false` : Utilise `BLEPeerProvider` et `NativePermissionProvider`
+## Variables d'environnement
 
-### Configuration des API
+### USE_MOCK_PROVIDERS
+- `true` : Utilise les providers simulés (InMemoryPeerProvider, GrantedPermissionProvider)
+- `false` : Utilise les providers réels (BLEPeerProvider, NativePermissionProvider)
 
-#### `API_BASE_URL`
-- **Type**: `string`
-- **Défaut**: `https://api.carpeapp.com`
-- **Description**: URL de base pour les appels API
+### ENABLE_DEBUG_LOGS
+- `true` : Active les logs de débogage détaillés
+- `false` : Désactive les logs de débogage
 
-### Configuration des Logs
+### API_BASE_URL
+- URL de base pour les appels API
 
-#### `DEBUG_LOGS`
-- **Type**: `boolean`
-- **Valeurs**: `true` | `false`
-- **Défaut**: `true` en mode `__DEV__`, `false` en mode production
-- **Description**: Active/désactive les logs de débogage détaillés
+## Scripts disponibles
 
-### Configuration des Fonctionnalités
-
-#### `ENABLE_ANALYTICS`
-- **Type**: `boolean`
-- **Valeurs**: `true` | `false`
-- **Défaut**: `false` en mode `__DEV__`, `true` en mode production
-- **Description**: Active/désactive les analytics (Firebase, etc.)
-
-#### `ENABLE_CRASH_REPORTING`
-- **Type**: `boolean`
-- **Valeurs**: `true` | `false`
-- **Défaut**: `false` en mode `__DEV__`, `true` en mode production
-- **Description**: Active/désactive le crash reporting
-
-## Utilisation
-
-### Méthode 1 : Variables d'environnement système
-
+### Initialisation
 ```bash
-# Définir une variable pour la session courante
-export USE_MOCK_PROVIDERS=false
-
-# Lancer l'application
-npx react-native run-ios
+./scripts/init-env.sh
 ```
+Crée le fichier `.env` avec la configuration de développement par défaut.
 
-### Méthode 2 : Script de basculement
-
+### Changement d'environnement
 ```bash
-# Basculer vers le mode développement
+# Mode développement (providers simulés)
 ./scripts/switch-env.sh dev
 
-# Basculer vers le mode production
+# Mode production (providers réels)
 ./scripts/switch-env.sh prod
 ```
 
-### Méthode 3 : Fichier .env
+## Utilisation avec Xcode
 
-Créer un fichier `.env` à la racine du projet :
+**IMPORTANT** : Pour que les changements prennent effet dans Xcode, vous devez :
 
-```env
-USE_MOCK_PROVIDERS=true
-API_BASE_URL=https://api.carpeapp.com
-DEBUG_LOGS=true
-ENABLE_ANALYTICS=false
-ENABLE_CRASH_REPORTING=false
+1. **Nettoyer le build** : Product > Clean Build Folder
+2. **Redémarrer Xcode**
+3. **Rebuild le projet**
+
+### Étapes détaillées
+
+1. Exécutez le script de changement d'environnement :
+   ```bash
+   ./scripts/switch-env.sh dev
+   ```
+
+2. Dans Xcode :
+   - Allez dans le menu `Product`
+   - Sélectionnez `Clean Build Folder` (ou utilisez `Cmd+Shift+K`)
+   - Fermez Xcode complètement
+   - Rouvrez le projet
+   - Build le projet (`Cmd+B`)
+
+3. Vérifiez que la configuration est appliquée en regardant les logs de l'application.
+
+## Vérification de la configuration
+
+Vous pouvez vérifier quelle configuration est active en regardant les logs de l'application :
+
+- **Mode développement** : Vous verrez des messages comme "Using InMemoryPeerProvider for development"
+- **Mode production** : Vous verrez des messages comme "Using BLEPeerProvider for production"
+
+## Structure des fichiers
+
 ```
-
-## Configuration par Environnement
-
-### Développement Local
-```env
-USE_MOCK_PROVIDERS=true
-DEBUG_LOGS=true
-ENABLE_ANALYTICS=false
-ENABLE_CRASH_REPORTING=false
+carpeApp/
+├── .env                    # Variables d'environnement (ignoré par git)
+├── env.example            # Modèle de configuration
+├── scripts/
+│   ├── init-env.sh       # Script d'initialisation
+│   └── switch-env.sh     # Script de changement d'environnement
+└── src/
+    ├── app/
+    │   └── config/
+    │       └── environment.ts  # Configuration TypeScript
+    └── types/
+        └── env.d.ts       # Types pour les variables d'environnement
 ```
-
-### Tests
-```env
-USE_MOCK_PROVIDERS=true
-DEBUG_LOGS=true
-ENABLE_ANALYTICS=false
-ENABLE_CRASH_REPORTING=false
-```
-
-### Staging
-```env
-USE_MOCK_PROVIDERS=false
-DEBUG_LOGS=true
-ENABLE_ANALYTICS=true
-ENABLE_CRASH_REPORTING=true
-```
-
-### Production
-```env
-USE_MOCK_PROVIDERS=false
-DEBUG_LOGS=false
-ENABLE_ANALYTICS=true
-ENABLE_CRASH_REPORTING=true
-```
-
-## Intégration dans le Code
-
-Les variables d'environnement sont accessibles via le fichier `src/app/config/environment.ts` :
-
-```typescript
-import { ENV, useMockProviders, debugLog } from '../config/environment';
-
-// Vérifier l'environnement
-if (useMockProviders()) {
-    debugLog('Utilisation des providers simulés');
-}
-
-// Accéder aux variables
-console.log('API URL:', ENV.API_BASE_URL);
-```
-
-## Bonnes Pratiques
-
-1. **Ne jamais commiter de secrets** dans les fichiers de configuration
-2. **Utiliser des valeurs par défaut** pour les variables optionnelles
-3. **Documenter les nouvelles variables** dans ce fichier
-4. **Tester les configurations** sur différents environnements
-5. **Utiliser le script de basculement** pour éviter les erreurs de configuration
 
 ## Dépannage
 
-### Variable non prise en compte
-- Redémarrer l'application après modification
-- Vérifier la syntaxe de la variable
-- S'assurer que la variable est bien exportée
+### Les changements ne prennent pas effet dans Xcode
 
-### Configuration inattendue
-- Vérifier les valeurs par défaut dans `environment.ts`
-- Contrôler l'ordre de priorité des variables
-- Utiliser les logs de débogage pour diagnostiquer 
+1. Vérifiez que le fichier `.env` a été créé/modifié
+2. Nettoyez le build dans Xcode (Product > Clean Build Folder)
+3. Redémarrez Xcode
+4. Rebuild le projet
+
+### Erreur "Cannot resolve module '@env'"
+
+1. Vérifiez que `react-native-dotenv` est installé
+2. Vérifiez que la configuration Babel est correcte
+3. Redémarrez le bundler Metro : `npx react-native start --reset-cache`
+
+### Variables d'environnement non définies
+
+1. Vérifiez que le fichier `.env` existe à la racine du projet
+2. Vérifiez la syntaxe du fichier `.env` (pas d'espaces autour du `=`)
+3. Redémarrez le bundler Metro 

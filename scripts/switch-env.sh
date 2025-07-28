@@ -50,10 +50,16 @@ case $ENV_MODE in
         print_header "Configuration de Développement"
         print_message "Activation des providers simulés..."
         
-        # Exporter la variable d'environnement pour forcer l'utilisation des mocks
+        # Créer le fichier .env pour React Native
+        echo "USE_MOCK_PROVIDERS=true" > .env
+        echo "ENABLE_DEBUG_LOGS=true" >> .env
+        echo "API_BASE_URL=https://api.carpeapp.com" >> .env
+        
+        # Exporter la variable d'environnement pour la session actuelle
         export USE_MOCK_PROVIDERS=true
         
         print_message "USE_MOCK_PROVIDERS=true"
+        print_message "Fichier .env créé avec la configuration de développement"
         print_message "L'application utilisera :"
         echo "  - InMemoryPeerProvider (données simulées)"
         echo "  - GrantedPermissionProvider (permissions automatiques)"
@@ -64,10 +70,16 @@ case $ENV_MODE in
         print_header "Configuration de Production"
         print_message "Activation des providers réels..."
         
-        # Exporter la variable d'environnement pour forcer l'utilisation des providers réels
+        # Créer le fichier .env pour React Native
+        echo "USE_MOCK_PROVIDERS=false" > .env
+        echo "ENABLE_DEBUG_LOGS=false" >> .env
+        echo "API_BASE_URL=https://api.carpeapp.com" >> .env
+        
+        # Exporter la variable d'environnement pour la session actuelle
         export USE_MOCK_PROVIDERS=false
         
         print_message "USE_MOCK_PROVIDERS=false"
+        print_message "Fichier .env créé avec la configuration de production"
         print_message "L'application utilisera :"
         echo "  - BLEPeerProvider (Bluetooth réel)"
         echo "  - NativePermissionProvider (permissions natives)"
@@ -83,8 +95,14 @@ esac
 
 echo ""
 print_message "Configuration appliquée avec succès !"
-print_warning "Redémarrez votre application pour que les changements prennent effet."
+echo ""
+print_warning "IMPORTANT: Pour Xcode, vous devez :"
+echo "  1. Nettoyer le build (Product > Clean Build Folder ou Cmd+Shift+K)"
+echo "  2. Redémarrer Xcode"
+echo "  3. Rebuild le projet (Product > Build ou Cmd+B)"
 echo ""
 print_message "Pour tester la configuration :"
 echo "  npx react-native run-ios     # iOS"
-echo "  npx react-native run-android # Android" 
+echo "  npx react-native run-android # Android"
+echo ""
+print_message "Le fichier .env a été créé/modifié avec la configuration $ENV_MODE" 

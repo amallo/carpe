@@ -15,7 +15,6 @@ const isIOS = Platform.OS === 'ios';
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     const shouldUseMockProviders = useMockProviders();
-    console.log("shouldUseMockProviders", shouldUseMockProviders);
     
     const logger = useMemo(() => new ReduxLogger(), []);
     const peerProvider = useMemo(() => {

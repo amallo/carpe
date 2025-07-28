@@ -1,16 +1,18 @@
+import { USE_MOCK_PROVIDERS, ENABLE_DEBUG_LOGS, API_BASE_URL } from '@env';
+
 // Configuration des variables d'environnement
 export const ENV = {
   // Mode développement/production
   IS_DEVELOPMENT: __DEV__,
   
   // Configuration des providers
-  USE_MOCK_PROVIDERS:  process.env.USE_MOCK_PROVIDERS !== 'false',
+  USE_MOCK_PROVIDERS: USE_MOCK_PROVIDERS !== 'false',
   
   // Configuration des logs
-  ENABLE_DEBUG_LOGS: __DEV__,
+  ENABLE_DEBUG_LOGS: ENABLE_DEBUG_LOGS !== 'false',
   
   // Configuration des API (si applicable)
-  API_BASE_URL: process.env.API_BASE_URL || 'https://api.carpeapp.com',
+  API_BASE_URL: API_BASE_URL || 'https://api.carpeapp.com',
   
   // Configuration des fonctionnalités
   ENABLE_ANALYTICS: !__DEV__,
