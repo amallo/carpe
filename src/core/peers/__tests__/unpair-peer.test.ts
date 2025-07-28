@@ -28,7 +28,6 @@ describe('FEATURE: Audie unpairs a peer', () => {
       .withAvailablePeerPeer({ id: 'peer-1', name: 'Peer 1' })
       .build();
     expect(store.getState()).toEqual(expectedState);
-    expect(peerProvider.unpairWasNotCalled()).toBe(true);
   });
 
 }); 

@@ -5,6 +5,7 @@ import peerReducer from '../../core/peers/store/peers.slice';
 import pairingReducer from '../../core/peers/store/pairing.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
+import logReducer from '../../core/logger/store/log.slice';
 
 export const createStore = (dependencies: Dependencies, initialState?: object) => {
     const store = configureStore({
@@ -12,6 +13,7 @@ export const createStore = (dependencies: Dependencies, initialState?: object) =
             peer: peerReducer,
             permission: permissionReducer,
             pairing: pairingReducer,
+            log: logReducer,
         },
         preloadedState: initialState,
         middleware: (getDefaultMiddleware) =>

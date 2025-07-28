@@ -4,7 +4,7 @@ export const ENV = {
   IS_DEVELOPMENT: __DEV__,
   
   // Configuration des providers
-  USE_MOCK_PROVIDERS: __DEV__ && process.env.USE_MOCK_PROVIDERS !== 'false',
+  USE_MOCK_PROVIDERS:  process.env.USE_MOCK_PROVIDERS !== 'false',
   
   // Configuration des logs
   ENABLE_DEBUG_LOGS: __DEV__,

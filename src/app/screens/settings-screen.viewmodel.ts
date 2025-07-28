@@ -4,6 +4,7 @@ import { PairingStatus, selectActivePairing, selectPairingError } from '../../co
 import { createSelector } from '@reduxjs/toolkit';
 import { disconnectPeer } from '../../core/peers/usecases/disconnect-peer.usecase';
 import { useState, useCallback } from 'react';
+import { LogEntry } from '../../core/logger/store/log.slice';
 
 export interface ActivePairingViewModel {
   id: string;
@@ -83,13 +84,30 @@ const selectActivePairingViewModel = createSelector(
   }
 );
 
-export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null} => {
+export const selectLogEntries = (state: any) => state.log.logs as LogEntry[];
+
+export const selectLogEntryViewModels = createSelector(
+  [selectLogEntries],
+  (logs): LogEntryViewModel[] =>
+    logs
+      .slice()
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map(log => ({
+        id: log.id,
+        timestamp: new Date(log.date).toLocaleTimeString('fr-FR'),
+        level: log.severity as 'info' | 'warning' | 'error',
+        message: `[${log.domaine}] ${log.message}`,
+      }))
+);
+
+export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null, logs: LogEntryViewModel[]} => {
   // Consommation du state via des selectors spécialisés
   const activePairing = useAppSelector(selectActivePairingViewModel);
   const error = useAppSelector(selectPairingError);
   const dispatch = useAppDispatch();
   const [disconnecting, setDisconnecting] = useState(false);
   const [disconnectError, setDisconnectError] = useState<string | null>(null);
+  const logs = useAppSelector(selectLogEntryViewModels);
 
   const handleDisconnectPeer = useCallback(async (peerId: string) => {
     setDisconnecting(true);
@@ -123,5 +141,6 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
     disconnectPeer: handleDisconnectPeer,
     disconnecting,
     disconnectError,
+    logs,
   };
 };

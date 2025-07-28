@@ -49,7 +49,7 @@ export default function BluetoothScanScreen() {
     toast.loading(`Connexion à ${device.name}...`);
 
     try {
-      await viewmodel.connectToPeer(device.id);
+      await viewmodel.pair(device.id);
 
       setIsConnecting(false);
       setShowPinModal(false);

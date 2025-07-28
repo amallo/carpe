@@ -1,11 +1,19 @@
 import { PeerFound, PeerProvider, PeerError } from './peer.provider';
 import BleManager, { BleScanMode } from 'react-native-ble-manager';
+import { Logger } from '../../logger/providers/logger.interface';
 
 export class BLEPeerProvider implements PeerProvider{
+    private logger?: Logger;
     private scanStartedCallback: (() => void) | null = null;
     private scanStoppedCallback: (() => void) | null = null;
     private peerFoundCallback: ((peer: PeerFound) => void) | null = null;
     private isScanning: boolean = false;
+
+    constructor(params?: { logger?: Logger }) {
+        if (params?.logger) {
+            this.logger = params.logger;
+        }
+    }
 
     // Parser les données LoRa depuis manufacturerData
     private parseLoRaManufacturerData(_manufacturerData?: string): {
@@ -57,27 +65,31 @@ export class BLEPeerProvider implements PeerProvider{
         }
     });
     onScanStarted(callback: () => void): void {
+        this.logger?.debug('BLE', 'onScanStarted() callback registered');
         this.scanStartedCallback = callback;
     }
     onPeerFound(callback: (peer: PeerFound) => void): void {
+        this.logger?.debug('BLE', 'onPeerFound() callback registered');
         this.peerFoundCallback = callback;
     }
     start(): Promise<void> {
+        this.logger?.debug('BLE', 'start() called');
         return BleManager.start();
     }
     async scan(): Promise<void> {
-        // Vérifier si un scan est déjà en cours
-        if (this.isScanning) {
-            throw new Error(PeerError.SCAN_IN_PROGRESS);
-        }
+        this.logger?.debug('BLE', 'scan() called');
+        
 
         this.isScanning = true;
+        this.logger?.debug('BLE', 'scan() started');
         return BleManager.scan(['6E400001-B5A3-F393-E0A9-E50E24DCCA9E'], 20, undefined, {scanMode: BleScanMode.Opportunistic}).then(()=>{
             if (this.scanStartedCallback) {
+                this.logger?.debug('BLE', 'scanStartedCallback called');
                 this.scanStartedCallback();
             }
         }).catch((error) => {
             this.isScanning = false;
+            this.logger?.debug('BLE', `scan() error: ${error.message}`);
             // Gérer les erreurs BLE spécifiques
             if (error.message?.includes('bluetooth')) {
                 throw new Error(PeerError.BLUETOOTH_DISABLED);
@@ -89,26 +101,33 @@ export class BLEPeerProvider implements PeerProvider{
         });
     }
     async stopScan(): Promise<void> {
+        this.logger?.debug('BLE', 'stopScan() called');
         this.isScanning = false;
         return BleManager.stopScan();
     }
     async pairing(peerId: string): Promise<void> {
+        this.logger?.debug('BLE', `pairing() called with peerId=${peerId}`);
         try {
             // Vérifier si un scan est en cours
             if (this.isScanning) {
+                this.logger?.debug('BLE', 'pairing() aborted: scan in progress');
                 throw new Error(PeerError.SCAN_IN_PROGRESS);
             }
 
             // Tenter la connexion BLE
             await BleManager.connect(peerId);
+            this.logger?.debug('BLE', `connect() success for peerId=${peerId}`);
 
             // Vérifier si la connexion a réussi
             const isConnected = await BleManager.isPeripheralConnected(peerId);
+            this.logger?.debug('BLE', `isPeripheralConnected(${peerId}) = ${isConnected}`);
             if (!isConnected) {
+                this.logger?.debug('BLE', `pairing() failed: not connected to ${peerId}`);
                 throw new Error(PeerError.CONNECTION_FAILED);
             }
 
         } catch (error: any) {
+            this.logger?.debug('BLE', `pairing() error: ${error.message}`);
             // Gérer les erreurs BLE spécifiques selon l'interface
             if (error.message?.includes('not found') || error.message?.includes('not found')) {
                 throw new Error(PeerError.PEER_NOT_FOUND);
@@ -140,6 +159,7 @@ export class BLEPeerProvider implements PeerProvider{
         }
     }
     async unpair(peerId: string): Promise<void> {
+        this.logger?.debug('BLE', `unpair() called with peerId=${peerId}`);
         const isPeripheralConnected= await BleManager.isPeripheralConnected(peerId);
         if (isPeripheralConnected){
             throw new Error(PeerError.PEER_NOT_FOUND);
@@ -147,6 +167,7 @@ export class BLEPeerProvider implements PeerProvider{
         await BleManager.disconnect(peerId);
     }
     onScanStopped(callback: () => void): void {
+        this.logger?.debug('BLE', 'onScanStopped() callback registered');
         this.scanStoppedCallback = callback;
     }
     destroy(): void {

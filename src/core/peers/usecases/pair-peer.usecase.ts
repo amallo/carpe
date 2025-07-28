@@ -11,6 +11,7 @@ export const pairPeer = createAsyncThunk<
 >(
     'peer/connect',
     async ({ peerId }, { dispatch, extra }) => {
+        extra.logger?.info('PAIR', `Tentative de pair avec peerId=${peerId}`);
         /**
          * Check permissions for connecting to peers
          */

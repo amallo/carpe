@@ -5,10 +5,13 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
 import { useSettingsViewModel, type LogEntryViewModel } from './settings-screen.viewmodel';
+import { useAppDispatch } from '../store/hooks';
+import { clearLogs } from '../../core/logger/store/log.slice';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const { activePairing, disconnectPeer, disconnecting, disconnectError } = useSettingsViewModel();
+  const { activePairing, disconnectPeer, disconnecting, disconnectError, logs } = useSettingsViewModel();
+  const dispatch = useAppDispatch();
 
   const [settings, setSettings] = useState({
     allowConnections: true,
@@ -23,15 +26,6 @@ export default function SettingsScreen() {
   const [showPublicKeyModal, setShowPublicKeyModal] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'warning' | 'error'>('healthy');
-
-  const [logs, setLogs] = useState<LogEntryViewModel[]>([
-    { id: '1', timestamp: '15:32:45', level: 'info', message: 'Connexion Bluetooth établie avec succès' },
-    { id: '2', timestamp: '15:32:40', level: 'info', message: 'Authentification PIN réussie' },
-    { id: '3', timestamp: '15:30:12', level: 'warning', message: 'Signal LoRa faible détecté (65%)' },
-    { id: '4', timestamp: '15:28:33', level: 'info', message: 'Message diffusé avec succès (12 destinataires)' },
-    { id: '5', timestamp: '15:25:17', level: 'error', message: 'Échec de transmission - retry automatique' },
-    { id: '6', timestamp: '15:20:45', level: 'info', message: 'Health check: Tous systèmes opérationnels' },
-  ]);
 
   const handleBack = () => {
     navigation.goBack();
@@ -76,13 +70,13 @@ export default function SettingsScreen() {
       toast.success('Connexion établie avec l\'émetteur LoRa');
 
       // Add connection log
-      const newLog: LogEntryViewModel = {
-        id: Date.now().toString(),
-        timestamp: new Date().toLocaleTimeString('fr-FR'),
-        level: 'info',
-        message: 'Connexion Bluetooth sécurisée établie',
-      };
-      setLogs(prev => [newLog, ...prev]);
+      // const newLog: LogEntryViewModel = {
+      //   id: Date.now().toString(),
+      //   timestamp: new Date().toLocaleTimeString('fr-FR'),
+      //   level: 'info',
+      //   message: 'Connexion Bluetooth sécurisée établie',
+      // };
+      // setLogs(prev => [newLog, ...prev]);
     }, 2000);
   };
 
@@ -94,18 +88,36 @@ export default function SettingsScreen() {
       const isHealthy = Math.random() > 0.3;
       setHealthStatus(isHealthy ? 'healthy' : 'warning');
 
-      const newLog: LogEntryViewModel = {
-        id: Date.now().toString(),
-        timestamp: new Date().toLocaleTimeString('fr-FR'),
-        level: isHealthy ? 'info' : 'warning',
-        message: isHealthy
-          ? 'Health check: Tous systèmes opérationnels'
-          : 'Health check: Attention - Signal faible détecté',
-      };
-      setLogs(prev => [newLog, ...prev]);
+      // const newLog: LogEntryViewModel = {
+      //   id: Date.now().toString(),
+      //   timestamp: new Date().toLocaleTimeString('fr-FR'),
+      //   level: isHealthy ? 'info' : 'warning',
+      //   message: isHealthy
+      //     ? 'Health check: Tous systèmes opérationnels'
+      //     : 'Health check: Attention - Signal faible détecté',
+      // };
+      // setLogs(prev => [newLog, ...prev]);
 
       toast.success(isHealthy ? 'Émetteur en parfait état' : 'Attention: Signal faible détecté');
     }, 3000);
+  };
+
+  const handleClearLogs = () => {
+    Alert.alert(
+      'Effacer les logs',
+      'Êtes-vous sûr de vouloir effacer tous les logs système ?',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Effacer',
+          style: 'destructive',
+          onPress: () => {
+            dispatch(clearLogs());
+            toast.success('Logs effacés');
+          },
+        },
+      ]
+    );
   };
 
   const getHealthStatusColor = () => {
@@ -345,9 +357,14 @@ export default function SettingsScreen() {
           <View style={[styles.modalContent, { height: '70%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Logs système</Text>
-              <TouchableOpacity onPress={() => setShowLogsModal(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
-              </TouchableOpacity>
+              <View style={styles.modalHeaderActions}>
+                <TouchableOpacity style={styles.clearLogsButton} onPress={handleClearLogs}>
+                  <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowLogsModal(false)}>
+                  <Ionicons name="close" size={24} color="#6b7280" />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <ScrollView style={styles.logsContainer}>
@@ -736,5 +753,12 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
     lineHeight: 16,
+  },
+  modalHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  clearLogsButton: {
+    marginRight: 10,
   },
 });

@@ -9,7 +9,8 @@ export const requestPermission = createAsyncThunk<
     { extra: Dependencies }
 >(
     'permission/request',
-    async ({ permissionId }, { dispatch, extra: {  permissionProvider } }) => {
+    async ({ permissionId }, { dispatch, extra: {  permissionProvider, logger } }) => {
+        logger?.info('PERMISSION', `Demande de permission pour ${permissionId}`);
         /**
          * Request permission to scan for peers
          */

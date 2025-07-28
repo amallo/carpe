@@ -100,11 +100,9 @@ export const useBluetoothScannerViewModel = () => {
 
     // Actions via dispatch de thunks
     startScan: () => {
-      console.log('startScan');
       return dispatch(scanPeers({ timeout: 30000 }));
     },
-    connectToPeer: (peerId: string) => {
-      console.log('connectToPeer', peerId);
+    pair: (peerId: string) => {
       return dispatch(pairPeer({ peerId }));
     },
 

@@ -6,6 +6,7 @@ import { Feature, permissionAdapter, PermissionEntity } from '../permission/stor
 import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
 import { getPairingInitialState, pairingAdapter } from '../peers/store/pairing.slice';
+import { initialState as logInitialState } from '../logger/store/log.slice';
 
 
 export class StateBuilder {
@@ -53,6 +54,7 @@ export const createStateBuilder = (initialState: RootState = {
     peer: getPeerInitialState(),
     permission: getPermissionInitialState(),
     pairing: getPairingInitialState(),
+    log: logInitialState,
 }) => {
     return new StateBuilder(initialState);
 };

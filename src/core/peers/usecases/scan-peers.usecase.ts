@@ -42,6 +42,7 @@ export const scanPeers = createAsyncThunk<
 >(
     'peer/scan',
         async ({ timeout: _timeout }, { dispatch, extra }) => {
+        extra.logger.info('SCAN', 'Début du scan de peers');
         /**
          * Check permissions for scanning peers
          */
