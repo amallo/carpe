@@ -50,12 +50,12 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7'
+          ruby-version: '3.0'
           bundler-cache: false
 
       - name: Install gems directly
         run: |
-          gem install fastlane -v 2.200.0
+          gem install fastlane -v 2.217.0
           gem install cocoapods
 
       - name: Install iOS pods
