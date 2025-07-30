@@ -75,6 +75,7 @@ platform :ios do
       workspace: "carpeApp.xcworkspace",
       scheme: "carpeApp",
       export_method: "app-store",
+      configuration: "Release",
       clean: true,
       output_directory: "builds",
       output_name: "carpeApp.ipa",
