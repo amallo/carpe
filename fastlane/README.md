@@ -47,6 +47,22 @@ Run tests
 
 Clean build artifacts
 
+### ios setup_certificates
+
+```sh
+[bundle exec] fastlane ios setup_certificates
+```
+
+Setup certificates and provisioning profiles
+
+### ios debug_config
+
+```sh
+[bundle exec] fastlane ios debug_config
+```
+
+Debug environment and API key
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

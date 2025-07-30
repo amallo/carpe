@@ -76,7 +76,6 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          cd ios
           fastlane debug_config
       
       - name: Build and upload to TestFlight
@@ -86,7 +85,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          cd ios
-          # Replace TEAM_ID in exportOptions.plist
-          sed -i '' "s/\$(TEAM_ID)/${{ secrets.TEAM_ID }}/g" exportOptions.plist
           fastlane beta 

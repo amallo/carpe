@@ -57,45 +57,71 @@ platform :ios do
     
     # Verify workspace exists
     UI.message "🔧 Verifying workspace exists..."
-    if File.exist?("carpeApp.xcworkspace")
-      UI.message "✅ carpeApp.xcworkspace found"
-      UI.message "📁 Workspace contents:"
-      sh "ls -la carpeApp.xcworkspace"
-    else
-      UI.message "❌ carpeApp.xcworkspace not found"
+    UI.message "🔧 Current working directory: #{Dir.pwd}"
+    UI.message "🔧 Fastlane directory: #{File.dirname(__FILE__)}"
+    
+    # Check multiple possible locations
+    workspace_paths = [
+      "carpeApp.xcworkspace",
+      "../carpeApp.xcworkspace",
+      "../../carpeApp.xcworkspace",
+      File.join(File.dirname(__FILE__), "..", "carpeApp.xcworkspace")
+    ]
+    
+    workspace_found = false
+    workspace_paths.each do |path|
+      if File.exist?(path)
+        UI.message "✅ carpeApp.xcworkspace found at: #{path}"
+        UI.message "📁 Workspace contents:"
+        sh "ls -la #{path}"
+        workspace_found = true
+        break
+      else
+        UI.message "❌ Not found at: #{path}"
+      end
+    end
+    
+    unless workspace_found
+      UI.message "❌ carpeApp.xcworkspace not found anywhere"
       UI.message "📁 Current directory contents:"
       sh "ls -la"
+      UI.message "📁 Parent directory contents:"
+      sh "ls -la .."
+      UI.message "📁 Grandparent directory contents:"
+      sh "ls -la ../.."
       raise "Workspace not found after pod install"
     end
     
     # Build the app with build_ios_app
     UI.message "🔧 Building with build_ios_app..."
     UI.message "🔧 Current directory: #{Dir.pwd}"
-    UI.message "🔧 Using workspace: carpeApp.xcworkspace"
+    
+    # Find the correct workspace path
+    workspace_path = nil
+    ["ios/carpeApp.xcworkspace", "carpeApp.xcworkspace", "../carpeApp.xcworkspace", "../../carpeApp.xcworkspace"].each do |path|
+      if File.exist?(path)
+        workspace_path = File.expand_path(path)
+        break
+      end
+    end
+    
+    UI.message "🔧 Using workspace: #{workspace_path}"
     
     # Force workspace usage and automatic signing
-    build_ios_app(
-      workspace: "carpeApp.xcworkspace",
-      scheme: "carpeApp",
-      export_method: "app-store",
-      configuration: "Release",
-      clean: true,
-      output_directory: "builds",
-      output_name: "carpeApp.ipa",
-      export_options: {
-        method: "app-store",
-        signingStyle: "automatic",
-        teamID: ENV["TEAM_ID"],
-        compileBitcode: false,
-        uploadBitcode: false,
-        uploadSymbols: false
-      },
-      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration -workspace carpeApp.xcworkspace"
-    )
+    Dir.chdir("ios")
+        build_ios_app(
+          workspace: "carpeApp.xcworkspace",
+          scheme: "carpeApp",
+          export_method: "app-store",
+          clean: true,
+          output_directory: "builds",
+          output_name: "carpeApp.ipa"
+        )
     
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
+      ipa: "ios/builds/carpeApp.ipa",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
       distribute_external: false,
