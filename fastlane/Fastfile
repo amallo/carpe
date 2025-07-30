@@ -50,11 +50,8 @@ platform :ios do
     
     UI.message "✅ Using automatic signing with allowProvisioningUpdates"
     
-    # Increment build number
-    increment_build_number(
-      build_number: latest_testflight_build_number + 1,
-    )
     
+    Dir.chdir("..")
     # Verify workspace exists
     UI.message "🔧 Verifying workspace exists..."
     UI.message "🔧 Current working directory: #{Dir.pwd}"
@@ -62,7 +59,7 @@ platform :ios do
     
     # Check multiple possible locations
     workspace_paths = [
-      "carpeApp.xcworkspace",
+      "ios/carpeApp.xcworkspace",
       "../carpeApp.xcworkspace",
       "../../carpeApp.xcworkspace",
       File.join(File.dirname(__FILE__), "..", "carpeApp.xcworkspace")
@@ -109,19 +106,25 @@ platform :ios do
     
     # Force workspace usage and automatic signing
     Dir.chdir("ios")
-        build_ios_app(
-          workspace: "carpeApp.xcworkspace",
-          scheme: "carpeApp",
-          export_method: "app-store",
-          clean: true,
-          output_directory: "builds",
-          output_name: "carpeApp.ipa"
-        )
+    
+    # Increment build number
+    increment_build_number(
+      build_number: latest_testflight_build_number + 1,
+    )
+    
+    build_ios_app(
+      workspace: "carpeApp.xcworkspace",
+      scheme: "carpeApp",
+      export_method: "app-store",
+      clean: true,
+      output_directory: "builds",
+      output_name: "carpeApp.ipa"
+    )
     
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
-      ipa: "ios/builds/carpeApp.ipa",
+      ipa: "builds/carpeApp.ipa",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
       distribute_external: false,
