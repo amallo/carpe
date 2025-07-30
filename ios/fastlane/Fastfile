@@ -50,7 +50,11 @@ platform :ios do
       clean: true,
       archive_path: "./builds/carpeApp.xcarchive",
       output_directory: "./builds",
-      output_name: "carpeApp.ipa"
+      output_name: "carpeApp.ipa",
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic"
+      }
     )
     
     # Upload to TestFlight
@@ -86,7 +90,11 @@ platform :ios do
       clean: true,
       archive_path: "./builds/carpeApp.xcarchive",
       output_directory: "./builds",
-      output_name: "carpeApp.ipa"
+      output_name: "carpeApp.ipa",
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic"
+      }
     )
     
     # Upload to App Store Connect
@@ -113,6 +121,26 @@ platform :ios do
     clean_build_artifacts
     sh "rm -rf ./builds"
     sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+  end
+
+  desc "Setup certificates and provisioning profiles"
+  lane :setup_certificates do
+    UI.message "🔧 Setting up certificates and provisioning profiles..."
+    
+    # Install certificates
+    import_certificate(
+      certificate_path: ENV["CERTIFICATE_PATH"],
+      certificate_password: ENV["CERTIFICATE_PASSWORD"],
+      keychain_name: "login",
+      keychain_password: ENV["KEYCHAIN_PASSWORD"]
+    )
+    
+    # Install provisioning profile
+    install_provisioning_profile(
+      path: ENV["PROVISIONING_PROFILE_PATH"]
+    )
+    
+    UI.message "✅ Certificates and provisioning profiles installed"
   end
 
   desc "Debug environment and API key"
