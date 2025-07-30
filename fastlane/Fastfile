@@ -105,26 +105,26 @@ platform :ios do
     UI.message "🔧 Using workspace: #{workspace_path}"
     
     # Force workspace usage and automatic signing
-    Dir.chdir("ios")
-    
-    # Increment build number
-    increment_build_number(
-      build_number: latest_testflight_build_number + 1,
-    )
-    
-    build_ios_app(
-      workspace: "carpeApp.xcworkspace",
-      scheme: "carpeApp",
-      export_method: "app-store",
-      clean: true,
-      output_directory: "builds",
-      output_name: "carpeApp.ipa"
-    )
+    Dir.chdir("ios") do
+      # Increment build number
+      increment_build_number(
+        build_number: latest_testflight_build_number + 1,
+      )
+      
+      build_ios_app(
+        workspace: "carpeApp.xcworkspace",
+        scheme: "carpeApp",
+        export_method: "app-store",
+        clean: true,
+        output_directory: "builds",
+        output_name: "carpeApp.ipa"
+      )
+    end
     
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
-      ipa: "builds/carpeApp.ipa",
+      ipa: "ios/builds/carpeApp.ipa",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
       distribute_external: false,
