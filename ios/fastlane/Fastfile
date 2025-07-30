@@ -37,13 +37,14 @@ platform :ios do
     )
     UI.message "✅ API Key configured successfully"
     
-    # Setup Apple Developer account
-    UI.message "🔧 Setting up Apple Developer account..."
-    setup_apple_developer_account(
-      apple_id: ENV["APPLE_ID"],
-      app_store_connect_api_key: api_key
+    # Setup code signing
+    UI.message "🔧 Setting up code signing..."
+    sync_code_signing(
+      type: "appstore",
+      team_id: ENV["TEAM_ID"],
+      force_for_new_devices: true
     )
-    UI.message "✅ Apple Developer account configured"
+    UI.message "✅ Code signing configured"
     
     # Increment build number
     increment_build_number(
@@ -86,10 +87,11 @@ platform :ios do
       is_key_content_base64: true
     )
     
-    # Setup Apple Developer account
-    setup_apple_developer_account(
-      apple_id: ENV["APPLE_ID"],
-      app_store_connect_api_key: api_key
+    # Setup code signing
+    sync_code_signing(
+      type: "appstore",
+      team_id: ENV["TEAM_ID"],
+      force_for_new_devices: true
     )
     
     # Increment version number
