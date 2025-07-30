@@ -71,23 +71,20 @@ platform :ios do
     # Build the app with build_ios_app
     UI.message "🔧 Building with build_ios_app..."
     UI.message "🔧 Current directory: #{Dir.pwd}"
-    Dir.chdir("../ios") do
-      UI.message "🔧 Changed to directory: #{Dir.pwd}"
-      build_ios_app(
-        workspace: "carpeApp.xcworkspace",
-        scheme: "carpeApp",
-        export_method: "app-store",
-        clean: true,
-        output_directory: "builds",
-        output_name: "carpeApp.ipa",
-        export_options: {
-          method: "app-store",
-          signingStyle: "automatic",
-          teamID: ENV["TEAM_ID"]
-        },
-        xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
-      )
-    end
+    build_ios_app(
+      workspace: "carpeApp.xcworkspace",
+      scheme: "carpeApp",
+      export_method: "app-store",
+      clean: true,
+      output_directory: "builds",
+      output_name: "carpeApp.ipa",
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic",
+        teamID: ENV["TEAM_ID"]
+      },
+      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
+    )
     
     # Upload to TestFlight
     upload_to_testflight(
