@@ -70,21 +70,23 @@ platform :ios do
     
     # Build the app with gym
     UI.message "🔧 Building with gym..."
-    gym(
-      workspace: "../carpeApp.xcworkspace",
-      scheme: "carpeApp",
-      export_method: "app-store",
-      clean: true,
-      archive_path: "../builds/carpeApp.xcarchive",
-      output_directory: "../builds",
-      output_name: "carpeApp.ipa",
-      export_options: {
-        method: "app-store",
-        signingStyle: "automatic",
-        teamID: ENV["TEAM_ID"]
-      },
-      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
-    )
+    Dir.chdir("..") do
+      gym(
+        workspace: "carpeApp.xcworkspace",
+        scheme: "carpeApp",
+        export_method: "app-store",
+        clean: true,
+        archive_path: "builds/carpeApp.xcarchive",
+        output_directory: "builds",
+        output_name: "carpeApp.ipa",
+        export_options: {
+          method: "app-store",
+          signingStyle: "automatic",
+          teamID: ENV["TEAM_ID"]
+        },
+        xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
+      )
+    end
     
     # Upload to TestFlight
     upload_to_testflight(
