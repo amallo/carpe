@@ -50,7 +50,6 @@ platform :ios do
     
     UI.message "✅ Using automatic signing with allowProvisioningUpdates"
     
-    
     Dir.chdir("..")
     # Verify workspace exists
     UI.message "🔧 Verifying workspace exists..."
@@ -106,13 +105,13 @@ platform :ios do
     
     # Force workspace usage and automatic signing
     Dir.chdir("ios") do
-      # Increment build number
-      increment_build_number(
-        build_number: latest_testflight_build_number + 1,
-      )
+      # Increment build number manually with agvtool
+      new_build_number = latest_testflight_build_number + 1
+      UI.message "🔧 Incrementing build number to: #{new_build_number}"
+      sh "agvtool new-version -all #{new_build_number}"
       
       build_ios_app(
-        workspace: "carpeApp.xcworkspace",
+        workspace: "./carpeApp.xcworkspace",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true,
