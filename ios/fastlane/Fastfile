@@ -26,6 +26,7 @@ platform :ios do
     UI.message "APP_STORE_CONNECT_API_KEY_ID: #{ENV['APP_STORE_CONNECT_API_KEY_ID'] ? 'SET' : 'NOT SET'}"
     UI.message "APP_STORE_CONNECT_API_ISSUER_ID: #{ENV['APP_STORE_CONNECT_API_ISSUER_ID'] ? 'SET' : 'NOT SET'}"
     UI.message "APP_STORE_CONNECT_API_KEY_CONTENT: #{ENV['APP_STORE_CONNECT_API_KEY_CONTENT'] ? 'SET' : 'NOT SET'}"
+    UI.message "TEAM_ID: #{ENV['TEAM_ID'] ? 'SET' : 'NOT SET'}"
     
     # Configure App Store Connect API
     UI.message "🔧 Configuring App Store Connect API Key..."
@@ -37,14 +38,9 @@ platform :ios do
     )
     UI.message "✅ API Key configured successfully"
     
-    # Setup code signing
-    UI.message "🔧 Setting up code signing..."
-    sync_code_signing(
-      type: "appstore",
-      team_id: ENV["TEAM_ID"],
-      force_for_new_devices: true
-    )
-    UI.message "✅ Code signing configured"
+    # Setup code signing with automatic signing
+    UI.message "🔧 Setting up automatic code signing..."
+    UI.message "✅ Using automatic signing with allowProvisioningUpdates"
     
     # Increment build number
     increment_build_number(
@@ -62,9 +58,10 @@ platform :ios do
       output_name: "carpeApp.ipa",
       export_options: {
         method: "app-store",
-        signingStyle: "automatic"
+        signingStyle: "automatic",
+        teamID: ENV["TEAM_ID"]
       },
-      xcargs: "-allowProvisioningUpdates"
+      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
     )
     
     # Upload to TestFlight
@@ -87,12 +84,8 @@ platform :ios do
       is_key_content_base64: true
     )
     
-    # Setup code signing
-    sync_code_signing(
-      type: "appstore",
-      team_id: ENV["TEAM_ID"],
-      force_for_new_devices: true
-    )
+    # Setup code signing with automatic signing
+    UI.message "🔧 Using automatic signing with allowProvisioningUpdates"
     
     # Increment version number
     increment_version_number(
