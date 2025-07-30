@@ -117,7 +117,7 @@ platform :ios do
       sh "ls -la"
       
       build_ios_app(
-        workspace: "carpeApp.xcworkspace",
+        project: "carpeApp.xcodeproj",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true
