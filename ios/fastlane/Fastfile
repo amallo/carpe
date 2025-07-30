@@ -55,13 +55,26 @@ platform :ios do
       build_number: latest_testflight_build_number + 1,
     )
     
-    # Install pods if needed
-    UI.message "🔧 Installing CocoaPods dependencies..."
-    sh "pod install"
+    # Verify workspace exists
+    UI.message "🔧 Verifying workspace exists..."
+    if File.exist?("carpeApp.xcworkspace")
+      UI.message "✅ carpeApp.xcworkspace found"
+    else
+      UI.message "❌ carpeApp.xcworkspace not found"
+      UI.message "📁 Current directory contents:"
+      sh "ls -la"
+      raise "Workspace not found after pod install"
+    end
     
     # Build the app with xcodebuild directly
     UI.message "🔧 Building with xcodebuild..."
-    sh "xcodebuild -workspace carpeApp.xcworkspace -scheme carpeApp -configuration Release -archivePath ./builds/carpeApp.xcarchive -allowProvisioningUpdates -allowProvisioningDeviceRegistration archive"
+    if File.exist?("carpeApp.xcworkspace")
+      UI.message "🔧 Using workspace..."
+      sh "xcodebuild -workspace carpeApp.xcworkspace -scheme carpeApp -configuration Release -archivePath ./builds/carpeApp.xcarchive -allowProvisioningUpdates -allowProvisioningDeviceRegistration archive"
+    else
+      UI.message "🔧 Using project..."
+      sh "xcodebuild -project carpeApp.xcodeproj -scheme carpeApp -configuration Release -archivePath ./builds/carpeApp.xcarchive -allowProvisioningUpdates -allowProvisioningDeviceRegistration archive"
+    end
     
     UI.message "🔧 Exporting IPA..."
     sh "xcodebuild -exportArchive -archivePath ./builds/carpeApp.xcarchive -exportPath ./builds -exportOptionsPlist exportOptions.plist"
