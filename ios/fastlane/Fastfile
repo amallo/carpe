@@ -40,6 +40,14 @@ platform :ios do
     
     # Setup code signing with automatic signing
     UI.message "🔧 Setting up automatic code signing..."
+    
+    # Create temporary API key file
+    UI.message "🔧 Creating temporary API key file..."
+    require 'base64'
+    key_content = Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY_CONTENT"])
+    File.write("/tmp/AuthKey.p8", key_content)
+    UI.message "✅ API key file created at /tmp/AuthKey.p8"
+    
     UI.message "✅ Using automatic signing with allowProvisioningUpdates"
     
     # Increment build number
@@ -47,22 +55,12 @@ platform :ios do
       build_number: latest_testflight_build_number + 1,
     )
     
-    # Build the app
-    build_ios_app(
-      workspace: "carpeApp.xcworkspace",
-      scheme: "carpeApp",
-      export_method: "app-store",
-      clean: true,
-      archive_path: "./builds/carpeApp.xcarchive",
-      output_directory: "./builds",
-      output_name: "carpeApp.ipa",
-      export_options: {
-        method: "app-store",
-        signingStyle: "automatic",
-        teamID: ENV["TEAM_ID"]
-      },
-      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration"
-    )
+    # Build the app with xcodebuild directly
+    UI.message "🔧 Building with xcodebuild..."
+    sh "xcodebuild -workspace carpeApp.xcworkspace -scheme carpeApp -configuration Release -archivePath ./builds/carpeApp.xcarchive -allowProvisioningUpdates -allowProvisioningDeviceRegistration archive"
+    
+    UI.message "🔧 Exporting IPA..."
+    sh "xcodebuild -exportArchive -archivePath ./builds/carpeApp.xcarchive -exportPath ./builds -exportOptionsPlist exportOptions.plist"
     
     # Upload to TestFlight
     upload_to_testflight(

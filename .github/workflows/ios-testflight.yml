@@ -87,4 +87,6 @@ jobs:
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
           cd ios
+          # Replace TEAM_ID in exportOptions.plist
+          sed -i '' "s/\$(TEAM_ID)/${{ secrets.TEAM_ID }}/g" exportOptions.plist
           fastlane beta 
