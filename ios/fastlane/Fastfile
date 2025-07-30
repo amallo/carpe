@@ -116,7 +116,7 @@ platform :ios do
   end
 
   desc "Debug environment and API key"
-  lane :debug do
+  lane :debug_config do
     UI.message "=== DEBUG MODE ==="
     UI.message "Ruby version: #{RUBY_VERSION}"
     UI.message "Fastlane version: #{Fastlane::VERSION}"
