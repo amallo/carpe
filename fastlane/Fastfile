@@ -116,6 +116,11 @@ platform :ios do
       UI.message "🔧 Directory contents:"
       sh "ls -la"
       
+      # Setup environment for automatic signing
+      UI.message "🔧 Setting up environment for automatic signing..."
+      UI.message "🔧 Team ID: #{ENV['TEAM_ID']}"
+      UI.message "🔧 Using App Store Connect API Key for authentication"
+      
       build_ios_app(
         workspace: "ios/carpeApp.xcworkspace",
         scheme: "carpeApp",
