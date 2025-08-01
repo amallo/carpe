@@ -121,14 +121,8 @@ platform :ios do
       UI.message "🔧 Team ID: #{ENV['TEAM_ID']}"
       UI.message "🔧 Using App Store Connect API Key for authentication"
       
-      # Sync code signing to generate certificates and profiles
-      UI.message "🔧 Syncing code signing..."
-      sync_code_signing(
-        type: "appstore",
-        app_identifier: "io.decentapp.carpeapp.dev",
-        team_id: ENV["TEAM_ID"],
-        api_key: api_key
-      )
+      # Note: sync_code_signing requires a Git repository for certificates
+      UI.message "🔧 Skipping sync_code_signing (requires Git repo for certificates)"
       
       build_ios_app(
         workspace: "ios/carpeApp.xcworkspace",
@@ -141,6 +135,7 @@ platform :ios do
           signingStyle: "automatic",
           teamID: ENV["TEAM_ID"]
         },
+        export_xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration",
         xcargs: "-allowProvisioningUpdates"
       )
     end
