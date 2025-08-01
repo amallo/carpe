@@ -121,11 +121,21 @@ platform :ios do
       UI.message "🔧 Team ID: #{ENV['TEAM_ID']}"
       UI.message "🔧 Using App Store Connect API Key for authentication"
       
+      # Sync code signing to generate certificates and profiles
+      UI.message "🔧 Syncing code signing..."
+      sync_code_signing(
+        type: "appstore",
+        app_identifier: "io.decentapp.carpeapp.dev",
+        team_id: ENV["TEAM_ID"],
+        api_key: api_key
+      )
+      
       build_ios_app(
         workspace: "ios/carpeApp.xcworkspace",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true,
+        configuration: "Release",
         export_options: {
           method: "app-store",
           signingStyle: "automatic",
