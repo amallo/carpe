@@ -67,7 +67,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.1'
+          xcode-version: '16.4'
 
       - name: Debug Fastlane configuration
         env:
