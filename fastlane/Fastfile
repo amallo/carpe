@@ -89,7 +89,7 @@ platform :ios do
     end
     
     # Build the app with build_ios_app
-    UI.message "🔧 Building with build_ios_app..."
+    UI.message "🔧 Building with build_ios_app (manual signing)..."
     UI.message "🔧 Current directory: #{Dir.pwd}"
     
     # Find the correct workspace path
@@ -103,7 +103,7 @@ platform :ios do
     
     UI.message "🔧 Using workspace: #{workspace_path}"
     
-    # Force workspace usage and automatic signing
+    # Force workspace usage and manual signing
     Dir.chdir("ios") do
       # Increment build number manually with agvtool
       new_build_number = latest_testflight_build_number + 1
@@ -116,8 +116,8 @@ platform :ios do
       UI.message "🔧 Directory contents:"
       sh "ls -la"
       
-      # Setup environment for automatic signing
-      UI.message "🔧 Setting up environment for automatic signing..."
+      # Setup environment for manual signing
+      UI.message "🔧 Setting up environment for manual signing..."
       UI.message "🔧 Team ID: #{ENV['TEAM_ID']}"
       UI.message "🔧 Using App Store Connect API Key for authentication"
       
@@ -125,18 +125,22 @@ platform :ios do
       UI.message "🔧 Skipping sync_code_signing (requires Git repo for certificates)"
       
       build_ios_app(
-        workspace: "ios/carpeApp.xcworkspace",
+        workspace: "carpeApp.xcworkspace",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true,
         configuration: "Release",
+        output_directory: "builds",
+        output_name: "carpeApp.ipa",
         export_options: {
           method: "app-store",
-          signingStyle: "automatic",
-          teamID: ENV["TEAM_ID"]
+          signingStyle: "manual",
+          teamID: ENV["TEAM_ID"],
+          provisioningProfiles: {
+            "io.decentapp.carpeapp.dev" => "Carpe"
+          }
         },
-        export_xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration",
-        xcargs: "-allowProvisioningUpdates"
+        xcargs: "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=Carpe DEVELOPMENT_TEAM=#{ENV['TEAM_ID']} CODE_SIGN_IDENTITY=Apple\ Distribution"
       )
     end
     
