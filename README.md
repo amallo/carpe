@@ -1,157 +1,27 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🌊 Carpe  
+![Build Status](https://github.com/amallo/carpe/actions/workflows/ci.yml/badge.svg?branch=main)  
+![License](https://img.shields.io/github/license/amallo/carpe)  
+![Version](https://img.shields.io/github/package-json/v/amallo/carpe)  
 
-# CarpeApp
+**Communication longue portée, sécurisée, et sans Internet.**  
 
-Application React Native pour la gestion des émetteurs LoRa avec fonctionnalités Bluetooth.
+---
 
-## Configuration des Environnements
+## 🚀 Pourquoi Carpe ?
+Imagine pouvoir envoyer un message **sécurisé** à quelqu’un **sans réseau cellulaire** ni **Wi-Fi**.  
+**Carpe** rend cela possible grâce à une combinaison intelligente de **LoRa** (longue portée) et **Bluetooth** (liaison smartphone ↔ ESP32), avec chiffrement de bout en bout.  
 
-L'application supporte différents environnements de développement et de production :
+Carpe, c’est la carpe qui nage dans les **ondes LoRa** pour transmettre vos messages… 🐟📡
 
-### Développement (par défaut)
-- **Providers simulés** : `InMemoryPeerProvider` et `GrantedPermissionProvider`
-- **Logs de débogage** activés
-- **Permissions automatiques** accordées
+---
 
-### Production
-- **Providers réels** : `BLEPeerProvider` et `NativePermissionProvider`
-- **Logs de débogage** désactivés
-- **Gestion native des permissions**
+## 🔒 Ce que Carpe apporte
+- **Sécurité totale** → Chiffrement sur le téléphone, jamais sur le réseau. Les modules LoRa ne voient que des données chiffrées.  
+- **Indépendance réseau** → Fonctionne sans 4G/5G, sans Wi-Fi.  
+- **Portée XXL** → LoRa assure plusieurs kilomètres de couverture.  
+- **Léger & rapide** → Format binaire optimisé, faible consommation d’énergie.  
+- **Fiabilité** → Gestion des accusés de réception (ACK) non bloquants.
 
-### Basculement rapide entre environnements
-
-```bash
-# Mode développement (providers simulés)
-./scripts/switch-env.sh dev
-
-# Mode production (providers réels)
-./scripts/switch-env.sh prod
-```
-
-Pour plus de détails, consultez la [documentation des environnements](docs/ENVIRONMENT.md).
-
-## CI/CD Automatique
-
-Le projet inclut un système de CI/CD complet avec GitHub Actions :
-
-### Fonctionnalités
-- **Tests automatiques** à chaque push
-- **Build automatique** en mode production
-- **Déploiement automatique** sur TestFlight
-- **Notifications** Slack (optionnel)
-
-### Configuration
-```bash
-# Initialiser Fastlane et les certificats
-./scripts/setup-fastlane.sh
-
-# Configurer les secrets GitHub (voir docs/GITHUB_CI_CD_SETUP.md)
-```
-
-### Workflow
-1. Push sur `main` ou `master`
-2. Tests unitaires automatiques
-3. Build en mode production
-4. Upload automatique vers TestFlight
-
-Pour plus de détails, consultez le [guide de configuration CI/CD](docs/GITHUB_CI_CD_SETUP.md).
-
-# Getting Started
-
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
-
-## Step 1: Start Metro
-
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Déploiement
-
-Pour déployer l'application sur TestFlight (iOS) ou Play Store (Android), consultez le [guide de déploiement](DEPLOYMENT.md).
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🛠 Architecture en bref
+📱 Téléphone A 📡 ESP32 A 🌐 LoRa 📡 ESP32 B 📱 Téléphone B
+[Chiffre msg] → BLE → [Relais sécurisé] → [Transmission] → [Relais sécurisé] → [Déchiffre msg]
