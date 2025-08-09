@@ -273,10 +273,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+                CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
+                DEVELOPMENT_TEAM = S5WFVK9Y5C;
+                "DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = carpeApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -290,10 +290,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
-				PRODUCT_NAME = carpeApp;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
+                PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
+                PRODUCT_NAME = carpeApp;
+                PROVISIONING_PROFILE = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
+                "PROVISIONING_PROFILE[sdk=iphoneos*]" = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
+                PROVISIONING_PROFILE_SPECIFIER = Carpe;
+                "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -308,10 +310,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+                CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
+                DEVELOPMENT_TEAM = S5WFVK9Y5C;
+                "DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
 				INFOPLIST_FILE = carpeApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -324,10 +326,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
-				PRODUCT_NAME = carpeApp;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
+                PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
+                PRODUCT_NAME = carpeApp;
+                PROVISIONING_PROFILE = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
+                "PROVISIONING_PROFILE[sdk=iphoneos*]" = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
+                PROVISIONING_PROFILE_SPECIFIER = Carpe;
+                "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
