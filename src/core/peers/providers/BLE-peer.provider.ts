@@ -109,14 +109,19 @@ export class BLEPeerProvider implements PeerProvider{
         this.logger?.debug('BLE', `pairing() called with peerId=${peerId}`);
         try {
 
+            const hasAlreadyPaired = await BleManager.isPeripheralConnected(peerId);
+            if (hasAlreadyPaired) {
+                this.logger?.info('BLE', `pairing() failed: already connected to ${peerId}`);
+                return;
+            }
             // Tenter la connexion BLE
             await BleManager.connect(peerId);
-            this.logger?.debug('BLE', `connect() success for peerId=${peerId}`);
+            this.logger?.debug('BLE', `pairing() success for peerId=${peerId}`);
 
             // Vérifier si la connexion a réussi
-            const isConnected = await BleManager.isPeripheralConnected(peerId);
-            this.logger?.debug('BLE', `isPeripheralConnected(${peerId}) = ${isConnected}`);
-            if (!isConnected) {
+            const isPaired = await BleManager.isPeripheralConnected(peerId);
+            this.logger?.debug('BLE', `isPeripheralConnected(${peerId}) = ${isPaired}`);
+            if (!isPaired) {
                 this.logger?.debug('BLE', `pairing() failed: not connected to ${peerId}`);
                 throw new Error(PeerError.CONNECTION_FAILED);
             }
