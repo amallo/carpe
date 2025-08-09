@@ -1,15 +1,14 @@
+import { AppDispatch } from '../../../app/store/store';
 import { Dependencies } from '../../dependencies';
-import { PermissionEntity } from '../store/permission.slice';
+import { PeerError } from '../../peers/providers/peer.provider';
+import { Feature, PermissionEntity, setMultiplePermissionForFeature } from '../store/permission.slice';
 
-export interface CheckPermissionResult {
-    hasPermission: boolean;
-    permissions: PermissionEntity[];
-}
 
-export const checkPermission = async (
-    feature: string,
-    dependencies: Dependencies
-): Promise<CheckPermissionResult> => {
+export const checkPermissionService = async (
+    feature: Feature,
+    dependencies: Dependencies,
+    dispatch: AppDispatch
+) => {
     const { permissionProvider } = dependencies;
 
     // Request permissions for the feature
@@ -17,12 +16,16 @@ export const checkPermission = async (
     const permissions: PermissionEntity[] = Object.keys(permissionResult).reduce((acc, p) => {
         return [...acc, { id: p, status: permissionResult[p] }];
     }, [] as PermissionEntity[]);
+    dispatch(setMultiplePermissionForFeature({
+        permission: permissions,
+        feature: feature,
+    }));
 
     // Check if all permissions are granted
     const hasPermission = permissions.every((p) => p.status === 'granted');
 
-    return {
-        hasPermission,
-        permissions,
-    };
+    if (!hasPermission) {
+        throw new Error(PeerError.PERMISSION_DENIED);
+    }
+
 };

@@ -3,7 +3,8 @@ import { Dependencies } from '../../dependencies';
 import { setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
 import { scanHit, setPeerScanning, PeerEntity } from '../store/peers.slice';
 import { PeerFound } from '../providers/peer.provider';
-import { checkPermission } from '../../permission/services/check-permission.service';
+import { checkPermissionService } from '../../permission/services/check-permission.service';
+import { AppDispatch } from '../../../app/store/store';
 
 // Mapping function to convert PeerFound to PeerEntity
 const mapPeerFoundToPeerEntity = (peerFound: PeerFound): PeerEntity => {
@@ -38,7 +39,7 @@ const mapPeerFoundToPeerEntity = (peerFound: PeerFound): PeerEntity => {
 export const scanPeers = createAsyncThunk<
     void,
     { timeout?: number },
-    { extra: Dependencies }
+    { extra: Dependencies, dispatch: AppDispatch }
 >(
     'peer/scan',
         async ({ timeout: _timeout }, { dispatch, extra }) => {
@@ -46,20 +47,9 @@ export const scanPeers = createAsyncThunk<
         /**
          * Check permissions for scanning peers
          */
-        const permissionCheck = await checkPermission('scan-peers', extra);
-
-        dispatch(setMultiplePermissionForFeature({
-            permission: permissionCheck.permissions,
-            feature: 'scan-peers',
-        }));
-
-        if (!permissionCheck.hasPermission) {
-            console.error('permission not granted');
-            return;
-        }
+        await checkPermissionService('scan-peers', extra, dispatch);
 
         const { peerProvider } = extra;
-
         /**
          * Register callbacks to the peer provider
          */
