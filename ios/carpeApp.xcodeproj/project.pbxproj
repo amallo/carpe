@@ -12,7 +12,7 @@
 		3368EC602F1E35E9B8202A94 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		C374C7412E47EB9C002BED70 /* Carpe.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = C374C7402E47EB9C002BED70 /* Carpe.mobileprovision */; };
+		C38A520C2E4DD75600E9D4AC /* CarpeAppStoreConnect.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = C38A520B2E4DD75600E9D4AC /* CarpeAppStoreConnect.mobileprovision */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +25,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-carpeApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-carpeApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = carpeApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = carpeApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C374C7402E47EB9C002BED70 /* Carpe.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = Carpe.mobileprovision; sourceTree = "<group>"; };
+		C38A520B2E4DD75600E9D4AC /* CarpeAppStoreConnect.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = CarpeAppStoreConnect.mobileprovision; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -72,7 +72,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				C374C7402E47EB9C002BED70 /* Carpe.mobileprovision */,
+				C38A520B2E4DD75600E9D4AC /* CarpeAppStoreConnect.mobileprovision */,
 				13B07FAE1A68108700A75B9A /* carpeApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -163,8 +163,8 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				C38A520C2E4DD75600E9D4AC /* CarpeAppStoreConnect.mobileprovision in Resources */,
 				3368EC602F1E35E9B8202A94 /* PrivacyInfo.xcprivacy in Resources */,
-				C374C7412E47EB9C002BED70 /* Carpe.mobileprovision in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,10 +273,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-                CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 15;
-                DEVELOPMENT_TEAM = S5WFVK9Y5C;
-                "DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
+				DEVELOPMENT_TEAM = S5WFVK9Y5C;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = carpeApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -290,12 +290,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-                PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
-                PRODUCT_NAME = carpeApp;
-                PROVISIONING_PROFILE = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
-                "PROVISIONING_PROFILE[sdk=iphoneos*]" = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
-                PROVISIONING_PROFILE_SPECIFIER = Carpe;
-                "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
+				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
+				PRODUCT_NAME = carpeApp;
+				PROVISIONING_PROFILE = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				PROVISIONING_PROFILE_SPECIFIER = Carpe;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = CarpeAppStoreConnect;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -310,10 +310,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-                CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 15;
-                DEVELOPMENT_TEAM = S5WFVK9Y5C;
-                "DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
+				DEVELOPMENT_TEAM = S5WFVK9Y5C;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = S5WFVK9Y5C;
 				INFOPLIST_FILE = carpeApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -326,12 +326,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-                PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
-                PRODUCT_NAME = carpeApp;
-                PROVISIONING_PROFILE = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
-                "PROVISIONING_PROFILE[sdk=iphoneos*]" = 312ecd13-9f1e-43eb-9d81-11cceabe6128;
-                PROVISIONING_PROFILE_SPECIFIER = Carpe;
-                "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Carpe;
+				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
+				PRODUCT_NAME = carpeApp;
+				PROVISIONING_PROFILE = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				PROVISIONING_PROFILE_SPECIFIER = Carpe;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = CarpeAppStoreConnect;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
