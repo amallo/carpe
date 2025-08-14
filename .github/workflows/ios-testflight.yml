@@ -90,7 +90,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          fastlane debug_config
+          cd fastlane && fastlane debug_config
       
       - name: Build and upload to TestFlight
         env:
@@ -99,4 +99,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          fastlane beta 
+          cd fastlane && fastlane beta 

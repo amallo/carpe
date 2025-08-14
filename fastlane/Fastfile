@@ -60,9 +60,9 @@ platform :ios do
 
     # Check multiple possible locations
     workspace_paths = [
-      "../ios/carpeApp.xcworkspace",
-      "../carpeApp.xcworkspace",
       "ios/carpeApp.xcworkspace",
+      "carpeApp.xcworkspace",
+      "../ios/carpeApp.xcworkspace",
       File.join(File.dirname(__FILE__), "..", "carpeApp.xcworkspace")
     ]
     
@@ -96,7 +96,7 @@ platform :ios do
     
     # Find the correct workspace path
     workspace_path = nil
-    ["../ios/carpeApp.xcworkspace", "../carpeApp.xcworkspace", "ios/carpeApp.xcworkspace"].each do |path|
+    ["ios/carpeApp.xcworkspace", "carpeApp.xcworkspace", "../ios/carpeApp.xcworkspace"].each do |path|
       if File.exist?(path)
         workspace_path = File.expand_path(path)
         break
@@ -106,7 +106,7 @@ platform :ios do
     UI.message "🔧 Using workspace: #{workspace_path}"
     
         # Force workspace usage and manual signing
-    Dir.chdir("../ios") do
+    Dir.chdir("ios") do
       # Debug: Check current directory and workspace
       UI.message "🔧 Current directory: #{Dir.pwd}"
       UI.message "🔧 Workspace exists: #{File.exist?('carpeApp.xcworkspace')}"
@@ -127,7 +127,7 @@ platform :ios do
       UI.message "🔧 Skipping sync_code_signing (requires Git repo for certificates)"
       
       build_ios_app(
-        workspace: "../ios/carpeApp.xcworkspace",
+        workspace: "ios/carpeApp.xcworkspace",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true,
@@ -149,7 +149,7 @@ platform :ios do
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
-      ipa: "../ios/builds/carpeApp.ipa",
+      ipa: "ios/builds/carpeApp.ipa",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
       distribute_external: false,
