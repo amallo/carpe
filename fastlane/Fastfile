@@ -125,7 +125,7 @@ platform :ios do
       UI.message "🔧 Skipping sync_code_signing (requires Git repo for certificates)"
       
       build_ios_app(
-        workspace: "ios/carpeApp.xcworkspace",
+        workspace: "carpeApp.xcworkspace",
         scheme: "carpeApp",
         export_method: "app-store",
         clean: true,
