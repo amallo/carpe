@@ -81,7 +81,7 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           # Robust base64 decode on macOS
-          echo "$IOS_MOBILEPROVISION_BASE64" | openssl base64 -d -A -out ~/Library/MobileDevice/Provisioning\ Profiles/312ecd13-9f1e-43eb-9d81-11cceabe6128.mobileprovision
+          echo "$IOS_MOBILEPROVISION_BASE64" | openssl base64 -d -A -out ~/Library/MobileDevice/Provisioning\ Profiles/CarpeAppStoreConnect.mobileprovision
 
       - name: Debug Fastlane configuration
         env:

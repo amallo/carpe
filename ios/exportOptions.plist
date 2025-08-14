@@ -11,7 +11,7 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>io.decentapp.carpeapp.dev</key>
-		<string>Carpe</string>
+		<string>CarpeAppStoreConnect</string>
 	</dict>
 	<key>uploadBitcode</key>
 	<false/>
