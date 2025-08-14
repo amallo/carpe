@@ -106,7 +106,7 @@ platform :ios do
     UI.message "🔧 Using workspace: #{workspace_path}"
     
         # Force workspace usage and manual signing
-    Dir.chdir("ios") do
+    Dir.chdir("../ios") do
       # Debug: Check current directory and workspace
       UI.message "🔧 Current directory: #{Dir.pwd}"
       UI.message "🔧 Workspace exists: #{File.exist?('carpeApp.xcworkspace')}"
@@ -149,7 +149,7 @@ platform :ios do
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
-      ipa: "ios/builds/carpeApp.ipa",
+      ipa: "../ios/builds/carpeApp.ipa",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
       distribute_external: false,
