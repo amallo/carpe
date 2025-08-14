@@ -134,6 +134,7 @@ platform :ios do
         configuration: "Release",
         output_directory: "builds",
         output_name: "carpeApp.ipa",
+        destination: "generic/platform=iOS",
         export_options: {
           method: "app-store",
           signingStyle: "manual",
