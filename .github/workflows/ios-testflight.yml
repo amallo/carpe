@@ -86,6 +86,14 @@ jobs:
           p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
           p12-password: ${{ secrets.IOS_P12_PASSWORD }}
 
+      - name: Debug certificates
+        run: |
+          echo "Available certificates:"
+          security find-identity -v -p codesigning
+          echo ""
+          echo "Available provisioning profiles:"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+
       - name: Install provisioning profile
         env:
           IOS_MOBILEPROVISION_BASE64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
