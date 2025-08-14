@@ -147,7 +147,7 @@ platform :ios do
                             "io.decentapp.carpeapp.dev" => "CarpeAppStoreConnect"
                           }
         },
-                                xcargs: "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=CarpeAppStoreConnect DEVELOPMENT_TEAM=#{ENV['TEAM_ID']} CODE_SIGN_IDENTITY=iPhone\\ Distribution"
+                                xcargs: "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=CarpeAppStoreConnect DEVELOPMENT_TEAM=#{ENV['TEAM_ID']} CODE_SIGN_IDENTITY=\"iPhone Distribution: audie malloggia (574AQ6394K)\""
       )
     end
     
