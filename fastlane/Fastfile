@@ -127,7 +127,7 @@ platform :ios do
       build_ios_app(
         workspace: "ios/carpeApp.xcworkspace",
         scheme: "carpeApp",
-        export_method: "ad-hoc",
+        export_method: "app-store",
         clean: true,
         configuration: "Release",
         output_directory: "builds",
