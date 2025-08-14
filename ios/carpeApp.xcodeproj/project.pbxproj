@@ -292,8 +292,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
 				PRODUCT_NAME = carpeApp;
-				PROVISIONING_PROFILE = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				PROVISIONING_PROFILE_SPECIFIER = Carpe;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = CarpeAppStoreConnect;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -328,8 +328,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.decentapp.carpeapp.dev;
 				PRODUCT_NAME = carpeApp;
-				PROVISIONING_PROFILE = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "312ecd13-9f1e-43eb-9d81-11cceabe6128";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				PROVISIONING_PROFILE_SPECIFIER = Carpe;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = CarpeAppStoreConnect;
 				SWIFT_VERSION = 5.0;
