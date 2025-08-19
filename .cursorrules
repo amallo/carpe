@@ -1,0 +1,209 @@
+# Règles Cursor pour CarpeApp - Architecture Hexagonale
+
+## Structure du Projet
+Ce projet suit une architecture hexagonale avec les couches suivantes :
+- `src/app/` : Couche présentation (UI, navigation, composants)
+- `src/core/` : Logique métier et infrastructure
+- `src/types/` : Définitions TypeScript
+
+## Règles d'Architecture
+
+### Couche Core (`src/core/`)
+- Chaque domaine fonctionnel doit avoir sa propre structure :
+  - `providers/` : Implémentations concrètes
+  - `providers/test/` : Implémentations de test (NON pour la production)
+  - `usecases/` : Cas d'usage métier
+  - `store/` : État Redux (slices)
+  - `services/` : Services métier
+  - `generators/` : Générateurs utilitaires
+
+### Couche App (`src/app/`)
+- `components/` : Composants réutilisables
+- `screens/` : Écrans de l'application
+- `navigation/` : Configuration de navigation
+- `store/` : Configuration du store Redux
+- `config/` : Configuration de l'application
+
+## Conventions de Nommage
+
+### Fichiers
+- **Providers** : `*.provider.ts`
+- **Use cases** : `*.usecase.ts`
+- **Services** : `*.service.ts`
+- **Slices Redux** : `*.slice.ts`
+- **Tests** : `*.test.ts` ou `__tests__/` directories
+- **Types/Interfaces** : `*.interface.ts` ou `*.types.ts`
+
+### Classes et Interfaces
+- **Providers** : Suffix `Provider` (ex: `BLEPeerProvider`)
+- **Use cases** : Suffix `UseCase` (ex: `PairPeerUseCase`)
+- **Services** : Suffix `Service` (ex: `DeviceStatusService`)
+- **Interfaces** : Préfix `I` ou suffix `Interface` (ex: `IPeerProvider`)
+
+## Règles de Dépendances
+
+### Flux des Dépendances
+- `src/app/` peut importer depuis `src/core/`
+- `src/core/` NE PEUT PAS importer depuis `src/app/`
+- `src/core/` peut importer depuis `src/types/`
+- Les providers de test ne doivent être utilisés que dans les tests
+
+### Injection de Dépendances
+- Utiliser `src/core/dependencies.ts` pour définir les interfaces
+- Injecter les dépendances via le store Redux
+- Préférer les interfaces abstraites aux implémentations concrètes
+
+## Règles TypeScript
+
+### Strict Mode
+- Toujours utiliser le mode strict TypeScript
+- Définir des types explicites pour les interfaces publiques
+- Utiliser des types génériques quand approprié
+
+### Imports
+- Préférer les imports nommés aux imports par défaut
+- Grouper les imports : React, React Native, tiers, internes
+- Utiliser des chemins absolus depuis `src/`
+
+## Règles React Native
+
+### Composants
+- Utiliser des composants fonctionnels avec hooks
+- Préférer `useCallback` et `useMemo` pour les optimisations
+- Utiliser TypeScript strict pour les props
+
+### Navigation
+- Définir les types de navigation dans `src/types/`
+- Utiliser des noms de routes constants
+- Gérer les paramètres de navigation avec TypeScript
+
+## Règles Redux
+
+### Slices
+- Un slice par domaine fonctionnel
+- Utiliser Redux Toolkit avec `createSlice`
+- Définir des types pour l'état et les actions
+
+### Thunks
+- Utiliser des thunks pour les opérations asynchrones
+- Injecter les dépendances via `extraArgument`
+- Gérer les erreurs de manière appropriée
+
+## Règles de Test
+
+### Structure
+- Tests unitaires dans `__tests__/` directories
+- Tests d'intégration dans `src/core/*/__tests__/`
+- Utiliser les providers de test pour les mocks
+
+### Conventions
+- Nommer les tests avec le pattern `describe('Feature', () => it('should do something', () => {}))`
+- Utiliser des mocks pour les dépendances externes
+- Tester les cas d'usage métier
+
+## Règles de Performance
+
+### React Native
+- Éviter les re-renders inutiles
+- Utiliser `React.memo` pour les composants coûteux
+- Optimiser les listes avec `FlatList`
+
+### Redux
+- Utiliser des sélecteurs pour éviter les recalculs
+- Normaliser l'état pour les listes
+- Éviter les mutations d'état
+
+## Règles de Sécurité
+
+### Permissions
+- Toujours vérifier les permissions avant utilisation
+- Gérer les cas où les permissions sont refusées
+- Utiliser les messages d'explication appropriés
+
+### Bluetooth
+- Vérifier l'état du Bluetooth avant les opérations
+- Gérer les erreurs de connexion
+- Implémenter la déconnexion propre
+
+## Règles de Documentation
+
+### Code
+- Documenter les interfaces publiques
+- Ajouter des commentaires pour la logique complexe
+- Utiliser des noms explicites pour les variables et fonctions
+- **Tout le code et la documentation doivent être en anglais**
+
+### Architecture
+- Maintenir la séparation des couches
+- Documenter les cas d'usage métier
+- Expliquer les choix d'architecture
+- **Toute la documentation technique doit être en anglais**
+
+## Règles de Déploiement
+
+### Environnements
+- Utiliser des variables d'environnement pour la configuration
+- Séparer les configurations dev/staging/prod
+- Ne pas commiter les secrets
+
+### Build
+- Configurer les builds pour Android et iOS
+- Utiliser Fastlane pour l'automatisation
+- Gérer les versions et les builds
+
+## Exceptions et Cas Particuliers
+
+### Providers de Test
+- Les fichiers dans `providers/test/` ne doivent JAMAIS être utilisés en production
+- Ils sont uniquement pour les tests et le développement
+- Ne pas les importer dans le code de production
+
+### Configuration Native
+- Les fichiers de configuration native (Android/iOS) suivent leurs propres conventions
+- Respecter les bonnes pratiques de chaque plateforme
+- Documenter les modifications natives importantes
+
+## Règle de Modification
+
+### Analyse Préalable
+Avant toute modification, se poser systématiquement ces questions :
+1. **Cette modification concerne-t-elle le core ?** (logique métier, cas d'usage, interfaces abstraites)
+2. **Peut-elle être traitée comme un détail d'implémentation ?** (providers, services concrets, configuration)
+
+### En Cas de Doute
+Si il y a une incertitude sur :
+- Si c'est du core ou de l'implémentation
+- Quelle couche devrait être modifiée
+- Si c'est un cas d'usage métier ou un détail technique
+- Si cela respecte l'architecture hexagonale
+
+**Demander explicitement au développeur** avant de procéder à la modification.
+
+Cette règle garantit le respect de la séparation des responsabilités de l'architecture hexagonale.
+
+## Règles Git
+
+### Conventional Commits
+- Utiliser le format Conventional Commits pour tous les commits
+- Format : `type(scope): description`
+- **Tous les commits doivent être en anglais**
+
+#### Types de Commits
+- **feat** : Nouvelle fonctionnalité
+- **fix** : Correction de bug
+- **docs** : Documentation
+- **style** : Formatage, point-virgules manquants, etc.
+- **refactor** : Refactoring du code
+- **test** : Ajout ou modification de tests
+- **chore** : Tâches de maintenance, dépendances, etc.
+
+#### Exemples
+- `feat(peers): add Bluetooth scanning functionality`
+- `fix(permission): fix Android permission handling`
+- `refactor(core): restructure dependency injection`
+- `test(usecases): add tests for PairPeerUseCase`
+- `docs(architecture): document hexagonal organization`
+
+#### Scope
+- Utiliser le domaine concerné : `peers`, `permission`, `core`, `app`, etc.
+- Ou le fichier/componente spécifique si pertinent

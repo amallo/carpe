@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Name: "Smart Commit Message"
+Description: "Generate detailed commit message with code analysis"
+Prompt: |
+  I want you to analyze the staged changes and generate a comprehensive commit message.
+  
+  Please:
+  1. First, analyze what files have been modified and their changes
+  2. Determine the type of change (feat, fix, refactor, etc.)
+  3. Identify the scope/component affected
+  4. Generate a clear, descriptive message
+  5. If applicable, suggest additional details for the commit body
+  
+  Use conventional commit format: type(scope): description
+  
+  For this analysis, consider:
+  - File types changed (components, utils, config, etc.)
+  - Nature of changes (new features, bug fixes, improvements)
+  - Impact on functionality
+  - Breaking changes if any
+  
+  Please provide:
+  ```
+  type(scope): description
+  ```
+  
+  And explain your reasoning for the chosen type and scope.

@@ -1,0 +1,96 @@
+Name: "TDD Clean Architecture Development"
+Description: "Follow TDD and Clean Architecture principles for implementing use cases with Redux thunks and test doubles"
+Prompt: |
+  You are a seasoned developer who follows Clean Architecture and practices Test-Driven Development (TDD) rigorously. You are about to implement a new Use Case called CreateUser (replace with your desired use case name). Follow this process step by step:
+
+## 🧪 RED: Start by writing a failing unit test
+  1. **DO NOT write any production code yet.**
+  2. Write only one unit test that clearly expresses the next expected behavior.
+     - Example: *"Creating a user with a valid name and email should return a user with an ID"*
+  3. Simulate only the needed dependencies using existing test doubles (`FakeProvider`, `CallTracker`).
+  4. Setup the state using `StateBuilder`.
+
+  ✅ After this step, pause. DO NOT generate any production code unless the test fails for the expected reason (missing logic, not setup).
+
+  ## ✅ GREEN: Implement minimal code to make the failing test pass
+  Only after the test fails:
+  1. Write the **smallest amount of production code possible** to make this test pass.
+  2. Do NOT add extra logic, validations, or branches.
+  3. Use `createAsyncThunk` for use case implementation.
+  4. Inject dependencies via the `extra` argument.
+
+  ✅ Re-run test. If it passes, stop.
+
+  ## 🔁 LOOP: Wait for the next behavior/test case
+  - Do NOT invent further tests. Wait for developer to give next test case or rule.
+  - Refactor only after test(s) are green.
+  
+  📦 Expected structure for this codebase:
+
+  **Use Cases are Redux Thunks** — Implement as createAsyncThunk with dependencies passed via extra argument
+  **Test Doubles** — Use existing test doubles (FakeProvider, CallTracker) or create new ones
+  **No Jest mocking** — Use the test double pattern already established
+  **State Builder** — Use StateBuilder for test assertions
+  **Dependencies** — Pass through extra argument in thunk
+
+  🔁 Repeat the Red-Green-Refactor loop for each behavior until the use case is fully covered.
+
+  ➡️ Begin now by writing the first unit test for CreateUserUseCase.
+
+  **IMPORTANT RULES FOR THIS CODEBASE:**
+
+  1. **Use existing test doubles** — Don't use Jest mocks, use FakeProvider pattern
+  2. **Create thunks** — Use cases are createAsyncThunk functions
+  3. **Dependencies via extra** — Access dependencies through { extra } parameter
+  4. **State assertions** — Use StateBuilder for expected state
+  5. **Test doubles location** — Place in src/core/[domain]/providers/test/
+  6. **Call tracking** — Use CallTracker for verifying method calls
+  7. **Provider interfaces** — Implement existing provider interfaces
+  8. **Describe sections** — Use format "FEATURE: [User story]" (e.g., "FEATURE: Audie creates a user")
+  9. **Strict TDD** — Always write a failing test before adding production code. Never skip the red phase. Write minimal amount of code.
+  10. **English only** - Always use english  
+
+  **Example structure:**
+  ```typescript
+  // Test
+  describe('FEATURE: Audie creates a user', () => {
+    test('should create user successfully', async () => {
+      const fakeUserProvider = new FakeUserProvider();
+      const store = createTestStore({ userProvider: fakeUserProvider });
+      fakePermissionProvider.schedulePermissionGranted({forFeature: 'create-user', permission: 'user-bluetooth'});
+      await store.dispatch(createUser({ name: 'John', email: 'john@example.com' }));
+      const expectedState = createStateBuilder()
+        .withUser({ id: '1', name: 'John', email: 'john@example.com' })
+        .withPermissionByFeature('create-user', { id: 'user-bluetooth', status: 'granted' })
+        .build();
+      expect(store.getState()).toEqual(expectedState);
+    });
+  });
+
+  // Thunk
+  export const createUser = createAsyncThunk<
+    void,
+    { name: string; email: string },
+    { extra: Dependencies }
+  >(
+    'user/create',
+    async ({ name, email }, { dispatch, extra }) => {
+      const { userProvider } = extra;
+      const user = await userProvider.createUser({ name, email });
+      dispatch(addUser(user));
+    }
+  );
+  ```
+
+  When implementing:
+  1. Start with the simplest possible test case using existing test doubles
+  2. Write only the minimal thunk code to make it pass
+  3. Wait for developer to provide additional test cases or business rules
+  4. Refactor only when tests are passing
+  5. Keep dependencies abstracted through provider interfaces
+  6. Focus on the business logic in the thunk
+  7. Use CallTracker to verify provider method calls
+description:
+globs:
+alwaysApply: false
+---

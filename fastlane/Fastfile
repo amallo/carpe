@@ -1,0 +1,299 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+# Enable verbose logging
+ENV["FASTLANE_VERBOSE"] = "true"
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Debug: Check initial working directory
+    UI.message "🔍 Initial working directory: #{Dir.pwd}"
+    
+    # Debug: Check environment variables
+    UI.message "🔍 Debug: Checking environment variables..."
+    UI.message "APP_STORE_CONNECT_API_KEY_ID: #{ENV['APP_STORE_CONNECT_API_KEY_ID'] ? 'SET' : 'NOT SET'}"
+    UI.message "APP_STORE_CONNECT_API_ISSUER_ID: #{ENV['APP_STORE_CONNECT_API_ISSUER_ID'] ? 'SET' : 'NOT SET'}"
+    UI.message "APP_STORE_CONNECT_API_KEY_CONTENT: #{ENV['APP_STORE_CONNECT_API_KEY_CONTENT'] ? 'SET' : 'NOT SET'}"
+    UI.message "TEAM_ID: #{ENV['TEAM_ID'] ? 'SET' : 'NOT SET'}"
+    
+                    # Configure App Store Connect API
+                UI.message "🔧 Configuring App Store Connect API Key..."
+                api_key = app_store_connect_api_key(
+                  key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+                  issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+                  key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
+                  is_key_content_base64: true
+                )
+                UI.message "✅ API Key configured successfully"
+    
+    # Setup code signing with automatic signing
+    UI.message "🔧 Setting up automatic code signing..."
+    
+    # Create temporary API key file
+    UI.message "🔧 Creating temporary API key file..."
+    require 'base64'
+    key_content = Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY_CONTENT"])
+    File.write("/tmp/AuthKey.p8", key_content)
+    UI.message "✅ API key file created at /tmp/AuthKey.p8"
+    
+    UI.message "✅ Using automatic signing with allowProvisioningUpdates"
+    
+        # Verify workspace exists
+    UI.message "🔧 Verifying workspace exists..."
+    UI.message "🔧 Current working directory: #{Dir.pwd}"
+    UI.message "🔧 Fastlane directory: #{File.dirname(__FILE__)}"
+
+    # Check multiple possible locations
+    workspace_paths = [
+      "ios/carpeApp.xcworkspace",
+      "carpeApp.xcworkspace",
+      "../ios/carpeApp.xcworkspace",
+      File.join(File.dirname(__FILE__), "..", "carpeApp.xcworkspace")
+    ]
+    
+    workspace_found = false
+    workspace_paths.each do |path|
+      if File.exist?(path)
+        UI.message "✅ carpeApp.xcworkspace found at: #{path}"
+        UI.message "📁 Workspace contents:"
+        sh "ls -la #{path}"
+        workspace_found = true
+        break
+      else
+        UI.message "❌ Not found at: #{path}"
+      end
+    end
+    
+    unless workspace_found
+      UI.message "❌ carpeApp.xcworkspace not found anywhere"
+      UI.message "📁 Current directory contents:"
+      sh "ls -la"
+      UI.message "📁 Parent directory contents:"
+      sh "ls -la .."
+      UI.message "📁 Grandparent directory contents:"
+      sh "ls -la ../.."
+      raise "Workspace not found after pod install"
+    end
+    
+    # Build the app with build_ios_app
+    UI.message "🔧 Building with build_ios_app (manual signing)..."
+    UI.message "🔧 Current directory: #{Dir.pwd}"
+    
+    # Find the correct workspace path
+    workspace_path = nil
+    ["ios/carpeApp.xcworkspace", "carpeApp.xcworkspace", "../ios/carpeApp.xcworkspace"].each do |path|
+      if File.exist?(path)
+        workspace_path = File.expand_path(path)
+        break
+      end
+    end
+    
+    UI.message "🔧 Using workspace: #{workspace_path}"
+    
+        # Force workspace usage and manual signing
+    Dir.chdir("../ios") do
+      # Debug: Check current directory and workspace
+      UI.message "🔧 Current directory: #{Dir.pwd}"
+      UI.message "🔧 Workspace exists: #{File.exist?('carpeApp.xcworkspace')}"
+      UI.message "🔧 Directory contents:"
+      sh "ls -la"
+      
+      # Increment build number manually with agvtool
+      new_build_number = latest_testflight_build_number + 1
+      UI.message "🔧 Incrementing build number to: #{new_build_number}"
+      sh "agvtool new-version -all #{new_build_number}"
+      
+      # Setup environment for manual signing
+      UI.message "🔧 Setting up environment for manual signing..."
+      UI.message "🔧 Team ID: #{ENV['TEAM_ID']}"
+      UI.message "🔧 Using App Store Connect API Key for authentication"
+      
+                                        # Debug: Check available certificates
+                  UI.message "🔧 Available certificates:"
+                  sh "security find-identity -v -p codesigning"
+                  
+                  # Debug: Check provisioning profiles
+                  UI.message "🔧 Available provisioning profiles:"
+                  sh "ls -la ~/Library/MobileDevice/Provisioning\\ Profiles/"
+                  
+                  # Debug: Check which certificate matches our team
+                  UI.message "🔧 Certificates for team #{ENV['TEAM_ID']}:"
+                  begin
+                    sh "security find-identity -v -p codesigning | grep #{ENV['TEAM_ID']}"
+                  rescue => e
+                    UI.message "⚠️ No certificates found for team #{ENV['TEAM_ID']}"
+                    UI.message "🔧 All available certificates:"
+                    sh "security find-identity -v -p codesigning"
+                  end
+                  
+                  # Debug: Check certificate details
+                  UI.message "🔧 Certificate details:"
+                  begin
+                    sh "security find-identity -v -p codesigning | head -5"
+                  rescue => e
+                    UI.message "⚠️ Could not get certificate details"
+                  end
+                  
+                  # Note: sync_code_signing requires a Git repository for certificates
+                  UI.message "🔧 Skipping sync_code_signing (requires Git repo for certificates)"
+      
+      build_ios_app(
+        workspace: "ios/carpeApp.xcworkspace",
+        scheme: "carpeApp",
+        export_method: "app-store",
+        clean: true,
+        configuration: "Release",
+        output_directory: "builds",
+        output_name: "carpeApp.ipa",
+        destination: "generic/platform=iOS",
+        export_options: {
+          method: "app-store",
+          signingStyle: "manual",
+          teamID: ENV["TEAM_ID"],
+                                    provisioningProfiles: {
+                            "io.decentapp.carpeapp.dev" => "CarpeAppStoreConnect"
+                          }
+        },
+                                xcargs: "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=CarpeAppStoreConnect DEVELOPMENT_TEAM=#{ENV['TEAM_ID']}"
+      )
+    end
+    
+                    # Upload to TestFlight
+                upload_to_testflight(
+                  api_key: api_key,
+                  ipa: "builds/carpeApp.ipa",
+                  skip_waiting_for_build_processing: true,
+                  skip_submission: true,
+                  distribute_external: false,
+                  notify_external_testers: false
+                )
+  end
+
+  desc "Build for App Store"
+  lane :release do
+    # Configure App Store Connect API
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
+      is_key_content_base64: true
+    )
+    
+    # Setup code signing with automatic signing
+    UI.message "🔧 Using automatic signing with allowProvisioningUpdates"
+    
+    # Increment version number
+    increment_version_number(
+      version_number: latest_testflight_build_number + 1,
+    )
+    
+    # Build the app
+    build_ios_app(
+      workspace: "carpeApp.xcworkspace",
+      scheme: "carpeApp",
+      export_method: "app-store",
+      clean: true,
+      archive_path: "./builds/carpeApp.xcarchive",
+      output_directory: "./builds",
+      output_name: "carpeApp.ipa",
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic"
+      },
+      xcargs: "-allowProvisioningUpdates"
+    )
+    
+    # Upload to App Store Connect
+    upload_to_app_store(
+      api_key: api_key,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false
+    )
+  end
+
+  desc "Run tests"
+  lane :test do
+    scan(
+      workspace: "carpeApp.xcworkspace",
+      scheme: "carpeApp",
+      device: "iPhone 15"
+    )
+  end
+
+  desc "Clean build artifacts"
+  lane :clean do
+    clean_build_artifacts
+    sh "rm -rf ./builds"
+    sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+  end
+
+  desc "Setup certificates and provisioning profiles"
+  lane :setup_certificates do
+    UI.message "🔧 Setting up certificates and provisioning profiles..."
+    
+    # Install certificates
+    import_certificate(
+      certificate_path: ENV["CERTIFICATE_PATH"],
+      certificate_password: ENV["CERTIFICATE_PASSWORD"],
+      keychain_name: "login",
+      keychain_password: ENV["KEYCHAIN_PASSWORD"]
+    )
+    
+    # Install provisioning profile
+    install_provisioning_profile(
+      path: ENV["PROVISIONING_PROFILE_PATH"]
+    )
+    
+    UI.message "✅ Certificates and provisioning profiles installed"
+  end
+
+  desc "Debug environment and API key"
+  lane :debug_config do
+    UI.message "=== DEBUG MODE ==="
+    UI.message "Ruby version: #{RUBY_VERSION}"
+    UI.message "Fastlane version: #{Fastlane::VERSION}"
+    
+    # Check environment variables
+    UI.message "Environment variables:"
+    UI.message "APP_STORE_CONNECT_API_KEY_ID: #{ENV['APP_STORE_CONNECT_API_KEY_ID'] ? 'SET' : 'NOT SET'}"
+    UI.message "APP_STORE_CONNECT_API_ISSUER_ID: #{ENV['APP_STORE_CONNECT_API_ISSUER_ID'] ? 'SET' : 'NOT SET'}"
+    UI.message "APP_STORE_CONNECT_API_KEY_CONTENT: #{ENV['APP_STORE_CONNECT_API_KEY_CONTENT'] ? 'SET' : 'NOT SET'}"
+    
+    if ENV['APP_STORE_CONNECT_API_KEY_CONTENT']
+      UI.message "Key length: #{ENV['APP_STORE_CONNECT_API_KEY_CONTENT'].length} characters"
+      UI.message "Key preview: #{ENV['APP_STORE_CONNECT_API_KEY_CONTENT'][0..20]}..."
+    end
+    
+    # Test API key configuration
+    begin
+      UI.message "Testing API key configuration..."
+      api_key = app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+        key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
+        is_key_content_base64: true
+      )
+      UI.message "✅ API Key test successful"
+    rescue => e
+      UI.message "❌ API Key test failed: #{e.message}"
+      UI.message "Error details: #{e.backtrace.first(3).join("\n")}"
+    end
+  end
+end 

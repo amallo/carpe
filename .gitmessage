@@ -1,0 +1,49 @@
+# Conventional Commits Template for CarpeApp
+
+# Type de commit (obligatoire)
+# feat: nouvelle fonctionnalité
+# fix: correction de bug
+# docs: documentation
+# style: formatage, point-virgules manquants, etc.
+# refactor: refactoring du code
+# test: ajout ou modification de tests
+# chore: tâches de maintenance, dépendances, etc.
+
+# Scope (optionnel)
+# peers: fonctionnalités liées aux appareils Bluetooth/LoRa
+# permission: gestion des permissions
+# core: logique métier et architecture
+# app: interface utilisateur et navigation
+# navigation: configuration de navigation
+# store: gestion d'état Redux
+# config: configuration de l'application
+
+# Description courte (obligatoire)
+# Utiliser l'impératif présent ("add" pas "added" ou "adds")
+# Ne pas capitaliser la première lettre
+# Pas de point à la fin
+
+# Corps du message (optionnel)
+# Expliquer le pourquoi et le comment du changement
+# Utiliser l'impératif présent
+
+# Pied de page (optionnel)
+# Référencer les issues fermées
+# BREAKING CHANGE: si le commit introduit un changement cassant
+
+# Exemples:
+# feat(peers): add Bluetooth scanning functionality
+# fix(permission): fix Android permission handling
+# refactor(core): restructure dependency injection
+# test(usecases): add tests for PairPeerUseCase
+# docs(architecture): document hexagonal organization
+
+# Type de commit:
+# Scope:
+# Description courte:
+
+# Corps du message (optionnel):
+
+# Pied de page (optionnel):
+# Closes #123
+# BREAKING CHANGE: description du changement cassant
