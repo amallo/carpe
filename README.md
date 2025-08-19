@@ -6,6 +6,13 @@ It’s about **exploration, autonomy, and curiosity**.
 
 ---
 
+## Key Features
+
+- **Instant access** — no account, no signup. Just connect to a **LoRa emitter/receiver module** and pick a nickname.  
+- **Community chat** — drop a message on a public neighborhood channel and reach everyone around you.  
+- **Private & secure** — send end-to-end encrypted messages directly to your friends.  
+---
+
 
 ## Hey, stop — what is LoRa?  
 
@@ -36,17 +43,6 @@ And that’s where the idea came:
 
 Carpe is the experiment born from this question — a way to explore peer-to-peer, off-grid communication, while staying practical and portable.
 
----
-
-## 🌍 What is this?
-
-Carpe is a playground for ideas and a vision for the future:
-
-- Eliminate dependencies on the cloud or central authorities  
-- Connect people directly using peer-to-peer communication  
-- Rely on open hardware, not locked-in systems  
-- A tool everyone can build, adapt, and experiment with  
-  
 
 ---
 
@@ -61,7 +57,7 @@ Carpe is not a finished product but an exploration:
 - An invitation to wander off the beaten path  
 - A notebook in motion, where experiments come to life  
 
---
+---
 
 ## 🛠️ Current Status
 
@@ -72,17 +68,9 @@ A minimal firmware is under development in [`amallo/carpe-module`](https://githu
 
 ## 🤔 Why?
 
-Because the world needs **resilient, off-grid communication tools**.  
+Because the world needs **resilient, censorship-resistant, off-grid communication tools**.  
 Because tinkering in the unknown feels alive.  
-Because autonomy matters.
-
----
-
-## 📖 Notes
-
-- This repo will evolve slowly and openly.  
-- Expect experiments, not guarantees.  
-- Contributions, forks, and crazy ideas are welcome.  
+Because autonomy matters. 
 
 ---
 
