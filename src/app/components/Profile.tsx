@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Clipboard } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Clipboard } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { toast } from 'sonner-native';
+import { useUser } from '../providers/UserProvider';
 
 export const Profile = () => {
-  const user = {
-    name: 'John Lennon',
-    phone: '(+44) 20 1234 5689',
-    gender: 'Male',
-    birthday: '12/01/1997',
-    email: 'john.lennon@mail.com',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  };
-
+  const navigation = useNavigation();
+  const { user } = useUser();
   const [isConnecting, setIsConnecting] = useState(false);
+  
+  if (!user) {
+    return null; // Ne devrait jamais arriver car on est dans l'app principale
+  }
 
   const tryToConnectEmitter = () => {
     setIsConnecting(true);
@@ -23,27 +23,55 @@ export const Profile = () => {
 
   const handleCopy = (value: string) => {
     Clipboard.setString(value);
+    toast.success('Copié dans le presse-papier');
+  };
+
+  const handleEditProfile = () => {
+    navigation.navigate('Settings' as never);
+  };
+
+  const handleViewQRCode = () => {
+    navigation.navigate('MyQRCode' as never);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   };
 
   return (
     <View style={styles.container}>
 
 
-      {/* Profile Picture */}
-      <View style={styles.avatarContainer}>
-        <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        <TouchableOpacity style={styles.editAvatar}>
-          <Ionicons name="pencil" size={20} color="#fff" />
-        </TouchableOpacity>
+      {/* User Icon */}
+      <View style={styles.userIconContainer}>
+        <View style={styles.userIcon}>
+          <Ionicons name="person" size={60} color="#4DB6FF" />
+        </View>
       </View>
 
       {/* Name */}
-      <Text style={styles.name}>{user.name}</Text>
+      <Text style={styles.name}>{user.nickname}</Text>
 
       {/* User Info */}
       <View style={styles.infoContainer}>
-        <ProfileInfo label="Phone" value={user.phone} onCopy={() => handleCopy(user.phone)} />
+        <ProfileInfo label="ID Utilisateur" value={user.id} onCopy={() => handleCopy(user.id)} />
+        <ProfileInfo label="Créé le" value={formatDate(user.createdAt)} onCopy={() => handleCopy(formatDate(user.createdAt))} />
       </View>
+
+      {/* Action Buttons */}
+      <TouchableOpacity style={styles.actionButton} onPress={handleEditProfile}>
+        <Ionicons name="settings-outline" size={20} color="#fff" />
+        <Text style={styles.actionButtonText}>Modifier le profil</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.actionButton} onPress={handleViewQRCode}>
+        <Ionicons name="qr-code-outline" size={20} color="#fff" />
+        <Text style={styles.actionButtonText}>Mon QR Code</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.bleButton} onPress={tryToConnectEmitter} disabled={isConnecting}>
         <Ionicons name="bluetooth" size={20} color="#fff" />
@@ -51,10 +79,6 @@ export const Profile = () => {
           {isConnecting ? 'Connexion...' : 'Se connecter'}
         </Text>
       </TouchableOpacity>
-
-      <View style={styles.pickerContainer}>
-        <Ionicons name="radio-outline" size={20} color="#4DB6FF" style={{marginRight: 8}} />
-      </View>
 
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton}>
@@ -100,27 +124,20 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontStyle: 'italic',
   },
-  avatarContainer: {
+  userIconContainer: {
     marginTop: -60,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatar: {
+  userIcon: {
     width: 120,
     height: 120,
     borderRadius: 60,
+    backgroundColor: '#EAF6FF',
     borderWidth: 4,
     borderColor: '#fff',
-  },
-  editAvatar: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#4DB6FF',
-    borderRadius: 20,
-    padding: 6,
-    borderWidth: 2,
-    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   name: {
     fontSize: 24,
@@ -193,18 +210,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 8,
   },
-  pickerContainer: {
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF6FF',
+    backgroundColor: '#4DB6FF',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 18,
+    marginBottom: 12,
     width: '85%',
+    justifyContent: 'center',
   },
-  picker: {
-    flex: 1,
-    height: 40,
-    color: '#222',
+  actionButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 8,
   },
 });

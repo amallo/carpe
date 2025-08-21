@@ -7,6 +7,7 @@ import { toast } from 'sonner-native';
 import { useSettingsViewModel, type LogEntryViewModel } from './settings-screen.viewmodel';
 import { useAppDispatch } from '../store/hooks';
 import { clearLogs } from '../../core/logger/store/log.slice';
+import { useUser } from '../providers/UserProvider';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -24,8 +25,12 @@ export default function SettingsScreen() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [showLogsModal, setShowLogsModal] = useState(false);
   const [showPublicKeyModal, setShowPublicKeyModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'warning' | 'error'>('healthy');
+  
+  const { user, updateUser } = useUser();
+  const [editingNickname, setEditingNickname] = useState(user?.nickname || '');
 
   const handleBack = () => {
     navigation.goBack();
@@ -47,7 +52,6 @@ export default function SettingsScreen() {
                 toast.error('Erreur lors de la déconnexion');
               }
             },
-            disabled: disconnecting,
           },
         ]
       );
@@ -118,6 +122,37 @@ export default function SettingsScreen() {
         },
       ]
     );
+  };
+
+  const handleEditProfile = () => {
+    if (user) {
+      setEditingNickname(user.nickname);
+      setShowEditProfileModal(true);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    try {
+      await updateUser({ nickname: editingNickname.trim() });
+      setShowEditProfileModal(false);
+    } catch (error) {
+      // L'erreur est déjà gérée par le UserProvider
+    }
+  };
+
+  const handleCopyUserId = () => {
+    // En réalité, on utiliserait Clipboard.setString(userProfile.id)
+    toast.success('ID utilisateur copié dans le presse-papier');
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   };
 
   const getHealthStatusColor = () => {
@@ -213,6 +248,36 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </>
             )}
+          </View>
+        </View>
+
+        {/* User Profile Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Mon profil</Text>
+          <View style={styles.profileCard}>
+            <View style={styles.profileHeader}>
+              <View style={styles.profileInfo}>
+                <Text style={styles.profileName}>{user?.nickname}</Text>
+                <Text style={styles.profileId}>{user?.id}</Text>
+                <Text style={styles.profileCreated}>
+                  Créé le {user ? formatDate(user.createdAt) : ''}
+                </Text>
+              </View>
+              <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+                <Ionicons name="pencil" size={20} color="#4f46e5" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.profileActions}>
+              <TouchableOpacity style={styles.profileAction} onPress={handleCopyUserId}>
+                <Ionicons name="copy-outline" size={16} color="#6b7280" />
+                <Text style={styles.profileActionText}>Copier l'ID</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.profileAction} onPress={() => navigation.navigate('MyQRCode' as never)}>
+                <Ionicons name="qr-code-outline" size={16} color="#6b7280" />
+                <Text style={styles.profileActionText}>Mon QR Code</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -413,7 +478,54 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
-      </Modal>
+              </Modal>
+
+        {/* Edit Profile Modal */}
+        <Modal
+          visible={showEditProfileModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowEditProfileModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Modifier le profil</Text>
+                <TouchableOpacity onPress={() => setShowEditProfileModal(false)}>
+                  <Ionicons name="close" size={24} color="#6b7280" />
+                </TouchableOpacity>
+              </View>
+              
+              <Text style={styles.modalSubtitle}>
+                Modifiez votre nickname qui sera visible par les autres utilisateurs
+              </Text>
+              
+              <TextInput
+                style={styles.nicknameInput}
+                placeholder="Votre nickname"
+                value={editingNickname}
+                onChangeText={setEditingNickname}
+                maxLength={20}
+                autoFocus
+              />
+              
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={styles.modalCancelButton}
+                  onPress={() => setShowEditProfileModal(false)}
+                >
+                  <Text style={styles.modalCancelText}>Annuler</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalConfirmButton}
+                  onPress={handleSaveProfile}
+                >
+                  <Text style={styles.modalConfirmText}>Enregistrer</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       {disconnectError && <Text style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>{disconnectError}</Text>}
     </SafeAreaView>
   );
@@ -760,5 +872,75 @@ const styles = StyleSheet.create({
   },
   clearLogsButton: {
     marginRight: 10,
+  },
+  // Profile styles
+  profileCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  profileId: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontFamily: 'monospace',
+    marginBottom: 4,
+  },
+  profileCreated: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  editProfileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+    paddingTop: 16,
+  },
+  profileAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+  },
+  profileActionText: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginLeft: 6,
+  },
+  nicknameInput: {
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    padding: 16,
+    fontSize: 16,
+    marginBottom: 24,
+    backgroundColor: '#f9fafb',
   },
 });

@@ -5,14 +5,17 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
+import { useUser } from '../providers/UserProvider';
 
 const { width } = Dimensions.get('window');
 
 export default function MyQRCodeScreen() {
   const navigation = useNavigation();
+  const { user } = useUser();
+  
   const [userInfo] = useState({
-    name: 'Mon Profil',
-    id: 'LoRa_User_' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+    nickname: user?.nickname || 'Utilisateur',
+    id: user?.id || 'LoRa_User_ABC123',
     publicKey: 'pk_' + Math.random().toString(36).substring(2, 15),
   });
 
@@ -23,7 +26,7 @@ export default function MyQRCodeScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Ajoutez-moi sur LoRa Mesh!\nID: ${userInfo.id}\nClé: ${userInfo.publicKey}`,
+        message: `Ajoutez-moi sur LoRa Mesh!\nNickname: ${userInfo.nickname}\nID: ${userInfo.id}\nClé: ${userInfo.publicKey}`,
         title: 'Mon contact LoRa Mesh',
       });
     } catch (error) {
@@ -32,7 +35,7 @@ export default function MyQRCodeScreen() {
   };
 
   const handleCopyId = () => {
-    // In a real app, this would copy to clipboard
+    // En réalité, on utiliserait Clipboard.setString(userInfo.id)
     toast.success('ID copié dans le presse-papier');
   };
 
@@ -91,13 +94,11 @@ export default function MyQRCodeScreen() {
 
         {/* User Info */}
         <View style={styles.userInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-            </Text>
+          <View style={styles.userIcon}>
+            <Ionicons name="person" size={32} color="#4DB6FF" />
           </View>
 
-          <Text style={styles.userName}>{userInfo.name}</Text>
+          <Text style={styles.userName}>{userInfo.nickname}</Text>
 
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
@@ -249,19 +250,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 32,
   },
-  avatar: {
+  userIcon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#EAF6FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  avatarText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#ffffff',
+    borderWidth: 2,
+    borderColor: '#4DB6FF',
   },
   userName: {
     fontSize: 20,
