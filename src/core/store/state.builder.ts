@@ -7,6 +7,7 @@ import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
 import { getPairingInitialState, pairingAdapter } from '../peers/store/pairing.slice';
 import { initialState as logInitialState } from '../logger/store/log.slice';
+import { Identity } from '../identity/entities/identity.entity';
 
 
 export class StateBuilder {
@@ -44,6 +45,13 @@ export class StateBuilder {
         });
         return this;
     }
+    withCurrentIdentity(identity: Identity) {
+        this._state.identity = {
+            ...this._state.identity,
+            current: identity,
+        };
+        return this;
+    }
 
     build() {
         return this._state;
@@ -55,6 +63,11 @@ export const createStateBuilder = (initialState: RootState = {
     permission: getPermissionInitialState(),
     pairing: getPairingInitialState(),
     log: logInitialState,
+    identity: {
+        current: null,
+        isLoading: false,
+        error: null,
+    },
 }) => {
     return new StateBuilder(initialState);
 };

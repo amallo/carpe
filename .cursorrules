@@ -181,6 +181,113 @@ Si il y a une incertitude sur :
 
 Cette règle garantit le respect de la séparation des responsabilités de l'architecture hexagonale.
 
+## Règles de Craftsmanship et Analyse Critique
+
+### Philosophie du Code Craftsmanship
+- **Être extrêmement critique** sur tout code généré ou analysé
+- **Détecter systématiquement** les anti-patterns et les fautes de conception
+- **Informer immédiatement** dès qu'il y a un doute sur la qualité ou l'architecture
+- **Privilégier la qualité** sur la rapidité d'exécution
+- **Respecter les principes SOLID** et les bonnes pratiques de l'architecture hexagonale
+
+### Anti-Patterns à Détecter et Éviter
+
+#### Architecture Hexagonale
+- ❌ **Violation de la séparation des couches** : Importer depuis `src/app/` dans `src/core/`
+- ❌ **Couplage fort** : Dépendances directes entre implémentations concrètes
+- ❌ **Leakage d'abstraction** : Exposer des détails d'implémentation dans les interfaces
+- ❌ **God Objects** : Classes ou services qui font trop de choses
+- ❌ **Tight Coupling** : Dépendances circulaires ou couplage excessif
+
+#### TypeScript et React Native
+- ❌ **Any types** : Utiliser `any` au lieu de types explicites
+- ❌ **Type assertions non sécurisées** : `as` sans vérification
+- ❌ **Props drilling** : Passer des props à travers plusieurs niveaux
+- ❌ **Side effects dans les composants** : Logique métier dans les composants UI
+- ❌ **Re-renders inutiles** : Pas d'optimisation avec `useCallback`/`useMemo`
+
+#### Redux et State Management
+- ❌ **Mutations d'état directes** : Modifier l'état sans utiliser les reducers
+- ❌ **Sélecteurs non optimisés** : Pas de memoization des sélecteurs
+- ❌ **Actions non typées** : Actions sans payload typé
+- ❌ **Side effects dans les reducers** : Logique asynchrone dans les reducers
+
+#### Tests
+- ❌ **Tests non isolés** : Tests qui dépendent d'autres tests
+- ❌ **Mocks excessifs** : Over-mocking qui masque les vrais problèmes
+- ❌ **Tests non significatifs** : Tests qui ne testent rien d'important
+- ❌ **Tests fragiles** : Tests qui cassent facilement
+
+### Signaux d'Alerte à Surveiller
+
+#### Code Smells
+- **Longueurs excessives** : Méthodes > 20 lignes, classes > 300 lignes
+- **Complexité cyclomatique** : Trop de conditions imbriquées
+- **Duplication de code** : DRY principle violé
+- **Noms non explicites** : Variables/fonctions avec des noms vagues
+- **Commentaires excessifs** : Code qui nécessite trop d'explications
+
+#### Architecture Smells
+- **Dépendances circulaires** : Modules qui s'importent mutuellement
+- **Violation du principe de responsabilité unique** : Classes avec trop de responsabilités
+- **Couplage temporel** : Dépendances sur l'ordre d'exécution
+- **Magic numbers/strings** : Valeurs hardcodées sans constantes
+
+### Processus d'Analyse Critique
+
+#### Avant Toute Modification
+1. **Analyser l'impact** : Cette modification respecte-t-elle l'architecture hexagonale ?
+2. **Vérifier les dépendances** : Y a-t-il des violations de la règle de flux des dépendances ?
+3. **Évaluer la cohérence** : Le code est-il cohérent avec les patterns existants ?
+4. **Identifier les risques** : Quels sont les risques de régression ou de dégradation ?
+
+#### Pendant le Développement
+1. **Code review continue** : Analyser chaque ligne de code générée
+2. **Tests de conception** : Les tests révèlent-ils des problèmes de conception ?
+3. **Refactoring opportuniste** : Améliorer le code existant quand c'est possible
+4. **Documentation** : Le code est-il auto-documenté ?
+
+#### Après le Développement
+1. **Validation architecturale** : Le code respecte-t-il les principes hexagonaux ?
+2. **Performance** : Y a-t-il des problèmes de performance évidents ?
+3. **Maintenabilité** : Le code sera-t-il facile à maintenir ?
+4. **Évolutivité** : Le code pourra-t-il évoluer sans casser ?
+
+### Communication des Problèmes
+
+#### Quand Signaler un Problème
+- **Doute architectural** : Incertitude sur la couche à modifier
+- **Anti-pattern détecté** : Violation des bonnes pratiques
+- **Code smell** : Indicateur de problème potentiel
+- **Performance** : Problème de performance identifié
+- **Sécurité** : Risque de sécurité détecté
+
+#### Format de Signalement
+```
+🚨 PROBLÈME DÉTECTÉ
+- Type : [Architecture/Performance/Sécurité/Code Quality]
+- Fichier : [chemin du fichier]
+- Description : [description du problème]
+- Impact : [impact sur le projet]
+- Suggestion : [solution proposée]
+```
+
+### Exemples de Problèmes Courants
+
+#### Dans le Code Actuel
+En analysant `create-identity.usecase.ts`, je détecte plusieurs points d'amélioration :
+
+1. **Incohérence de nommage** : L'interface `CreateIdentityRequest` n'est pas utilisée dans la signature
+2. **Duplication de type** : `{nickname: string}` est répété
+3. **Manque de validation** : Pas de validation des entrées
+4. **Gestion d'erreur** : Pas de try/catch pour les opérations asynchrones
+
+#### Recommandations
+- Utiliser l'interface `CreateIdentityRequest` dans la signature
+- Ajouter une validation des entrées
+- Implémenter une gestion d'erreur appropriée
+- Considérer l'ajout d'un service de validation
+
 ## Règles Git
 
 ### Conventional Commits

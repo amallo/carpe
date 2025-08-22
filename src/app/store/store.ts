@@ -7,6 +7,10 @@ import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
+import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fake-identity-id.generator';
+import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.generator';
+import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
+import identityReducer from '../../core/identity/store/identity.slice';
 
 export const createStore = (dependencies: Dependencies, initialState?: object) => {
     const store = configureStore({
@@ -15,6 +19,7 @@ export const createStore = (dependencies: Dependencies, initialState?: object) =
             permission: permissionReducer,
             pairing: pairingReducer,
             log: logReducer,
+            identity: identityReducer,
         },
         preloadedState: initialState,
         middleware: (getDefaultMiddleware) =>
@@ -34,6 +39,9 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         peerProvider: new FakePeerProvider(),
         permissionProvider: new GrantedPermissionProvider(),
         logger: new ConsoleLogger(),
+        identityIdGenerator: new FakeIdentityIdGenerator(),
+        keyGenerator: new FakeKeyGenerator(),
+        vaultProvider: new FakeVaultProvider(),
         ...dependencies,
     };
     const store = createStore(deps, initialState);

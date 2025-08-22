@@ -1,14 +1,15 @@
 export class CallTracker {
     private _callCount: number = 0;
-    private _calls: any[] = [];
+    private _calls: unknown[] = [];
     methodWasCalled(): boolean {
         return this._callCount > 0;
     }
-    recordCall(param?: any): void {
+    recordCall<T>(param?: T): void {
         this._callCount++;
         this._calls.push(param);
     }
-    wasCalledWith(param: any): boolean {
-        return this._calls.includes(param);
+    wasCalledWith<T>(param: T): boolean {
+        const paramString = JSON.stringify(param);
+        return this._calls.some(call => JSON.stringify(call) === paramString);
     }
 }
