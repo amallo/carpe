@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createIdentity } from '../../../core/identity/usecases/create-identity.usecase';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { selectIdentityError, selectIsIdentityLoading } from '../../../core/identity/store/identity.slice';
+import { selectIdentityError, selectIsIdentityLoading, selectHasIdentity } from '../../../core/identity/store/identity.slice';
 
 export const useOnboardingViewModel = () => {
   const dispatch = useAppDispatch();
@@ -10,6 +10,7 @@ export const useOnboardingViewModel = () => {
   // Sélecteurs Redux
   const isLoading = useAppSelector(selectIsIdentityLoading);
   const error = useAppSelector(selectIdentityError);
+  const hasIdentity = useAppSelector(selectHasIdentity);
 
   const createFirstIdentity = async () => {
       // Validation
@@ -32,6 +33,7 @@ export const useOnboardingViewModel = () => {
     nickname,
     isLoading,
     error,
+    hasIdentity,
     
     // Actions
     setNickname,

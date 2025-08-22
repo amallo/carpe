@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { toast } from 'sonner-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
@@ -9,20 +9,31 @@ export default function OnboardingScreen() {
   const {
     nickname,
     isLoading,
-
+    error,
     setNickname,
     createFirstIdentity,
     isButtonDisabled,
     charCount,
+    hasIdentity,
   } = useOnboardingViewModel();
 
-  const handleSubmit = async () => {
-    try {
-      await createFirstIdentity();
-      toast.success('Profil créé avec succès !');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Erreur lors de la création du profil');
+  // Surveiller les erreurs du store et afficher le toast
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
     }
+  }, [error]);
+
+  // Surveiller la création de l'identité et afficher le toast de succès
+  useEffect(() => {
+    if (hasIdentity) {
+      // L'identité a été créée avec succès
+      toast.success('Profil créé avec succès !');
+    }
+  }, [isLoading, error, hasIdentity]);
+
+  const handleSubmit = async () => {
+    await createFirstIdentity();
   };
 
   return (
