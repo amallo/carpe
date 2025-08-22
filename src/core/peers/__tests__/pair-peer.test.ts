@@ -1,75 +1,45 @@
-import { createTestStore, Store } from '../../../app/store/store';
-import { FakePeerProvider } from '../providers/test/fake-peer.provider';
-import { pairPeer } from '../usecases/pair-peer.usecase';
-import { createStateBuilder } from '../../store/state.builder';
+import { PairingFixture } from './pairing.fixture';
 import { PeerError } from '../providers/peer.provider';
-import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
 
+/**
+ * @jest-environment node
+ */
 describe('FEATURE: Audie connects to a peer', () => {
-    let peerProvider: FakePeerProvider;
-    let permissionProvider: FakePermissionProvider;
-    let store: Store;
-
-    beforeEach(() => {
-        peerProvider = new FakePeerProvider();
-        permissionProvider = new FakePermissionProvider();
-        store = createTestStore({ peerProvider, permissionProvider });
-    });
-
     test('should connect to peer successfully', async () => {
-        permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        await store.dispatch(pairPeer({ peerId: 'peer-001' }));
-        expect(peerProvider.connectToPeerWasCalled()).toBe(true);
-        const expectedState = createStateBuilder()
-            .withPermissionByFeature('connect-peers', {
-                id: 'connect-bluetooth',
-                status: 'granted',
-            })
-            .withConnectedPeer('peer-001')
-            .build();
-        expect(store.getState()).toEqual(expectedState);
+        const fixture = new PairingFixture()
+            .withPermissionGranted('connect-peers', 'connect-bluetooth');
+
+        await fixture.pairPeer('peer-001');
+
+        fixture
+            .expectConnectToPeerWasCalled()
+            .expectPeerConnected('peer-001');
     });
 
     test('should fail when peer is not found', async () => {
-        permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        const nonExistentPeerId = 'non-existent-peer';
-        await store.dispatch(pairPeer({ peerId: nonExistentPeerId }));
-        const expectedState = createStateBuilder()
-            .withPairingError(PeerError.PEER_NOT_FOUND)
-            .withPermissionByFeature('connect-peers', {
-                id: 'connect-bluetooth',
-                status: 'granted',
-            })
-            .build();
-        expect(store.getState()).toEqual(expectedState);
+        const fixture = new PairingFixture()
+            .withPermissionGranted('connect-peers', 'connect-bluetooth');
+
+        await fixture.pairPeer('non-existent-peer');
+
+        fixture.expectPairingError(PeerError.PEER_NOT_FOUND);
     });
 
     test('should fail when connection times out', async () => {
-        permissionProvider.schedulePermissionGranted({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        await store.dispatch(pairPeer({ peerId: 'timeout-peer' }));
-        const expectedState = createStateBuilder()
-            .withPairingError(PeerError.CONNECTION_TIMEOUT)
-            .withPermissionByFeature('connect-peers', {
-                id: 'connect-bluetooth',
-                status: 'granted',
-            })
-            .build();
-        expect(store.getState()).toEqual(expectedState);
+        const fixture = new PairingFixture()
+            .withPermissionGranted('connect-peers', 'connect-bluetooth');
+
+        await fixture.pairPeer('timeout-peer');
+
+        fixture.expectPairingError(PeerError.CONNECTION_TIMEOUT);
     });
 
     test('should fail when permission is denied', async () => {
-        // Arrange: Permission refusée
-        permissionProvider.schedulePermissionDenied({forFeature: 'connect-peers', permission: 'connect-bluetooth'});
-        // Act: Tentative de connexion
-        await store.dispatch(pairPeer({ peerId: 'peer-001' }));
-        // Assert: Vérifier que l'erreur de permission est gérée
-        const expectedState = createStateBuilder()
-            .withPairingError(PeerError.PERMISSION_DENIED)
-            .withPermissionByFeature('connect-peers', {
-                id: 'connect-bluetooth',
-                status: 'denied',
-            })
-            .build();
-        expect(store.getState()).toEqual(expectedState);
+        const fixture = new PairingFixture()
+            .withPermissionDenied('connect-peers', 'connect-bluetooth');
+
+        await fixture.pairPeer('peer-001');
+
+        fixture.expectPermissionDeniedError();
     });
 });
