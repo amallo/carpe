@@ -50,8 +50,8 @@ export class IdentityFixture {
     return this;
   }
 
-  expectKeyPairSaved(): this {
-    expect(this.vaultProvider.saveKeyPairWasCalled()).toBe(true);
+  expectKeyPairSaved(publicKey: string, privateKey: string): this {
+    expect(this.vaultProvider.saveKeyPairWasCalledWith('identity', { publicKey, privateKey })).toBe(true);
     return this;
   }
 

@@ -15,7 +15,7 @@ import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.g
 import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
 import { InMemoryVaultProvider } from '../../core/identity/providers/in-memory-vault.provider';
 import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
-import { CounterIdentityIdGenerator } from '../../core/identity/generators/counter-identity-id.generator';
+import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
 
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
@@ -34,7 +34,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     const store = useMemo(() => {
-        const identityIdGenerator = new CounterIdentityIdGenerator();
+        const identityIdGenerator = new BasicIdentityGenerator();
         const keyGenerator = new BasicKeyGenerator();
         const vaultProvider = new InMemoryVaultProvider();
         const permissionProvider = shouldUseMockProviders

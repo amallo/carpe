@@ -7,7 +7,7 @@ import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
-import { CounterIdentityIdGenerator } from '../../core/identity/generators/counter-identity-id.generator';
+import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
 import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
 import { InMemoryVaultProvider } from '../../core/identity/providers/in-memory-vault.provider';
 import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fake-identity-id.generator';
@@ -42,7 +42,7 @@ export const createProductionStore = (dependencies: Partial<Dependencies>, initi
         peerProvider: new FakePeerProvider(), // TODO: Replace with real implementation
         permissionProvider: new GrantedPermissionProvider(), // TODO: Replace with real implementation
         logger: new ConsoleLogger(),
-        identityIdGenerator: new CounterIdentityIdGenerator(),
+        identityIdGenerator: new BasicIdentityGenerator(),
         keyGenerator: new BasicKeyGenerator(),
         vaultProvider: new InMemoryVaultProvider(),
         ...dependencies,
