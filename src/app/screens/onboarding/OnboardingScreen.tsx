@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import { toast } from 'sonner-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import { useUser } from '../providers/UserProvider';
+import { useOnboardingViewModel } from './onboarding.viewmodel';
+import { OnboardingHeader } from './OnboardingHeader';
 
 export default function OnboardingScreen() {
-  const [nickname, setNickname] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
-  const { createUser } = useUser();
+  const {
+    nickname,
+    isLoading,
 
-  const handleCreateProfile = async () => {
+    setNickname,
+    createFirstIdentity,
+    isButtonDisabled,
+    charCount,
+  } = useOnboardingViewModel();
+
+  const handleSubmit = async () => {
     try {
-      setIsCreating(true);
-      await createUser(nickname);
+      await createFirstIdentity();
+      toast.success('Profil créé avec succès !');
     } catch (error) {
-      // L'erreur est déjà gérée par le UserProvider
-    } finally {
-      setIsCreating(false);
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de la création du profil');
     }
   };
 
@@ -24,16 +29,7 @@ export default function OnboardingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Ionicons name="radio" size={60} color="#4DB6FF" />
-        </View>
-        <Text style={styles.title}>Bienvenue sur LoRa Mesh</Text>
-        <Text style={styles.subtitle}>
-          Créez votre profil pour commencer à communiquer de manière décentralisée
-        </Text>
-      </View>
+      <OnboardingHeader />
 
       {/* Form */}
       <View style={styles.form}>
@@ -52,17 +48,17 @@ export default function OnboardingScreen() {
             Ce nom sera visible par les autres utilisateurs du réseau LoRa
           </Text>
           <Text style={styles.charCount}>
-            {nickname.length}/20 caractères
+            {charCount}/20 caractères
           </Text>
         </View>
 
         <TouchableOpacity
-          style={[styles.button, isCreating && styles.buttonDisabled]}
-          onPress={handleCreateProfile}
-          disabled={isCreating}
+          style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={isButtonDisabled}
         >
           <Text style={styles.buttonText}>
-            {isCreating ? 'Création...' : 'Créer mon profil'}
+            {isLoading ? 'Création...' : 'Créer mon profil'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -98,36 +94,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 40,
-  },
-  logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#EAF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-    borderWidth: 3,
-    borderColor: '#4DB6FF',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 24,
   },
   form: {
     flex: 1,

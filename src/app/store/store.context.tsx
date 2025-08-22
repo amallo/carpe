@@ -13,6 +13,9 @@ import { ReduxLogger } from '../../core/logger/providers/redux-logger.provider';
 import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fake-identity-id.generator';
 import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.generator';
 import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
+import { InMemoryVaultProvider } from '../../core/identity/providers/in-memory-vault.provider';
+import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
+import { CounterIdentityIdGenerator } from '../../core/identity/generators/counter-identity-id.generator';
 
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
@@ -31,9 +34,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     const store = useMemo(() => {
-        const identityIdGenerator = new FakeIdentityIdGenerator();
-        const keyGenerator = new FakeKeyGenerator();
-        const vaultProvider = new FakeVaultProvider();
+        const identityIdGenerator = new CounterIdentityIdGenerator();
+        const keyGenerator = new BasicKeyGenerator();
+        const vaultProvider = new InMemoryVaultProvider();
         const permissionProvider = shouldUseMockProviders
             ? new GrantedPermissionProvider()
             : NativePermissionProvider.create(Platform.OS, logger);
