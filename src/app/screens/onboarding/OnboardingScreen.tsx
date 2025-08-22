@@ -28,7 +28,7 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+
       <OnboardingHeader />
 
       {/* Form */}

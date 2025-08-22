@@ -4,7 +4,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StoreProvider } from './app/store/store.context';
-import { UserProvider } from './app/providers/UserProvider';
 import { AppContent } from './app/components/AppContent';
 
 export default function App() {
@@ -13,9 +12,7 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer>
           <StoreProvider>
-            <UserProvider>
               <AppContent />
-            </UserProvider>
           </StoreProvider>
         </NavigationContainer>
         <Toaster />

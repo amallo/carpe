@@ -12,22 +12,17 @@ export const useOnboardingViewModel = () => {
   const error = useAppSelector(selectIdentityError);
 
   const createFirstIdentity = async () => {
-    try {
       // Validation
-      if (nickname.trim().length < 2) {
-        throw new Error('Le nickname doit contenir au moins 2 caractères');
-      }
-
-      if (nickname.trim().length > 20) {
-        throw new Error('Le nickname ne peut pas dépasser 20 caractères');
-      }
-
-      // Dispatch de l'action Redux
-      await dispatch(createIdentity({ nickname: nickname.trim() })).unwrap();
-    } catch (error) {
-      // L'erreur sera gérée par le composant via le sélecteur error
-      throw error;
+    if (nickname.trim().length < 2) {
+      throw new Error('Le nickname doit contenir au moins 2 caractères');
     }
+
+    if (nickname.trim().length > 20) {
+      throw new Error('Le nickname ne peut pas dépasser 20 caractères');
+    }
+
+    // Dispatch de l'action Redux
+    await dispatch(createIdentity({ nickname: nickname.trim() })).unwrap();
   };
 
   const isButtonDisabled = isLoading || nickname.trim().length < 2;
