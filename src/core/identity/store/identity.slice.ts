@@ -47,4 +47,11 @@ const identitySlice = createSlice({
 });
 
 export const { clearCurrentIdentity, setError } = identitySlice.actions;
+
+// Selectors
+export const selectCurrentIdentity = (state: { identity: IdentityState }) => state.identity.current;
+export const selectIsIdentityLoading = (state: { identity: IdentityState }) => state.identity.isLoading;
+export const selectIdentityError = (state: { identity: IdentityState }) => state.identity.error;
+export const selectHasIdentity = (state: { identity: IdentityState }) => state.identity.current !== null;
+
 export default identitySlice.reducer;

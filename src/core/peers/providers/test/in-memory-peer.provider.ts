@@ -39,7 +39,7 @@ export class InMemoryPeerProvider implements PeerProvider{
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
     private _pairedPeerIds: Set<string> = new Set();
-    
+
     constructor(params?: { logger?: Logger }) {
         if (params?.logger) {
             this.logger = params.logger;
@@ -48,7 +48,7 @@ export class InMemoryPeerProvider implements PeerProvider{
 
     // Méthodes pour compatibilité avec BLEPeerProvider
     start(): Promise<void> {
-        
+
         this.logger?.debug('INMEMORY', 'start() called');
         if (this.logger) {
             this.logger.debug('INMEMORY', '[DEV] InMemoryPeerProvider started');
@@ -57,7 +57,7 @@ export class InMemoryPeerProvider implements PeerProvider{
         }
         return Promise.resolve();
     }
-    
+
     destroy(): void {
         this.logger?.debug('INMEMORY', 'destroy() called');
         if (this.logger) {
@@ -67,9 +67,9 @@ export class InMemoryPeerProvider implements PeerProvider{
         }
         // Cleanup si nécessaire
     }
-    
+
     scan(): Promise<void> {
-        console.log("this.logger", this.logger);
+        console.log('this.logger', this.logger);
         this.logger?.debug('INMEMORY', 'scan() called');
         this._peerScanned = PEERS;
         this.logger?.debug('INMEMORY', `Found ${PEERS.length} peers`);

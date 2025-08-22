@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Ionicons from '@react-native-vector-icons/ionicons';
@@ -52,13 +52,13 @@ export default function HomeScreen() {
 
   const handleContactPress = (contact: Contact) => {
     navigation.navigate('Chat' as never, { contact } as never);
-  };  
+  };
   const handlePublicMessage = () => {
     navigation.navigate('PublicMessages' as never);
   };
   const handleWritePublicMessage = () => {
     navigation.navigate('Broadcast' as never);
-  };  
+  };
   const handleSettings = () => {
     navigation.navigate('Settings' as never);
   };
@@ -85,7 +85,8 @@ export default function HomeScreen() {
               {isLoRaConnected ? 'Connecté' : 'Déconnecté'}
             </Text>
           </View>
-        </View>        <View style={styles.headerActions}>
+        </View>
+        <View style={styles.headerActions}>
           <TouchableOpacity style={styles.iconButton} onPress={handleBluetoothScan}>
             <Ionicons name="bluetooth" size={24} color={isLoRaConnected ? '#10b981' : '#6b7280'} />
           </TouchableOpacity>

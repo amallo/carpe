@@ -7,6 +7,9 @@ import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
+import { CounterIdentityIdGenerator } from '../../core/identity/generators/counter-identity-id.generator';
+import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
+import { InMemoryVaultProvider } from '../../core/identity/providers/in-memory-vault.provider';
 import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fake-identity-id.generator';
 import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.generator';
 import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
@@ -31,6 +34,20 @@ export const createStore = (dependencies: Dependencies, initialState?: object) =
         devTools: true,
     });
 
+    return store;
+};
+
+export const createProductionStore = (dependencies: Partial<Dependencies>, initialState?: object) => {
+    const deps: Dependencies = {
+        peerProvider: new FakePeerProvider(), // TODO: Replace with real implementation
+        permissionProvider: new GrantedPermissionProvider(), // TODO: Replace with real implementation
+        logger: new ConsoleLogger(),
+        identityIdGenerator: new CounterIdentityIdGenerator(),
+        keyGenerator: new BasicKeyGenerator(),
+        vaultProvider: new InMemoryVaultProvider(),
+        ...dependencies,
+    };
+    const store = createStore(deps, initialState);
     return store;
 };
 
