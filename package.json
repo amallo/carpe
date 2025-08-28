@@ -21,6 +21,7 @@
     "react-native": "0.78.1",
     "react-native-ble-manager": "^12.1.5",
     "react-native-gesture-handler": "^2.25.0",
+    "react-native-keychain": "^10.0.0",
     "react-native-permissions": "^5.4.1",
     "react-native-reanimated": "^3.17.5",
     "react-native-safe-area-context": "^5.4.1",

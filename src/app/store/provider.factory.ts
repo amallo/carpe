@@ -1,0 +1,98 @@
+import { Platform } from 'react-native';
+import { Logger } from '../../core/logger/providers/logger.interface';
+import { PeerProvider } from '../../core/peers/providers/peer.provider';
+import { PermissionProvider } from '../../core/permission/providers/permission.provider';
+import { VaultProvider } from '../../core/identity/providers/vault.provider';
+import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
+import { KeyGenerator } from '../../core/identity/generators/key.generator';
+
+// Production providers
+import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
+import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
+import { iOSKeychainVaultProvider } from '../../core/identity/providers/ios-keychain-vault.provider';
+import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
+import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
+
+// Test providers
+import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-peer.provider';
+import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
+import { InMemoryVaultProvider } from '../../core/identity/providers/test/in-memory-vault.provider';
+
+// Logging utilities
+import { debugLog, prodLog } from '../config/environment';
+
+/**
+ * Factory for creating providers based on environment
+ * Centralizes provider creation logic and logging
+ */
+export class ProviderFactory {
+  /**
+   * Create peer provider based on environment
+   */
+  static createPeerProvider(shouldUseMock: boolean, logger: Logger): PeerProvider {
+    if (shouldUseMock) {
+      debugLog('Using InMemoryPeerProvider for development');
+      return new InMemoryPeerProvider({ logger });
+    }
+    
+    prodLog('Using BLEPeerProvider for production');
+    return new BLEPeerProvider({ logger });
+  }
+
+  /**
+   * Create vault provider based on environment
+   */
+  static createVaultProvider(shouldUseMock: boolean): VaultProvider {
+    if (shouldUseMock) {
+      debugLog('Using InMemoryVaultProvider for development');
+      return new InMemoryVaultProvider();
+    }
+    
+    prodLog('Using iOSKeychainVaultProvider for production');
+    return new iOSKeychainVaultProvider();
+  }
+
+  /**
+   * Create permission provider based on environment
+   */
+  static createPermissionProvider(shouldUseMock: boolean, logger: Logger): PermissionProvider {
+    if (shouldUseMock) {
+      debugLog('Using GrantedPermissionProvider for development');
+      return new GrantedPermissionProvider();
+    }
+    
+    prodLog('Using NativePermissionProvider for production');
+    return NativePermissionProvider.create(Platform.OS, logger);
+  }
+
+  /**
+   * Create identity ID generator
+   * Always uses production implementation as it's stateless
+   */
+  static createIdentityIdGenerator(): IdentityIdGenerator {
+    return new BasicIdentityGenerator();
+  }
+
+  /**
+   * Create key generator
+   * Always uses production implementation as it's stateless
+   */
+  static createKeyGenerator(): KeyGenerator {
+    return new BasicKeyGenerator();
+  }
+
+  /**
+   * Create all dependencies at once
+   * Convenience method for creating all providers
+   */
+  static createAllDependencies(shouldUseMock: boolean, logger: Logger) {
+    return {
+      logger,
+      peerProvider: this.createPeerProvider(shouldUseMock, logger),
+      vaultProvider: this.createVaultProvider(shouldUseMock),
+      permissionProvider: this.createPermissionProvider(shouldUseMock, logger),
+      identityIdGenerator: this.createIdentityIdGenerator(),
+      keyGenerator: this.createKeyGenerator(),
+    };
+  }
+}
