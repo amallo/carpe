@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, Dimensions, Animated, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useUser } from '../providers/UserProvider';
+import { useAppSelector } from '../store/hooks';
+import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,7 +39,7 @@ interface MapUser {
 
 export default function PublicMessagesScreen() {
   const navigation = useNavigation();
-  const { user } = useUser();
+  const user = useAppSelector(selectCurrentIdentity);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [filterDistance, setFilterDistance] = useState<'all' | 'local' | 'medium' | 'long'>('all');

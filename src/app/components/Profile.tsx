@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, Clipboard } from 'react-nativ
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useUser } from '../providers/UserProvider';
+import { useAppSelector } from '../store/hooks';
+import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
 
 export const Profile = () => {
   const navigation = useNavigation();
-  const { user } = useUser();
+  const user = useAppSelector(selectCurrentIdentity);
   const [isConnecting, setIsConnecting] = useState(false);
   
   if (!user) {
@@ -34,14 +35,6 @@ export const Profile = () => {
     navigation.navigate('MyQRCode' as never);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
-
   return (
     <View style={styles.container}>
 
@@ -59,7 +52,6 @@ export const Profile = () => {
       {/* User Info */}
       <View style={styles.infoContainer}>
         <ProfileInfo label="ID Utilisateur" value={user.id} onCopy={() => handleCopy(user.id)} />
-        <ProfileInfo label="Créé le" value={formatDate(user.createdAt)} onCopy={() => handleCopy(formatDate(user.createdAt))} />
       </View>
 
       {/* Action Buttons */}

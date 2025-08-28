@@ -5,13 +5,14 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useUser } from '../providers/UserProvider';
+import { useAppSelector } from '../store/hooks';
+import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
 
 const { width } = Dimensions.get('window');
 
 export default function MyQRCodeScreen() {
   const navigation = useNavigation();
-  const { user } = useUser();
+  const user = useAppSelector(selectCurrentIdentity);
   
   const [userInfo] = useState({
     nickname: user?.nickname || 'Utilisateur',

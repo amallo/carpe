@@ -6,7 +6,7 @@ import { selectIdentityError, selectIsIdentityLoading, selectHasIdentity } from 
 export const useOnboardingViewModel = () => {
   const dispatch = useAppDispatch();
   const [nickname, setNickname] = useState('');
-  
+
   // Sélecteurs Redux
   const isLoading = useAppSelector(selectIsIdentityLoading);
   const error = useAppSelector(selectIdentityError);
@@ -34,11 +34,11 @@ export const useOnboardingViewModel = () => {
     isLoading,
     error,
     hasIdentity,
-    
+
     // Actions
     setNickname,
     createFirstIdentity,
-    
+
     // Computed
     isButtonDisabled,
     charCount: nickname.length,
