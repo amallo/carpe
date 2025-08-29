@@ -21,6 +21,7 @@ export class iOSKeychainVaultProvider implements VaultProvider {
      */
     async saveKeyPair(service: string, keyPair: KeyPair): Promise<void> {
         try {
+            const Keychain = require('react-native-keychain');
             // Create a combined data structure for both keys
             const keyData = {
                 publicKey: keyPair.publicKey,
@@ -31,20 +32,27 @@ export class iOSKeychainVaultProvider implements VaultProvider {
             // Convert to JSON string
             const keyDataString = JSON.stringify(keyData);
 
-            // Use React Native Keychain for iOS
-            const Keychain = require('react-native-keychain');
-            
-            await Keychain.setInternetCredentials(
-                `${this.keychainService}.${service}`,
-                this.keychainAccount,
-                keyDataString,
-                {
-                    accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY_OR_DEVICE_PASSCODE,
-                    accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-                    authenticationType: Keychain.AUTHENTICATION_TYPE.BIOMETRICS,
-                }
-            );
+            // Try to save with basic configuration first
+            try {
+                await Keychain.setInternetCredentials(
+                    `${this.keychainService}.${service}`,
+                    this.keychainAccount,
+                    keyDataString,
+                    {
+                        accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+                    }
+                );
+                return;
+            } catch (basicError) {
+                // If basic save fails, try with even simpler configuration
+                await Keychain.setInternetCredentials(
+                    `${this.keychainService}.${service}`,
+                    this.keychainAccount,
+                    keyDataString
+                );
+            }
         } catch (error) {
+            console.error('Keychain save error details:', error);
             throw new Error(`Failed to save key pair to iOS Keychain: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
@@ -57,7 +65,6 @@ export class iOSKeychainVaultProvider implements VaultProvider {
     async getKeyPair(service: string): Promise<KeyPair | null> {
         try {
             const Keychain = require('react-native-keychain');
-            
             const credentials = await Keychain.getInternetCredentials(
                 `${this.keychainService}.${service}`
             );
@@ -103,7 +110,6 @@ export class iOSKeychainVaultProvider implements VaultProvider {
     async deleteKeyPair(service: string): Promise<void> {
         try {
             const Keychain = require('react-native-keychain');
-            
             await Keychain.resetInternetCredentials(
                 `${this.keychainService}.${service}`
             );
@@ -123,7 +129,6 @@ export class iOSKeychainVaultProvider implements VaultProvider {
     async clearAllKeyPairs(): Promise<void> {
         try {
             const Keychain = require('react-native-keychain');
-            
             // Get all stored credentials
             const credentials = await Keychain.getAllInternetCredentials();
             
@@ -144,8 +149,7 @@ export class iOSKeychainVaultProvider implements VaultProvider {
      */
     async isBiometricAvailable(): Promise<boolean> {
         try {
-            const Keychain = require('react-native-keychain');
-            const biometryType = await Keychain.getSupportedBiometryType();
+            const Keychain = require('react-native-keychain');const biometryType = await Keychain.getSupportedBiometryType();
             return biometryType !== null;
         } catch (error) {
             return false;
@@ -158,8 +162,7 @@ export class iOSKeychainVaultProvider implements VaultProvider {
      */
     async getBiometricType(): Promise<string | null> {
         try {
-            const Keychain = require('react-native-keychain');
-            return await Keychain.getSupportedBiometryType();
+            const Keychain = require('react-native-keychain');return await Keychain.getSupportedBiometryType();
         } catch (error) {
             return null;
         }

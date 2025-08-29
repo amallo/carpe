@@ -9,7 +9,7 @@ import { KeyGenerator } from '../../core/identity/generators/key.generator';
 // Production providers
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
-import { iOSKeychainVaultProvider } from '../../core/identity/providers/ios-keychain-vault.provider';
+import { SimpleIOSKeychainVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
 import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
 import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
 
@@ -48,8 +48,8 @@ export class ProviderFactory {
       return new InMemoryVaultProvider();
     }
     
-    prodLog('Using iOSKeychainVaultProvider for production');
-    return new iOSKeychainVaultProvider();
+    prodLog('Using SimpleIOSKeychainVaultProvider for production');
+    return new SimpleIOSKeychainVaultProvider();
   }
 
   /**
