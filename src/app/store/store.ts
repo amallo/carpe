@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
 import peerReducer from '../../core/peers/store/peers.slice';
@@ -11,21 +12,28 @@ import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fak
 import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.generator';
 import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
 import identityReducer from '../../core/identity/store/identity.slice';
+import { identityPersistConfig } from './persistence.config';
 
 export const createStore = (dependencies: Dependencies, initialState?: object) => {
+    // Create persisted identity reducer
+    const persistedIdentityReducer = persistReducer(identityPersistConfig, identityReducer);
+
     const store = configureStore({
         reducer: {
             peer: peerReducer,
             permission: permissionReducer,
             pairing: pairingReducer,
             log: logReducer,
-            identity: identityReducer,
+            identity: persistedIdentityReducer,
         },
         preloadedState: initialState,
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware({
                 thunk: {
                     extraArgument: dependencies,
+                },
+                serializableCheck: {
+                    ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
                 },
             }),
         devTools: true,
@@ -52,3 +60,11 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
 export type Store = ReturnType<typeof createStore>;
 export type RootState = ReturnType<Store['getState']>;
 export type AppDispatch = Store['dispatch'];
+
+/**
+ * Create persistor for the store
+ * Must be called after createStore
+ */
+export const createPersistor = (store: Store) => {
+    return persistStore(store);
+};

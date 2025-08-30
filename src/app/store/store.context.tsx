@@ -1,8 +1,9 @@
 // Créer un context React pour injecter le store et les dependencies
 
 import { useMemo } from 'react';
-import { createStore } from './store';
+import { createStore, createPersistor } from './store';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import { useMockProviders } from '../config/environment';
 import { ReduxLogger } from '../../core/logger/providers/redux-logger.provider';
 import { ProviderFactory } from './provider.factory';
@@ -25,6 +26,12 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     [dependencies]
   );
 
+  // Create persistor for redux-persist
+  const persistor = useMemo(() =>
+    createPersistor(store),
+    [store]
+  );
+
   // Manage provider lifecycle
   useProviderLifecycle(
     dependencies.peerProvider,
@@ -33,5 +40,11 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     store.dispatch
   );
 
-  return <Provider store={store}>{children}</Provider>;
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+      </PersistGate>
+    </Provider>
+  );
 };
