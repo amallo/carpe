@@ -5,6 +5,7 @@ import { PermissionProvider } from '../../core/permission/providers/permission.p
 import { VaultProvider } from '../../core/identity/providers/vault.provider';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
 import { KeyGenerator } from '../../core/identity/generators/key.generator';
+import { AsyncStorageProvider } from '../../core/storage/providers/async-storage.provider';
 
 // Production providers
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
@@ -12,11 +13,13 @@ import { NativePermissionProvider } from '../../core/permission/providers/native
 import { SimpleIOSKeychainVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
 import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
 import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
+import { RNAsyncStorageProvider } from '../../core/storage/providers/rn-async-storage.provider';
 
 // Test providers
 import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-peer.provider';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import { InMemoryVaultProvider } from '../../core/identity/providers/test/in-memory-vault.provider';
+import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 
 // Logging utilities
 import { debugLog, prodLog } from '../config/environment';
@@ -82,6 +85,19 @@ export class ProviderFactory {
   }
 
   /**
+   * Create storage provider based on environment
+   */
+  static createStorageProvider(shouldUseMock: boolean): AsyncStorageProvider {
+    if (shouldUseMock) {
+      debugLog('Using InMemoryAsyncStorageProvider for development');
+      return new InMemoryAsyncStorageProvider();
+    }
+    
+    prodLog('Using RNAsyncStorageProvider for production');
+    return new RNAsyncStorageProvider();
+  }
+
+  /**
    * Create all dependencies at once
    * Convenience method for creating all providers
    */
@@ -93,6 +109,7 @@ export class ProviderFactory {
       permissionProvider: this.createPermissionProvider(shouldUseMock, logger),
       identityIdGenerator: this.createIdentityIdGenerator(),
       keyGenerator: this.createKeyGenerator(),
+      storageProvider: this.createStorageProvider(shouldUseMock),
     };
   }
 }

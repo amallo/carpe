@@ -5,6 +5,7 @@ import { Logger } from '../core/logger/providers/logger.interface';
 import { IdentityIdGenerator } from './identity/generators/identity-id.generator';
 import { KeyGenerator } from './identity/generators/key.generator';
 import { VaultProvider } from './identity/providers/vault.provider';
+import { AsyncStorageProvider } from './storage/providers/async-storage.provider';
 
 export interface Dependencies {
     peerProvider: PeerProvider;
@@ -13,4 +14,5 @@ export interface Dependencies {
     identityIdGenerator: IdentityIdGenerator;
     keyGenerator: KeyGenerator;
     vaultProvider: VaultProvider;
+    storageProvider: AsyncStorageProvider;
 }

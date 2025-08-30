@@ -2,9 +2,9 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectPeerById } from '../../core/peers/store/peers.slice';
 import { PairingStatus, selectActivePairing, selectPairingError } from '../../core/peers/store/pairing.slice';
 import { createSelector } from '@reduxjs/toolkit';
-import { disconnectPeer } from '../../core/peers/usecases/disconnect-peer.usecase';
 import { useState, useCallback } from 'react';
 import { LogEntry } from '../../core/logger/store/log.slice';
+import { unpairPeer } from '../../core/peers/usecases/unpair-peer.usecase';
 
 export interface ActivePairingViewModel {
   id: string;
@@ -113,7 +113,7 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
     setDisconnecting(true);
     setDisconnectError(null);
     try {
-      await dispatch(disconnectPeer(peerId)).unwrap();
+      await dispatch(unpairPeer(peerId)).unwrap();
     } catch (e: any) {
       setDisconnectError(e.message || 'Erreur lors de la déconnexion');
     } finally {
