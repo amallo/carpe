@@ -9,10 +9,14 @@ import BroadcastScreen from '../screens/BroadcastScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import BluetoothScanScreen from '../screens/BluetoothScanScreen';
 import PublicMessagesScreen from '../screens/PublicMessagesScreen';
+import { useAppState } from '../hooks/use-app-state';
 
 const Stack = createNativeStackNavigator();
 
 export const MainApp: React.FC = () => {
+  // Enable auto-reconnection when app returns to foreground
+  useAppState();
+  
   return (
     <Stack.Navigator screenOptions={{
       headerShown: false,

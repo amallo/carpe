@@ -5,6 +5,8 @@ import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.prov
 import peerReducer from '../../core/peers/store/peers.slice';
 import pairedPeerReducer from '../../core/peers/store/paired-peer.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
+import connectivityReducer from '../../core/connectivity/store/connectivity.slice';
+import appReducer from '../../core/app/store/app.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
@@ -14,6 +16,7 @@ import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import identityReducer from '../../core/identity/store/identity.slice';
 import { createIdentityPersistConfig } from './persistence.factory';
+import { createAutoReconnectionMiddleware } from '../../core/peers/middlewares/auto-reconnection.middleware';
 
 export const createStore = (
     dependencies: Dependencies,
@@ -31,6 +34,8 @@ export const createStore = (
             permission: permissionReducer,
             pairedPeer: pairedPeerReducer,
             log: logReducer,
+            connectivity: connectivityReducer,
+            app: appReducer,
             identity: persistedIdentityReducer,
         },
         preloadedState: initialState,
@@ -42,7 +47,7 @@ export const createStore = (
                 serializableCheck: {
                     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
                 },
-            }),
+            }).concat(createAutoReconnectionMiddleware(dependencies)),
         devTools: true,
     });
 

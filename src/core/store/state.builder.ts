@@ -7,6 +7,8 @@ import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
 import { getPairedPeerInitialState, pairedPeerAdapter } from '../peers/store/paired-peer.slice';
 import { initialState as logInitialState } from '../logger/store/log.slice';
+import { getConnectivityInitialState } from '../connectivity/store/connectivity.slice';
+import { getAppInitialState } from '../app/store/app.slice';
 import { Identity } from '../identity/entities/identity.entity';
 
 
@@ -70,6 +72,8 @@ export const createStateBuilder = (initialState: RootState = {
     permission: getPermissionInitialState(),
     pairedPeer: getPairedPeerInitialState(),
     log: logInitialState,
+    connectivity: getConnectivityInitialState(),
+    app: getAppInitialState(),
     identity: {
         current: null,
         isLoading: false,
