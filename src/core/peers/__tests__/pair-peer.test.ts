@@ -25,7 +25,6 @@ describe('FEATURE: Audie pair with a peer', () => {
         await fixture.pairPeer('non-existent-peer');
 
         fixture.expectPairingError(PeerError.PEER_NOT_FOUND);
-        fixture.expectExists('non-existent-peer');
         fixture.expectDisconnectedPairedPeer('non-existent-peer');
     });
 
@@ -44,7 +43,6 @@ describe('FEATURE: Audie pair with a peer', () => {
         await fixture.pairPeer('timeout-peer');
 
         // Verify peer exists and is disconnected (paired peers persist)
-        fixture.expectExists('timeout-peer');
         fixture.expectDisconnectedPairedPeer('timeout-peer');
         
         // Verify error state
