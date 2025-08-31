@@ -5,7 +5,7 @@ import { peerAdapter } from '../peers/store/peers.slice';
 import { Feature, permissionAdapter, PermissionEntity } from '../permission/store/permission.slice';
 import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
-import { getPairingInitialState, pairingAdapter } from '../peers/store/pairing.slice';
+import { getPairedPeerInitialState, pairedPeerAdapter } from '../peers/store/paired-peer.slice';
 import { initialState as logInitialState } from '../logger/store/log.slice';
 import { Identity } from '../identity/entities/identity.entity';
 
@@ -35,18 +35,18 @@ export class StateBuilder {
         return this;
     }
     withPairingError(error: string | null) {
-        this._state.pairing.error = error;
+        this._state.pairedPeer.error = error;
         return this;
     }
     withConnectedPeer(peerId: string){
-        this._state.pairing = pairingAdapter.addOne(this._state.pairing, {
+        this._state.pairedPeer = pairedPeerAdapter.addOne(this._state.pairedPeer, {
             id: peerId,
             status: 'connected',
         });
         return this;
     }
     withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected'){
-        this._state.pairing = pairingAdapter.addOne(this._state.pairing, {
+        this._state.pairedPeer = pairedPeerAdapter.addOne(this._state.pairedPeer, {
             id: peerId,
             status: status,
         });
@@ -68,7 +68,7 @@ export class StateBuilder {
 export const createStateBuilder = (initialState: RootState = {
     peer: getPeerInitialState(),
     permission: getPermissionInitialState(),
-    pairing: getPairingInitialState(),
+    pairedPeer: getPairedPeerInitialState(),
     log: logInitialState,
     identity: {
         current: null,

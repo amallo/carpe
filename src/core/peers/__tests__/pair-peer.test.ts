@@ -50,7 +50,7 @@ describe('FEATURE: Audie pair with a peer', () => {
         // Verify error state
         const store = fixture.getStore();
         const state = store.getState();
-        expect(state.pairing.error).toBe(PeerError.CONNECTION_TIMEOUT);
+        expect(state.pairedPeer.error).toBe(PeerError.CONNECTION_TIMEOUT);
     });
 
     test('should fail when permission is denied', async () => {

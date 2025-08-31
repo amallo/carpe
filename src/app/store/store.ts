@@ -3,7 +3,7 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
 import peerReducer from '../../core/peers/store/peers.slice';
-import pairingReducer from '../../core/peers/store/pairing.slice';
+import pairedPeerReducer from '../../core/peers/store/paired-peer.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
@@ -29,7 +29,7 @@ export const createStore = (
         reducer: {
             peer: peerReducer,
             permission: permissionReducer,
-            pairing: pairingReducer,
+            pairedPeer: pairedPeerReducer,
             log: logReducer,
             identity: persistedIdentityReducer,
         },
