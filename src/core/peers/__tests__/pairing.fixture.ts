@@ -1,10 +1,11 @@
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
 import { pairPeer } from '../usecases/pair-peer.usecase';
-import { createStateBuilder } from '../../store/state.builder';
+import { createStateBuilder, StateBuilder } from '../../store/state.builder';
 import { PeerError } from '../providers/peer.provider';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
 import { createTestStore, Store } from '../../../app/store/store';
 import { FeatureRequest } from '../../permission/providers/permission.provider';
+import { Identity } from '../../identity/entities/identity.entity';
 
 /**
  * @jest-environment node
@@ -12,37 +13,102 @@ import { FeatureRequest } from '../../permission/providers/permission.provider';
 export class PairingFixture {
   private peerProvider: FakePeerProvider;
   private permissionProvider: FakePermissionProvider;
-  private store: Store;
+  private stateBuilder: StateBuilder;
+  private store?: Store; // Store created lazily
 
-  constructor(dependencies: {
-    peerProvider?: FakePeerProvider;
-    permissionProvider?: FakePermissionProvider;
-  } = {}) {
+  constructor(
+    dependencies: {
+      peerProvider?: FakePeerProvider;
+      permissionProvider?: FakePermissionProvider;
+    } = {},
+    initialStateBuilder?: StateBuilder
+  ) {
     this.peerProvider = dependencies.peerProvider || new FakePeerProvider();
     this.permissionProvider = dependencies.permissionProvider || new FakePermissionProvider();
 
-    this.store = createTestStore({
-      peerProvider: this.peerProvider,
-      permissionProvider: this.permissionProvider,
-    });
+    // Use provided StateBuilder or create a new one
+    this.stateBuilder = initialStateBuilder || createStateBuilder();
+    // Store created lazily when first action is called
+    this.store = undefined;
   }
 
   withPermissionGranted(feature: FeatureRequest, permission: string): this {
     this.permissionProvider.schedulePermissionGranted({ forFeature: feature, permission });
+
+    // Also add to initial state
+    this.stateBuilder.withPermissionByFeature(feature, {
+      id: permission,
+      status: 'granted',
+    });
     return this;
   }
 
   withPermissionDenied(feature: FeatureRequest, permission: string): this {
     this.permissionProvider.schedulePermissionDenied({ forFeature: feature, permission });
+
+    // Also add to initial state
+    this.stateBuilder.withPermissionByFeature(feature, {
+      id: permission,
+      status: 'denied',
+    });
     return this;
   }
 
+  /**
+   * Configure initial identity in the state
+   */
+  withInitialIdentity(identity: Identity): this {
+    this.stateBuilder.withCurrentIdentity(identity);
+    return this;
+  }
+
+  /**
+   * Configure initial connected peer in the state
+   */
+  withInitialConnectedPeer(peerId: string): this {
+    this.stateBuilder.withConnectedPeer(peerId);
+    return this;
+  }
+
+  /**
+   * Configure initial available peer in the state
+   */
+  withInitialAvailablePeer(peer: { id: string; name: string; [key: string]: any }): this {
+    this.stateBuilder.withAvailablePeerPeer(peer);
+    return this;
+  }
+
+  /**
+   * Configure initial scanning state
+   */
+  withInitialScanningState(isScanning: boolean): this {
+    this.stateBuilder.withScanningPeer(isScanning);
+    return this;
+  }
+
+  /**
+   * Get or create the store with configured initial state
+   * Store is created lazily when first needed
+   */
+  private getOrCreateStore(): Store {
+    if (!this.store) {
+      const initialState = this.stateBuilder.build();
+      this.store = createTestStore({
+        peerProvider: this.peerProvider,
+        permissionProvider: this.permissionProvider,
+      }, initialState);
+    }
+    return this.store;
+  }
+
   async pairPeer(peerId: string): Promise<this> {
-    await this.store.dispatch(pairPeer({ peerId }));
+    const store = this.getOrCreateStore();
+    await store.dispatch(pairPeer({ peerId }));
     return this;
   }
 
   expectPeerConnected(peerId: string): this {
+    const store = this.getOrCreateStore();
     const expectedState = createStateBuilder()
       .withConnectedPeer(peerId)
       .withPermissionByFeature('connect-peers', {
@@ -50,11 +116,12 @@ export class PairingFixture {
         status: 'granted',
       })
       .build();
-    expect(this.store.getState()).toEqual(expectedState);
+    expect(store.getState()).toEqual(expectedState);
     return this;
   }
 
   expectPairingError(error: PeerError): this {
+    const store = this.getOrCreateStore();
     const expectedState = createStateBuilder()
       .withPairingError(error)
       .withPermissionByFeature('connect-peers', {
@@ -62,11 +129,12 @@ export class PairingFixture {
         status: 'granted',
       })
       .build();
-    expect(this.store.getState()).toEqual(expectedState);
+    expect(store.getState()).toEqual(expectedState);
     return this;
   }
 
   expectPermissionDeniedError(): this {
+    const store = this.getOrCreateStore();
     const expectedState = createStateBuilder()
       .withPairingError(PeerError.PERMISSION_DENIED)
       .withPermissionByFeature('connect-peers', {
@@ -74,7 +142,7 @@ export class PairingFixture {
         status: 'denied',
       })
       .build();
-    expect(this.store.getState()).toEqual(expectedState);
+    expect(store.getState()).toEqual(expectedState);
     return this;
   }
 
@@ -84,7 +152,7 @@ export class PairingFixture {
   }
 
   getStore(): Store {
-    return this.store;
+    return this.getOrCreateStore();
   }
 
   getPeerProvider(): FakePeerProvider {
