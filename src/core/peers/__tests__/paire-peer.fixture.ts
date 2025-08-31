@@ -10,7 +10,7 @@ import { Identity } from '../../identity/entities/identity.entity';
 /**
  * @jest-environment node
  */
-export class PairingFixture {
+export class PairedPeerFixture {
   private peerProvider: FakePeerProvider;
   private permissionProvider: FakePermissionProvider;
   private stateBuilder: StateBuilder;
