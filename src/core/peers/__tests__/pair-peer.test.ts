@@ -1,11 +1,12 @@
 import { PairingFixture } from './pairing.fixture';
 import { PeerError } from '../providers/peer.provider';
+import { createStateBuilder } from '../../store/state.builder';
 
 /**
  * @jest-environment node
  */
-describe('FEATURE: Audie connects to a peer', () => {
-    test('should connect to peer successfully', async () => {
+describe('FEATURE: Audie pair with a peer', () => {
+    test('should pair and connect with a peer successfully', async () => {
         const fixture = new PairingFixture()
             .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
@@ -13,25 +14,43 @@ describe('FEATURE: Audie connects to a peer', () => {
 
         fixture
             .expectConnectToPeerWasCalled()
-            .expectPeerConnected('peer-001');
+            .expectPeerConnected('peer-001')
+            .expectPairedPeer('peer-001');
     });
 
-    test('should fail when peer is not found', async () => {
+    test('should not be paired if peer is not found', async () => {
         const fixture = new PairingFixture()
             .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
         await fixture.pairPeer('non-existent-peer');
 
         fixture.expectPairingError(PeerError.PEER_NOT_FOUND);
+        fixture.expectExists('non-existent-peer');
+        fixture.expectDisconnectedPairedPeer('non-existent-peer');
     });
 
-    test('should fail when connection times out', async () => {
-        const fixture = new PairingFixture()
+    test('paired peer should remains pairable when connection fails', async () => {
+        // Initialize fixture with an existing paired peer
+        const initialState = createStateBuilder()
+            .withExistingPairedPeer('timeout-peer', 'disconnected')
+            .withPermissionByFeature('connect-peers', {
+                id: 'connect-bluetooth',
+                status: 'granted',
+            });
+
+        const fixture = new PairingFixture({}, initialState)
             .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
         await fixture.pairPeer('timeout-peer');
 
-        fixture.expectPairingError(PeerError.CONNECTION_TIMEOUT);
+        // Verify peer exists and is disconnected (paired peers persist)
+        fixture.expectExists('timeout-peer');
+        fixture.expectDisconnectedPairedPeer('timeout-peer');
+        
+        // Verify error state
+        const store = fixture.getStore();
+        const state = store.getState();
+        expect(state.pairing.error).toBe(PeerError.CONNECTION_TIMEOUT);
     });
 
     test('should fail when permission is denied', async () => {

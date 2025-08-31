@@ -43,7 +43,14 @@ const pairingSlice = createSlice({
         });
         builder.addCase(pairPeer.rejected, (state, action) => {
             state.error = action.error.message || 'Connection failed';
-            pairingAdapter.removeOne(state, action.meta.arg.peerId);
+            // Keep the peer in the list but mark it as disconnected
+            // This allows paired peers to persist even when connection fails
+            pairingAdapter.updateOne(state, {
+                id: action.meta.arg.peerId,
+                changes: {
+                    status: 'disconnected'
+                }
+            });
         });
     },
 });

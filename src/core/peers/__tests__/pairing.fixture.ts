@@ -120,10 +120,25 @@ export class PairingFixture {
     return this;
   }
 
-  expectPairingError(error: PeerError): this {
+  expectPeerNotExists(peerId: string): this {
+    const store = this.getOrCreateStore();
+    const state = store.getState();
+    
+    // Check that peer is not in available peers
+    const peerExists = state.peer.ids.includes(peerId);
+    expect(peerExists).toBe(false);
+    
+    // Check that peer is not in connected peers
+    const connectedPeerExists = state.pairing.ids.includes(peerId);
+    expect(connectedPeerExists).toBe(false);
+    
+    return this;
+  }
+
+  expectPairedPeer(peerId: string): this {
     const store = this.getOrCreateStore();
     const expectedState = createStateBuilder()
-      .withPairingError(error)
+      .withConnectedPeer(peerId)
       .withPermissionByFeature('connect-peers', {
         id: 'connect-bluetooth',
         status: 'granted',
@@ -133,16 +148,75 @@ export class PairingFixture {
     return this;
   }
 
+  expectPairedPeerNotExists(peerId: string): this {
+    const store = this.getOrCreateStore();
+    const state = store.getState();
+    
+    // For "not exists", we verify directly that the peer is not in the connected state
+    // because building an expected state without a specific peer is more complex
+    const pairingEntity = state.pairing.entities[peerId];
+    
+    // Either the entity doesn't exist or it's not in connected status
+    if (pairingEntity) {
+      expect(pairingEntity.status).not.toBe('connected');
+    } else {
+      expect(pairingEntity).toBeUndefined();
+    }
+    
+    return this;
+  }
+
+  expectExists(peerId: string): this {
+    const store = this.getOrCreateStore();
+    const state = store.getState();
+    
+    // Check that peer exists in pairing entities (regardless of status)
+    const pairingEntity = state.pairing.entities[peerId];
+    expect(pairingEntity).toBeDefined();
+    expect(state.pairing.ids).toContain(peerId);
+    
+    return this;
+  }
+
+  expectDisconnectedPairedPeer(peerId: string): this {
+    const store = this.getOrCreateStore();
+    const state = store.getState();
+    
+    // Check that peer exists but is not connected (failed connection)
+    const pairingEntity = state.pairing.entities[peerId];
+    expect(pairingEntity).toBeDefined();
+    expect(pairingEntity?.status).not.toBe('connected');
+    
+    // For future: when we implement pairedPeers slice, we'll also check that
+    // the peer remains in the paired peers list even if connection failed
+    
+    return this;
+  }
+
+  expectPairingError(error: PeerError): this {
+    const store = this.getOrCreateStore();
+    const state = store.getState();
+    
+    // Verify error is set
+    expect(state.pairing.error).toBe(error);
+    
+    // Note: Peers now persist with 'disconnected' status on error
+    // so we don't compare against a clean state anymore
+    
+    return this;
+  }
+
   expectPermissionDeniedError(): this {
     const store = this.getOrCreateStore();
-    const expectedState = createStateBuilder()
-      .withPairingError(PeerError.PERMISSION_DENIED)
-      .withPermissionByFeature('connect-peers', {
-        id: 'connect-bluetooth',
-        status: 'denied',
-      })
-      .build();
-    expect(store.getState()).toEqual(expectedState);
+    const state = store.getState();
+    
+    // Verify error is set to permission denied
+    expect(state.pairing.error).toBe(PeerError.PERMISSION_DENIED);
+    
+    // Verify permission status is denied
+    const permissionEntity = state.permission.entities['connect-bluetooth'];
+    expect(permissionEntity?.status).toBe('denied');
+    
     return this;
   }
 

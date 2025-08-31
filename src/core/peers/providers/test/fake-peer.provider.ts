@@ -32,7 +32,7 @@ export class FakePeerProvider implements PeerProvider{
             throw new Error(PeerError.PEER_NOT_FOUND);
         }
         
-        if (peerId === 'timeout-peer') {
+        if (peerId === 'timeout-peer' || peerId === 'timeout-peer-id') {
             throw new Error(PeerError.CONNECTION_TIMEOUT);
         }
         

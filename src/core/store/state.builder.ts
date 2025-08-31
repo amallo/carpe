@@ -45,6 +45,13 @@ export class StateBuilder {
         });
         return this;
     }
+    withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected'){
+        this._state.pairing = pairingAdapter.addOne(this._state.pairing, {
+            id: peerId,
+            status: status,
+        });
+        return this;
+    }
     withCurrentIdentity(identity: Identity) {
         this._state.identity = {
             ...this._state.identity,
