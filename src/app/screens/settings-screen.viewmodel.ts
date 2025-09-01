@@ -13,6 +13,7 @@ export interface ActivePairingViewModel {
   isConnected: Readonly<boolean>;
   statusColor: string;
   statusIcon: 'bluetooth' | 'close';
+  status: PairedPeerStatus;
   batteryLevel: number;
   signalStrength: number;
   lastSeen: string;
@@ -78,6 +79,7 @@ const selectActivePairingViewModel = createSelector(
         firmware: peerById[pairing.id]?.firmware || 'Inconnu2',
         statusIcon: getActivePairingStatusIcon(pairing.status),
         isConnected: pairing.status === 'connected',
+        status: pairing.status,
         closePairingStatusButtonColor: getClosePairingStatusButtonColor(pairing.status),
       };
     });
@@ -101,7 +103,6 @@ export const selectLogEntryViewModels = createSelector(
 );
 
 export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null, logs: LogEntryViewModel[]} => {
-  // Consommation du state via des selectors spécialisés
   const activePairing = useAppSelector(selectActivePairingViewModel);
   const error = useAppSelector(selectPairedPeerError);
   const dispatch = useAppDispatch();
@@ -135,6 +136,7 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
       statusColor: getActivePairingStatusColor('disconnected'),
       statusIcon: 'bluetooth',
       isConnected: false,
+      status: 'disconnected',
       closePairingStatusButtonColor: '#10b981',
     },
     error,

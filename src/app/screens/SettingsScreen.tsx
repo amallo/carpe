@@ -30,8 +30,9 @@ export default function SettingsScreen() {
 
   const handleBack = () => {
     navigation.goBack();
-  };  const handleConnectDevice = () => {
-    if (activePairing.statusText === 'connected') {
+  }; 
+  const handleConnectDevice = () => {
+    if (activePairing.isConnected) {
       Alert.alert(
         'Déconnecter l\'émetteur',
         'Êtes-vous sûr de vouloir vous déconnecter de l\'émetteur LoRa ?',
@@ -418,7 +419,7 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
-              </Modal>
+      </Modal>
 
 
       {disconnectError && <Text style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>{disconnectError}</Text>}
