@@ -7,7 +7,7 @@ import { pairPeer } from '../usecases/pair-peer.usecase';
 import { scanPeers } from '../usecases/scan-peers.usecase';
 import type { RootState } from '../../../app/store/store';
 
-export const createAutoReconnectionMiddleware = <S extends Store>(dependencies: Dependencies) => {
+export const createAutoReconnectionMiddleware = (dependencies: Dependencies) => {
   return (store: any) => (next: any) => (action: UnknownAction) => {
     const result = next(action);
 

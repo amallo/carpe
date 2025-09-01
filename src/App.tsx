@@ -1,3 +1,4 @@
+import 'react-native-get-random-values'; // Must be first import for crypto.getRandomValues polyfill
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
