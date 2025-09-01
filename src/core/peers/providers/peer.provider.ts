@@ -68,12 +68,12 @@ export interface PeerProvider{
      * @throws {Error} BLUETOOTH_DISABLED - When Bluetooth is disabled
      * @throws {Error} PERMISSION_DENIED - When permission is denied
      */
-    pairing(peerId: string): Promise<void>;
+    connect(peerId: string): Promise<void>;
     onScanStopped(callback: () => void): void;
     onScanStarted(callback: () => void): void;
     onPeerFound(callback: (peer: PeerFound) => void): void;
     /**
-     * Unpair/disconnect a peer physically (must be implemented)
+     * Disconnect a peer physically (must be implemented)
      */
-    unpair(peerId: string): Promise<void>;
+    disconnect(peerId: string): Promise<void>;
 }

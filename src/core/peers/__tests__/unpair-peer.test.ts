@@ -19,7 +19,7 @@ describe('FEATURE: Audie unpairs a peer', () => {
     await store.dispatch(unpairPeer('peer-1'));
     const expectedState = createStateBuilder().build();
     expect(store.getState()).toEqual(expectedState);
-    expect(peerProvider.unpairWasCalledWithPeerId('peer-1')).toBe(true);
+    expect(peerProvider.disconnectWasCalledWithPeerId('peer-1')).toBe(true);
   });
 
   test('should do nothing if peer is not found', async () => {

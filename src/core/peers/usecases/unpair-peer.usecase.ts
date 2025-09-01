@@ -12,7 +12,7 @@ export const unpairPeer = createAsyncThunk<
   'peer/unpair',
   async (peerId, { extra }) => {
     extra.logger?.info('UNPAIR', `Tentative de dépair avec peerId=${peerId}`);
-    await extra.peerProvider.unpair(peerId);
+    await extra.peerProvider.disconnect(peerId);
     return peerId;
   }
 ); 

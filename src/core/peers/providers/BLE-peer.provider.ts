@@ -104,7 +104,7 @@ export class BLEPeerProvider implements PeerProvider{
         this.isScanning = false;
         return BleManager.stopScan();
     }
-    async pairing(peerId: string): Promise<void> {
+    async connect(peerId: string): Promise<void> {
         this.logger?.debug('BLE', `pairing() called with peerId=${peerId}`);
         try {
 
@@ -157,7 +157,7 @@ export class BLEPeerProvider implements PeerProvider{
             throw new Error(PeerError.CONNECTION_FAILED);
         }
     }
-    async unpair(peerId: string): Promise<void> {
+    async disconnect(peerId: string): Promise<void> {
         this.logger?.debug('BLE', `unpair() called with peerId=${peerId}`);
         const isPeripheralConnected= await BleManager.isPeripheralConnected(peerId);
         if (isPeripheralConnected){

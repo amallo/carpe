@@ -82,30 +82,30 @@ export class InMemoryPeerProvider implements PeerProvider{
         this._scanStoppedCallback?.();
         return Promise.resolve();
     }
-    async pairing(peerId: string): Promise<void> {
-        this.logger?.debug('INMEMORY', `pairing() called with peerId=${peerId}`);
+    async connect(peerId: string): Promise<void> {
+        this.logger?.debug('INMEMORY', `connect() called with peerId=${peerId}`);
         // Vérifier si le peer existe dans la liste
         const peer = PEERS.find(p => p.id === peerId);
         if (!peer) {
-            this.logger?.debug('INMEMORY', `pairing() failed: peer ${peerId} not found`);
+            this.logger?.debug('INMEMORY', `connect() failed: peer ${peerId} not found`);
             throw new Error(PeerError.PEER_NOT_FOUND);
         }
         if (this._pairedPeerIds.has(peerId)) {
-            this.logger?.debug('INMEMORY', `pairing() failed: peer ${peerId} already connected`);
+            this.logger?.debug('INMEMORY', `connect() failed: peer ${peerId} already connected`);
             throw new Error(PeerError.PEER_ALREADY_CONNECTED);
         }
         this._pairedPeerIds.add(peerId);
-        this.logger?.debug('INMEMORY', `pairing() success: peer ${peerId} connected`);
+        this.logger?.debug('INMEMORY', `connect() success: peer ${peerId} connected`);
         return Promise.resolve();
     }
-    async unpair(peerId: string): Promise<void> {
-        this.logger?.debug('INMEMORY', `unpair() called with peerId=${peerId}`);
+    async disconnect(peerId: string): Promise<void> {
+        this.logger?.debug('INMEMORY', `disconnect() called with peerId=${peerId}`);
         if (!this._pairedPeerIds.has(peerId)) {
-            this.logger?.debug('INMEMORY', `unpair() failed: peer ${peerId} not found`);
+            this.logger?.debug('INMEMORY', `disconnect() failed: peer ${peerId} not found`);
             throw new Error(PeerError.PEER_NOT_FOUND);
         }
         this._pairedPeerIds.delete(peerId);
-        this.logger?.debug('INMEMORY', `unpair() success: peer ${peerId} disconnected`);
+        this.logger?.debug('INMEMORY', `disconnect() success: peer ${peerId} disconnected`);
         return Promise.resolve();
     }
     onPeerFound(callback: (peer: PeerFound) => void): void {

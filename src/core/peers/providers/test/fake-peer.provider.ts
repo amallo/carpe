@@ -24,7 +24,7 @@ export class FakePeerProvider implements PeerProvider{
         this._scanStoppedCallback?.();
         return Promise.resolve();
     }
-    async pairing(peerId: string): Promise<void> {
+    async connect(peerId: string): Promise<void> {
         this._connectToPeerCallTracker.recordCall();
         
         // Simuler les erreurs possibles selon l'interface
@@ -50,17 +50,17 @@ export class FakePeerProvider implements PeerProvider{
         
         return Promise.resolve();
     }
-    unpair(peerId: string): Promise<void> {
+    disconnect(peerId: string): Promise<void> {
         this._unpairCallTracker.recordCall(peerId);
         return Promise.resolve();
     }
-    unpairWasCalledWithPeerId(peerId: string): boolean {
+    disconnectWasCalledWithPeerId(peerId: string): boolean {
         return this._unpairCallTracker.wasCalledWith(peerId);
     }
-    unpairWasCalled(): boolean {
+    disconnectWasCalled(): boolean {
         return this._unpairCallTracker.methodWasCalled();
     }
-    unpairWasNotCalled(): boolean {
+    disconnectWasNotCalled(): boolean {
         return !this._unpairCallTracker.methodWasCalled();
     }
     scanWasCalled(): boolean {

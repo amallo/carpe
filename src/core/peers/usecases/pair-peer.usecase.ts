@@ -17,6 +17,6 @@ export const pairPeer = createAsyncThunk<
         await checkPermissionService('connect-peers', extra, dispatch);
 
         const { peerProvider } = extra;
-        await peerProvider.pairing(peerId);
+        await peerProvider.connect(peerId);
     }
 ); 
