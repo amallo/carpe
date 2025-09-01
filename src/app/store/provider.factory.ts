@@ -12,7 +12,8 @@ import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
 import { SimpleIOSKeychainVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
 import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
-import { BasicKeyGenerator } from '../../core/identity/generators/basic-key.generator';
+import { SecureIdentityGenerator } from '../../core/identity/generators/secure-identity-id.generator';
+import { BasicKeyGenerator } from '../../core/identity/generators/fake/basic-key.generator';
 import { RNAsyncStorageProvider } from '../../core/storage/providers/rn-async-storage.provider';
 
 // Test providers
@@ -70,10 +71,15 @@ export class ProviderFactory {
 
   /**
    * Create identity ID generator
-   * Always uses production implementation as it's stateless
+   * Uses secure UUID v4 generator for production, basic for development/tests
    */
-  static createIdentityIdGenerator(): IdentityIdGenerator {
-    return new BasicIdentityGenerator();
+  static createIdentityIdGenerator(shouldUseMock: boolean = false): IdentityIdGenerator {
+    if (shouldUseMock) {
+      debugLog('Using BasicIdentityGenerator for development');
+      return new BasicIdentityGenerator();
+    }
+    prodLog('Using SecureIdentityGenerator for production');
+    return new SecureIdentityGenerator();
   }
 
   /**
@@ -107,7 +113,7 @@ export class ProviderFactory {
       peerProvider: this.createPeerProvider(shouldUseMock, logger),
       vaultProvider: this.createVaultProvider(shouldUseMock),
       permissionProvider: this.createPermissionProvider(shouldUseMock, logger),
-      identityIdGenerator: this.createIdentityIdGenerator(),
+      identityIdGenerator: this.createIdentityIdGenerator(shouldUseMock),
       keyGenerator: this.createKeyGenerator(),
       storageProvider: this.createStorageProvider(shouldUseMock),
     };

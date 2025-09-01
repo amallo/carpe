@@ -1,4 +1,4 @@
-import { KeyGenerator, KeyPair } from './key.generator';
+import { KeyGenerator, KeyPair } from '../key.generator';
 
 export class BasicKeyGenerator implements KeyGenerator {
     private counter = 0;
