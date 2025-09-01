@@ -78,7 +78,7 @@ export class BLEPeerProvider implements PeerProvider{
         return BleManager.start();
     }
     async scan(): Promise<void> {
-        this.logger?.debug('BLE', 'scan() called');  d;
+        this.logger?.debug('BLE', 'scan() called');
 
         this.isScanning = true;
         this.logger?.debug('BLE', 'scan() started');
