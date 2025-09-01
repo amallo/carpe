@@ -114,28 +114,11 @@ export class BLEPeerProvider implements PeerProvider{
                 this.logger?.info('BLE', `Device ${peerId} already connected`);
                 return;
             }
+            this.logger?.debug('BLE', `connect(${peerId}): isAlreadyConnected=${isAlreadyConnected}`);
 
-            // Check if device is bonded
-            const boundedPeripherals = await BleManager.getBondedPeripherals();
-            const isBonded = boundedPeripherals.some(p => p.id === peerId);
-            this.logger?.info('BLE', `connect(${peerId}): bonded=${isBonded}`);
-
-            if (isBonded) {
-                // Device is bonded → direct connection (faster)
-                this.logger?.info('BLE', `Device ${peerId} already bonded, connecting directly`);
-                await BleManager.connect(peerId);
-            } else {
-                // Device not bonded → create bond first (slower, but secure)
-                this.logger?.info('BLE', `Device ${peerId} not bonded, creating bond first`);
-                await BleManager.createBond(peerId);
-            
-                // Verify that bond created the connection, if not connect manually
-                const isConnectedAfterBond = await BleManager.isPeripheralConnected(peerId);
-                if (!isConnectedAfterBond) {
-                    this.logger?.debug('BLE', `Bond created but not connected, connecting manually`);
-                    await BleManager.connect(peerId);
-                }
-            }
+            // Simple BLE connection
+            await BleManager.connect(peerId);
+            this.logger?.debug('BLE', `connect() success for peerId=${peerId}`);
 
             // Final verification that connection is established
             const isConnected = await BleManager.isPeripheralConnected(peerId);
@@ -147,7 +130,8 @@ export class BLEPeerProvider implements PeerProvider{
             this.logger?.info('BLE', `connect() success for peerId=${peerId}`);
 
         } catch (error: any) {
-            this.logger?.error('BLE', `connect() error: ${error.message}`);
+            this.logger?.debug('BLE', `connect() error: ${error}`);
+            this.logger?.debug('BLE', `connect() error: ${error.message}`);
             // Gérer les erreurs BLE spécifiques selon l'interface
             if (error.message?.includes('not found') || error.message?.includes('not found')) {
                 throw new Error(PeerError.PEER_NOT_FOUND);
