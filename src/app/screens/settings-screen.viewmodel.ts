@@ -1,6 +1,6 @@
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { selectPeerById } from '../../core/peers/store/peers.slice';
-import { PairingStatus, selectActivePairing, selectPairingError } from '../../core/peers/store/pairing.slice';
+import { PairedPeerStatus, selectActivePairedPeers, selectPairedPeerError } from '../../core/peers/store/paired-peer.slice';
 import { createSelector } from '@reduxjs/toolkit';
 import { useState, useCallback } from 'react';
 import { LogEntry } from '../../core/logger/store/log.slice';
@@ -28,7 +28,7 @@ export interface LogEntryViewModel {
   message: string;
 }
 
-const getActivePairingStatusText = (activePairingStatus: PairingStatus) => {
+const getActivePairingStatusText = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
     case 'connected': return 'Connecté';
     case 'pending': return 'Connexion...';
@@ -37,7 +37,7 @@ const getActivePairingStatusText = (activePairingStatus: PairingStatus) => {
   }
 };
 
-const getActivePairingStatusColor = (activePairingStatus: PairingStatus) => {
+const getActivePairingStatusColor = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
     case 'connected': return '#10b981';
     case 'pending': return '#f59e0b';
@@ -48,14 +48,14 @@ const getActivePairingStatusColor = (activePairingStatus: PairingStatus) => {
 };
 
 
-const getClosePairingStatusButtonColor = (activePairingStatus: PairingStatus) => {
+const getClosePairingStatusButtonColor = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
     case 'connected': return '#ef4444';
     default: return '#10b981';
   }
 };
 
-const getActivePairingStatusIcon = (activePairingStatus: PairingStatus) => {
+const getActivePairingStatusIcon = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
     case 'connected': return 'close';
     default: return 'bluetooth';
@@ -63,7 +63,7 @@ const getActivePairingStatusIcon = (activePairingStatus: PairingStatus) => {
 };
 
 const selectActivePairingViewModel = createSelector(
-  [selectActivePairing, selectPeerById],
+  [selectActivePairedPeers, selectPeerById],
   (activePairing, peerById) : ActivePairingViewModel[] => {
     return activePairing.map((pairing) => {
       return {
@@ -103,7 +103,7 @@ export const selectLogEntryViewModels = createSelector(
 export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null, logs: LogEntryViewModel[]} => {
   // Consommation du state via des selectors spécialisés
   const activePairing = useAppSelector(selectActivePairingViewModel);
-  const error = useAppSelector(selectPairingError);
+  const error = useAppSelector(selectPairedPeerError);
   const dispatch = useAppDispatch();
   const [disconnecting, setDisconnecting] = useState(false);
   const [disconnectError, setDisconnectError] = useState<string | null>(null);

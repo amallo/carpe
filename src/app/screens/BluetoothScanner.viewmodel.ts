@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectScanLoading, selectAllPeers, selectPeerScanningError } from '../../core/peers/store/peers.slice';
-import { selectActivePairing } from '../../core/peers/store/pairing.slice';
+import { selectActivePairedPeers } from '../../core/peers/store/paired-peer.slice';
 import { scanPeers } from '../../core/peers/usecases/scan-peers.usecase';
 import { pairPeer } from '../../core/peers/usecases/pair-peer.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
@@ -42,7 +42,7 @@ export const useBluetoothScannerViewModel = () => {
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
   const error = useAppSelector(selectPeerScanningError);
-  const activePairings = useAppSelector(selectActivePairing);
+  const activePairings = useAppSelector(selectActivePairedPeers);
   // Remonter un message utilisateur friendly si possible
   const errorFriendly = error ? (errorMessageMap[error] || 'Une erreur inattendue est survenue. Veuillez réessayer.') : null;
   const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
