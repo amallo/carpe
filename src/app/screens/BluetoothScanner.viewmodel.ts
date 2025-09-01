@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectScanLoading, selectAllPeers, selectPeerScanningError } from '../../core/peers/store/peers.slice';
-import { selectActivePairedPeers } from '../../core/peers/store/paired-peer.slice';
+import { selectActivePairedPeers, selectPairedPeerError } from '../../core/peers/store/paired-peer.slice';
 import { scanPeers } from '../../core/peers/usecases/scan-peers.usecase';
 import { pairPeer } from '../../core/peers/usecases/pair-peer.usecase';
 import { PermissionStatus, selectMissingPermissionForFeature } from '../../core/permission/store/permission.slice';
@@ -41,9 +41,13 @@ export const useBluetoothScannerViewModel = () => {
   // Consommation du state via des selectors uniquement
   const isScanning = useAppSelector(selectScanLoading);
   const peers = useAppSelector(selectAllPeers);
-  const error = useAppSelector(selectPeerScanningError);
+  const scanError = useAppSelector(selectPeerScanningError);
+  const pairError = useAppSelector(selectPairedPeerError);
   const activePairings = useAppSelector(selectActivePairedPeers);
+  
   // Remonter un message utilisateur friendly si possible
+  // Prioriser l'erreur de pairing si elle existe, sinon l'erreur de scan
+  const error = pairError || scanError;
   const errorFriendly = error ? (errorMessageMap[error] || 'Une erreur inattendue est survenue. Veuillez réessayer.') : null;
   const missingPermission = useAppSelector((state) => selectMissingPermissionForFeature(state, 'scan-peers'));
 
@@ -115,7 +119,7 @@ export const useBluetoothScannerViewModel = () => {
       return dispatch(scanPeers({ timeout: 30000 }));
     },
     pair: (peerId: string) => {
-      return dispatch(pairPeer({ peerId }));
+      return dispatch(pairPeer({ peerId })).unwrap();
     },
 
     // Permissions via selectors
