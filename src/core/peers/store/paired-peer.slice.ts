@@ -1,5 +1,6 @@
 import { createSlice, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { pairPeer } from '../usecases/pair-peer.usecase';
+import { disconnectPairedPeer } from '../usecases/disconnect-paired-peer.usecase';
 
 export type PairedPeerStatus = 'pending' | 'connected' | 'disconnected'
 
@@ -45,6 +46,16 @@ const pairedPeerSlice = createSlice({
             state.error = action.error.message || 'Connection failed';
             // Keep the peer in the list but mark it as disconnected
             // This allows paired peers to persist even when connection fails
+            pairedPeerAdapter.updateOne(state, {
+                id: action.meta.arg.peerId,
+                changes: {
+                    status: 'disconnected'
+                }
+            });
+        });
+        builder.addCase(disconnectPairedPeer.fulfilled, (state, action) => {
+            state.error = null;
+            // Update the paired peer status to disconnected
             pairedPeerAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {

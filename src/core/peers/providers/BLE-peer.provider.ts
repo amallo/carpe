@@ -30,6 +30,7 @@ export class BLEPeerProvider implements PeerProvider{
             batteryLevel: 85,
         };
     }
+
     private onStopListener = BleManager.onStopScan(() => {
         this.isScanning = false;
         if (this.scanStoppedCallback) {
@@ -77,7 +78,7 @@ export class BLEPeerProvider implements PeerProvider{
         return BleManager.start();
     }
     async scan(): Promise<void> {
-        this.logger?.debug('BLE', 'scan() called');  d
+        this.logger?.debug('BLE', 'scan() called');  d;
 
         this.isScanning = true;
         this.logger?.debug('BLE', 'scan() started');
@@ -105,28 +106,48 @@ export class BLEPeerProvider implements PeerProvider{
         return BleManager.stopScan();
     }
     async connect(peerId: string): Promise<void> {
-        this.logger?.debug('BLE', `pairing() called with peerId=${peerId}`);
+        this.logger?.debug('BLE', `connect() called with peerId=${peerId}`);
         try {
-
-            const hasAlreadyPaired = await BleManager.isPeripheralConnected(peerId);
-            if (hasAlreadyPaired) {
-                this.logger?.info('BLE', `pairing() failed: already connected to ${peerId}`);
+            // Check if already connected
+            const isAlreadyConnected = await BleManager.isPeripheralConnected(peerId);
+            if (isAlreadyConnected) {
+                this.logger?.info('BLE', `Device ${peerId} already connected`);
                 return;
             }
-            // Tenter la connexion BLE
-            await BleManager.connect(peerId);
-            this.logger?.debug('BLE', `pairing() success for peerId=${peerId}`);
 
-            // Vérifier si la connexion a réussi
-            const isPaired = await BleManager.isPeripheralConnected(peerId);
-            this.logger?.debug('BLE', `isPeripheralConnected(${peerId}) = ${isPaired}`);
-            if (!isPaired) {
-                this.logger?.debug('BLE', `pairing() failed: not connected to ${peerId}`);
+            // Check if device is bonded
+            const boundedPeripherals = await BleManager.getBondedPeripherals();
+            const isBonded = boundedPeripherals.some(p => p.id === peerId);
+            this.logger?.info('BLE', `connect(${peerId}): bonded=${isBonded}`);
+
+            if (isBonded) {
+                // Device is bonded → direct connection (faster)
+                this.logger?.info('BLE', `Device ${peerId} already bonded, connecting directly`);
+                await BleManager.connect(peerId);
+            } else {
+                // Device not bonded → create bond first (slower, but secure)
+                this.logger?.info('BLE', `Device ${peerId} not bonded, creating bond first`);
+                await BleManager.createBond(peerId);
+            
+                // Verify that bond created the connection, if not connect manually
+                const isConnectedAfterBond = await BleManager.isPeripheralConnected(peerId);
+                if (!isConnectedAfterBond) {
+                    this.logger?.debug('BLE', `Bond created but not connected, connecting manually`);
+                    await BleManager.connect(peerId);
+                }
+            }
+
+            // Final verification that connection is established
+            const isConnected = await BleManager.isPeripheralConnected(peerId);
+            if (!isConnected) {
+                this.logger?.error('BLE', `connect() failed: not connected to ${peerId}`);
                 throw new Error(PeerError.CONNECTION_FAILED);
             }
 
+            this.logger?.info('BLE', `connect() success for peerId=${peerId}`);
+
         } catch (error: any) {
-            this.logger?.debug('BLE', `pairing() error: ${error.message}`);
+            this.logger?.error('BLE', `connect() error: ${error.message}`);
             // Gérer les erreurs BLE spécifiques selon l'interface
             if (error.message?.includes('not found') || error.message?.includes('not found')) {
                 throw new Error(PeerError.PEER_NOT_FOUND);
@@ -159,10 +180,6 @@ export class BLEPeerProvider implements PeerProvider{
     }
     async disconnect(peerId: string): Promise<void> {
         this.logger?.debug('BLE', `unpair() called with peerId=${peerId}`);
-        const isPeripheralConnected= await BleManager.isPeripheralConnected(peerId);
-        if (isPeripheralConnected){
-            throw new Error(PeerError.PEER_NOT_FOUND);
-        }
         await BleManager.disconnect(peerId);
     }
     onScanStopped(callback: () => void): void {
