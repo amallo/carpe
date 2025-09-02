@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useSettingsViewModel, type LogEntryViewModel } from './settings/settings-screen.viewmodel';
+import { useSettingsViewModel, type LogEntryViewModel } from '../components/settings/settings-screen.viewmodel';
 import { useAppDispatch } from '../store/hooks';
 import { clearLogs } from '../../core/logger/store/log.slice';
-import { SettingsIdentitySection } from '../components/SettingsIdentitySection';
-import { SettingsScreenActivePeer } from './settings/SettingsActivePeer';
+import { SettingsActivePeer } from '../components/settings/SettingsActivePeer';
+import { SettingsIdentitySection } from '../components/settings/SettingsIdentitySection';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const { activePairing, disconnectPeer, disconnecting, disconnectError, logs } = useSettingsViewModel();
+  const { logs } = useSettingsViewModel();
   const dispatch = useAppDispatch();
 
   const [settings, setSettings] = useState({
@@ -23,85 +23,11 @@ export default function SettingsScreen() {
     encryptionEnabled: true,
   });
 
-  const [showPinModal, setShowPinModal] = useState(false);
   const [showLogsModal, setShowLogsModal] = useState(false);
   const [showPublicKeyModal, setShowPublicKeyModal] = useState(false);
-  const [pinCode, setPinCode] = useState('');
-  const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'warning' | 'error'>('healthy');
 
   const handleBack = () => {
     navigation.goBack();
-  }; 
-  const handleConnectDevice = () => {
-    if (activePairing.isConnected) {
-      Alert.alert(
-        'Déconnecter l\'émetteur',
-        'Êtes-vous sûr de vouloir vous déconnecter de l\'émetteur LoRa ?',
-        [
-          { text: 'Annuler', style: 'cancel' },
-          {
-            text: disconnecting ? 'Déconnexion...' : 'Déconnecter',
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await disconnectPeer(activePairing.id);
-                toast.success('Émetteur déconnecté');
-              } catch (e) {
-                toast.error('Erreur lors de la déconnexion');
-              }
-            },
-          },
-        ]
-      );
-    } else {
-      // Navigate to Bluetooth scan screen instead of showing PIN modal
-      navigation.navigate('BluetoothScan' as never);
-    }
-  };
-
-  const handlePinSubmit = () => {
-    if (pinCode.length !== 4) {
-      toast.error('Le code PIN doit contenir 4 chiffres');
-      return;
-    }
-
-    setShowPinModal(false);
-    setPinCode('');
-
-    setTimeout(() => {
-      toast.success('Connexion établie avec l\'émetteur LoRa');
-
-      // Add connection log
-      // const newLog: LogEntryViewModel = {
-      //   id: Date.now().toString(),
-      //   timestamp: new Date().toLocaleTimeString('fr-FR'),
-      //   level: 'info',
-      //   message: 'Connexion Bluetooth sécurisée établie',
-      // };
-      // setLogs(prev => [newLog, ...prev]);
-    }, 2000);
-  };
-
-  const handleHealthCheck = () => {
-    setHealthStatus('checking');
-    toast.loading('Vérification de l\'état de l\'émetteur...');
-
-    setTimeout(() => {
-      const isHealthy = Math.random() > 0.3;
-      setHealthStatus(isHealthy ? 'healthy' : 'warning');
-
-      // const newLog: LogEntryViewModel = {
-      //   id: Date.now().toString(),
-      //   timestamp: new Date().toLocaleTimeString('fr-FR'),
-      //   level: isHealthy ? 'info' : 'warning',
-      //   message: isHealthy
-      //     ? 'Health check: Tous systèmes opérationnels'
-      //     : 'Health check: Attention - Signal faible détecté',
-      // };
-      // setLogs(prev => [newLog, ...prev]);
-
-      toast.success(isHealthy ? 'Émetteur en parfait état' : 'Attention: Signal faible détecté');
-    }, 3000);
   };
 
   const handleClearLogs = () => {
@@ -148,12 +74,7 @@ export default function SettingsScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Device Status Card */}
-        <SettingsScreenActivePeer
-          activePairing={activePairing}
-          healthStatus={healthStatus}
-          onConnectDevice={handleConnectDevice}
-          onHealthCheck={handleHealthCheck}
-        />
+        <SettingsActivePeer />
 
         {/* User Profile Section */}
         <SettingsIdentitySection />
@@ -172,7 +93,7 @@ export default function SettingsScreen() {
               <Text style={styles.actionTitle}>Clé publique</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionCard} onPress={handleHealthCheck}>
+            <TouchableOpacity style={styles.actionCard} onPress={() => {}}>
               <Ionicons name="pulse" size={24} color="#f59e0b" />
               <Text style={styles.actionTitle}>Diagnostic</Text>
             </TouchableOpacity>
@@ -259,39 +180,7 @@ export default function SettingsScreen() {
         <View style={{ height: 32 }} />
       </ScrollView>
 
-      {/* PIN Modal */}
-      <Modal visible={showPinModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Code PIN Sécurisé</Text>
-            <Text style={styles.modalSubtitle}>
-              Entrez le code PIN à 4 chiffres de votre émetteur LoRa
-            </Text>
 
-            <TextInput
-              style={styles.pinInput}
-              value={pinCode}
-              onChangeText={setPinCode}
-              placeholder="••••"
-              keyboardType="numeric"
-              maxLength={4}
-              secureTextEntry
-            />
-
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalCancelButton}
-                onPress={() => { setShowPinModal(false); setPinCode(''); }}
-              >
-                <Text style={styles.modalCancelText}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalConfirmButton} onPress={handlePinSubmit}>
-                <Text style={styles.modalConfirmText}>Connecter</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
 
       {/* Logs Modal */}
       <Modal visible={showLogsModal} transparent animationType="slide">
@@ -358,7 +247,7 @@ export default function SettingsScreen() {
       </Modal>
 
 
-      {disconnectError && <Text style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>{disconnectError}</Text>}
+
     </SafeAreaView>
   );
 }

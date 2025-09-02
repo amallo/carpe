@@ -3,13 +3,12 @@ import { selectPeerById } from '../../../core/peers/store/peers.slice';
 import { PairedPeerStatus, selectActivePairedPeers, selectPairedPeerError } from '../../../core/peers/store/paired-peer.slice';
 import { createSelector } from '@reduxjs/toolkit';
 import { useState, useCallback } from 'react';
-import { LogEntry } from '../../../core/logger/store/log.slice';
 import { unpairPeer } from '../../../core/peers/usecases/unpair-peer.usecase';
 
 export interface ActivePairingViewModel {
   id: string;
   name: string;
-  statusText: string
+  statusText: string;
   isConnected: Readonly<boolean>;
   statusColor: string;
   statusIcon: 'bluetooth' | 'close';
@@ -22,18 +21,10 @@ export interface ActivePairingViewModel {
   closePairingStatusButtonColor: string;
 }
 
-export interface LogEntryViewModel {
-  id: string;
-  timestamp: string;
-  level: 'info' | 'warning' | 'error';
-  message: string;
-}
-
 const getActivePairingStatusText = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
     case 'connected': return 'Connecté';
     case 'pending': return 'Connexion...';
-    //case 'error': return 'Erreur';
     default: return 'Inconnu';
   }
 };
@@ -43,11 +34,9 @@ const getActivePairingStatusColor = (activePairingStatus: PairedPeerStatus) => {
     case 'connected': return '#10b981';
     case 'pending': return '#f59e0b';
     case 'disconnected': return '#6b7280';
-    //case 'error': return '#ef4444';
     default: return '#6b7280';
   }
 };
-
 
 const getClosePairingStatusButtonColor = (activePairingStatus: PairedPeerStatus) => {
   switch (activePairingStatus) {
@@ -65,7 +54,7 @@ const getActivePairingStatusIcon = (activePairingStatus: PairedPeerStatus) => {
 
 const selectActivePairingViewModel = createSelector(
   [selectActivePairedPeers, selectPeerById],
-  (activePairing, peerById) : ActivePairingViewModel[] => {
+  (activePairing, peerById): ActivePairingViewModel[] => {
     return activePairing.map((pairing) => {
       return {
         statusText: getActivePairingStatusText(pairing.status),
@@ -75,8 +64,8 @@ const selectActivePairingViewModel = createSelector(
         batteryLevel: peerById[pairing.id]?.batteryLevel || 0,
         signalStrength: peerById[pairing.id]?.signalStrength || 0,
         lastSeen: peerById[pairing.id]?.lastSeen || 'Jamais connecté',
-        publicKey:  '',
-        firmware: peerById[pairing.id]?.firmware || 'Inconnu2',
+        publicKey: '',
+        firmware: peerById[pairing.id]?.firmware || 'Inconnu',
         statusIcon: getActivePairingStatusIcon(pairing.status),
         isConnected: pairing.status === 'connected',
         status: pairing.status,
@@ -86,29 +75,18 @@ const selectActivePairingViewModel = createSelector(
   }
 );
 
-export const selectLogEntries = (state: any) => state.log.logs as LogEntry[];
-
-export const selectLogEntryViewModels = createSelector(
-  [selectLogEntries],
-  (logs): LogEntryViewModel[] =>
-    logs
-      .slice()
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .map(log => ({
-        id: log.id,
-        timestamp: new Date(log.date).toLocaleTimeString('fr-FR'),
-        level: log.severity as 'info' | 'warning' | 'error',
-        message: `[${log.domaine}] ${log.message}`,
-      }))
-);
-
-export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel, error: string | null, disconnectPeer: (peerId: string) => Promise<void>, disconnecting: boolean, disconnectError: string | null, logs: LogEntryViewModel[]} => {
+export const useSettingsActivePeerViewModel = (): {
+  activePairing: ActivePairingViewModel;
+  error: string | null;
+  disconnectPeer: (peerId: string) => Promise<void>;
+  disconnecting: boolean;
+  disconnectError: string | null;
+} => {
   const activePairing = useAppSelector(selectActivePairingViewModel);
   const error = useAppSelector(selectPairedPeerError);
   const dispatch = useAppDispatch();
   const [disconnecting, setDisconnecting] = useState(false);
   const [disconnectError, setDisconnectError] = useState<string | null>(null);
-  const logs = useAppSelector(selectLogEntryViewModels);
 
   const handleDisconnectPeer = useCallback(async (peerId: string) => {
     setDisconnecting(true);
@@ -123,8 +101,7 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
   }, [dispatch]);
 
   return {
-    // Données du state via selectors
-    activePairing : activePairing.length > 0 ? activePairing[0] :  {
+    activePairing: activePairing.length > 0 ? activePairing[0] : {
       id: 'no_device',
       name: 'Aucun appareil connecté',
       statusText: getActivePairingStatusText('disconnected'),
@@ -143,6 +120,5 @@ export const useSettingsViewModel = () : {activePairing: ActivePairingViewModel,
     disconnectPeer: handleDisconnectPeer,
     disconnecting,
     disconnectError,
-    logs,
   };
 };

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useAppSelector } from '../store/hooks';
-import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentIdentity } from '../../../core/identity/store/identity.slice';
 
 export interface SettingsIdentityViewModel {
   // State

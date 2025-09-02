@@ -6,7 +6,7 @@ import ChatScreen from '../screens/ChatScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import MyQRCodeScreen from '../screens/MyQRCodeScreen';
 import BroadcastScreen from '../screens/BroadcastScreen';
-import SettingsScreen from '../screens/settings/SettingsScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import BluetoothScanScreen from '../screens/BluetoothScanScreen';
 import PublicMessagesScreen from '../screens/PublicMessagesScreen';
 import { useAppState } from '../hooks/use-app-state';

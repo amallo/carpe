@@ -1,33 +1,55 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { toast } from 'sonner-native';
+import { useSettingsActivePeerViewModel } from './settings-active-peer.viewmodel';
 
-interface ActivePairing {
-  name: string;
-  statusColor: string;
-  statusText: string;
-  lastSeen: string;
-  closePairingStatusButtonColor: string;
-  statusIcon: 'battery-half' | 'radio' | 'code-working' | 'medical' | 'close' | 'checkmark';
-  isConnected: boolean;
-  batteryLevel: number;
-  signalStrength: number;
-  firmware: string;
-}
+export const SettingsActivePeer: React.FC = () => {
+  const navigation = useNavigation();
+  const { activePairing, disconnectPeer, disconnecting } = useSettingsActivePeerViewModel();
+  
+  const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'warning' | 'error'>('healthy');
 
-interface SettingsScreenActivePeerProps {
-  activePairing: ActivePairing;
-  healthStatus: string;
-  onConnectDevice: () => void;
-  onHealthCheck: () => void;
-}
+  const handleConnectDevice = () => {
+    if (activePairing.isConnected) {
+      Alert.alert(
+        'Déconnecter l\'émetteur',
+        'Êtes-vous sûr de vouloir vous déconnecter de l\'émetteur LoRa ?',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          {
+            text: disconnecting ? 'Déconnexion...' : 'Déconnecter',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await disconnectPeer(activePairing.id);
+                toast.success('Émetteur déconnecté');
+              } catch (e) {
+                toast.error('Erreur lors de la déconnexion');
+              }
+            },
+          },
+        ]
+      );
+    } else {
+      // Navigate to Bluetooth scan screen
+      navigation.navigate('BluetoothScan' as never);
+    }
+  };
 
-export const SettingsScreenActivePeer: React.FC<SettingsScreenActivePeerProps> = ({
-  activePairing,
-  healthStatus,
-  onConnectDevice,
-  onHealthCheck,
-}) => {
+  const handleHealthCheck = () => {
+    setHealthStatus('checking');
+    toast.loading('Vérification de l\'état de l\'émetteur...');
+
+    setTimeout(() => {
+      const isHealthy = Math.random() > 0.3;
+      setHealthStatus(isHealthy ? 'healthy' : 'warning');
+
+      toast.success(isHealthy ? 'Émetteur en parfait état' : 'Attention: Signal faible détecté');
+    }, 3000);
+  };
+
   const getHealthStatusColor = () => {
     switch (healthStatus) {
       case 'healthy':
@@ -59,7 +81,7 @@ export const SettingsScreenActivePeer: React.FC<SettingsScreenActivePeerProps> =
               styles.connectButton,
               { backgroundColor: activePairing.closePairingStatusButtonColor },
             ]}
-            onPress={onConnectDevice}
+            onPress={handleConnectDevice}
             disabled={activePairing.statusText === ''}
           >
             <Ionicons
@@ -92,7 +114,7 @@ export const SettingsScreenActivePeer: React.FC<SettingsScreenActivePeerProps> =
             </View>
 
             {/* Health Check */}
-            <TouchableOpacity style={styles.healthCheckButton} onPress={onHealthCheck}>
+            <TouchableOpacity style={styles.healthCheckButton} onPress={handleHealthCheck}>
               <View style={styles.healthCheckContent}>
                 <View style={[styles.healthIndicator, { backgroundColor: getHealthStatusColor() }]} />
                 <Text style={styles.healthCheckText}>
