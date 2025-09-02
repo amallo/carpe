@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useAppSelector } from '../store/hooks';
-import { selectCurrentIdentity, selectHasIdentity } from '../../core/identity/store/identity.slice';
-import { useIdentityPersistence } from '../store/use-identity-persistence';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentIdentity, selectHasIdentity } from '../../../core/identity/store/identity.slice';
+import { useIdentityPersistence } from '../../store/use-identity-persistence';
 import { toast } from 'sonner-native';
-import { isDevelopment } from '../config/environment';
+import { isDevelopment } from '../../config/environment';
 
 /**
  * Debug component for testing identity persistence

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, Stat
 import { toast } from 'sonner-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useOnboardingViewModel } from './onboarding.viewmodel';
-import { OnboardingHeader } from './OnboardingHeader';
+import { OnboardingHeader } from '../components/onboarding/OnboardingHeader';
 
 export default function OnboardingScreen() {
   const {

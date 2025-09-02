@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { createIdentity } from '../../../core/identity/usecases/create-identity.usecase';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { selectIdentityError, selectIsIdentityLoading, selectHasIdentity } from '../../../core/identity/store/identity.slice';
+import { createIdentity } from '../../core/identity/usecases/create-identity.usecase';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { selectIdentityError, selectIsIdentityLoading, selectHasIdentity } from '../../core/identity/store/identity.slice';
 
 export const useOnboardingViewModel = () => {
   const dispatch = useAppDispatch();

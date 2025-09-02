@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IdentityPersistenceDebug } from '../components/IdentityPersistenceDebug';
+import { IdentityPersistenceDebug } from '../components/identity/IdentityPersistenceDebug';
 import { isDevelopment } from '../config/environment';
 
 /**
