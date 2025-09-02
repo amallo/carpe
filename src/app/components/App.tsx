@@ -24,6 +24,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+// Import the useLogger hook
+import { useLogger } from '../store/hooks';
+
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -56,6 +59,19 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  // Example usage of useLogger hook
+  const logger = useLogger();
+  
+  // Log when component mounts
+  React.useEffect(() => {
+    logger.info('App', 'App component mounted');
+    logger.info('App', 'ProviderFactory logging should be visible in console');
+    
+    return () => {
+      logger.info('App', 'App component unmounting');
+    };
+  }, [logger]);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,

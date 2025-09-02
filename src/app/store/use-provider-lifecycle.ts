@@ -1,33 +1,46 @@
-import { useEffect } from 'react';
-import { PeerProvider } from '../../core/peers/providers/peer.provider';
-import { Logger } from '../../core/logger/providers/logger.interface';
-import { prodLog } from '../config/environment';
+import { useEffect, useMemo } from 'react';
+import { ReduxLogger } from '../../core/logger/providers/redux-logger.provider';
+import { ProviderFactory } from './provider.factory';
+import {  createStore } from './store';
 
 /**
  * Hook for managing provider lifecycle
  * Handles initialization and cleanup of providers
  */
 export const useProviderLifecycle = (
-  peerProvider: PeerProvider,
-  shouldUseMock: boolean,
-  logger: Logger,
-  dispatch: any
+  shouldUseMockProviders: boolean,
 ) => {
+  const logger = useMemo(() => new ReduxLogger(), []);
+
+  // Create all dependencies using the factory
+  const dependencies = useMemo(() =>
+    ProviderFactory.createAllDependencies(shouldUseMockProviders, logger),
+    [shouldUseMockProviders, logger]
+  );
+
+  // Create store with dependencies
+  const store = useMemo(() =>
+    createStore(dependencies),
+    [dependencies]
+  );
+
+
   useEffect(() => {
     // Initialize logger with store dispatch
-    if (dispatch) {
-      logger.init(dispatch);
+    if (store.dispatch) {
+      logger.init(store.dispatch);
     }
 
     // Start BLE peer provider in production
-    if (!shouldUseMock && peerProvider) {
-      prodLog('Starting BLE peer provider');
-      peerProvider.start();
-      
+    if (!shouldUseMockProviders && dependencies.peerProvider) {
+      logger.info('STORE', 'Starting BLE peer provider');
+      dependencies.peerProvider.start();
       return () => {
-        prodLog('Destroying BLE peer provider');
-        peerProvider.destroy();
+        logger.info('STORE', 'Destroying BLE peer provider');
+        dependencies.peerProvider.destroy();
       };
     }
-  }, [peerProvider, shouldUseMock, logger, dispatch]);
+  }, [dependencies.peerProvider, shouldUseMockProviders, dependencies.logger, store.dispatch, logger]);
+
+  return { store, logger };
 };

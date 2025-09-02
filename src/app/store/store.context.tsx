@@ -1,29 +1,27 @@
 // Créer un context React pour injecter le store et les dependencies
 
-import { useMemo } from 'react';
-import { createStore, createPersistor } from './store';
+import React, { createContext, useMemo } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { useMockProviders } from '../config/environment';
-import { ReduxLogger } from '../../core/logger/providers/redux-logger.provider';
-import { ProviderFactory } from './provider.factory';
 import { useProviderLifecycle } from './use-provider-lifecycle';
+import { Logger } from '../../core/logger/providers/logger.interface';
+import { createPersistor } from './store';
 
+// Context for accessing dependencies
+interface StoreContextType {
+  logger: Logger;
+  // Add other dependencies as needed
+}
+
+const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const shouldUseMockProviders = useMockProviders();
-  const logger = useMemo(() => new ReduxLogger(), []);
 
-  // Create all dependencies using the factory
-  const dependencies = useMemo(() =>
-    ProviderFactory.createAllDependencies(shouldUseMockProviders, logger),
-    [shouldUseMockProviders, logger]
-  );
-
-  // Create store with dependencies
-  const store = useMemo(() =>
-    createStore(dependencies),
-    [dependencies]
+  // Manage provider lifecycle
+  const { store, logger } = useProviderLifecycle(
+    shouldUseMockProviders,
   );
 
   // Create persistor for redux-persist
@@ -32,19 +30,22 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     [store]
   );
 
-  // Manage provider lifecycle
-  useProviderLifecycle(
-    dependencies.peerProvider,
-    shouldUseMockProviders,
+  // Context value with dependencies
+  const contextValue = useMemo(() => ({
     logger,
-    store.dispatch
-  );
+    // Add other dependencies as needed
+  }), [logger]);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        {children}
-      </PersistGate>
-    </Provider>
+    <StoreContext.Provider value={contextValue}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          {children}
+        </PersistGate>
+      </Provider>
+    </StoreContext.Provider>
   );
 };
+
+// Export the context for use in hooks
+export { StoreContext };

@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import { Logger } from '../../core/logger/providers/logger.interface';
-import { PeerProvider } from '../../core/peers/providers/peer.provider';
 import { PermissionProvider } from '../../core/permission/providers/permission.provider';
 import { VaultProvider } from '../../core/identity/providers/vault.provider';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
@@ -22,9 +21,6 @@ import { GrantedPermissionProvider } from '../../core/permission/providers/test/
 import { InMemoryVaultProvider } from '../../core/identity/providers/test/in-memory-vault.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 
-// Logging utilities
-import { debugLog, prodLog } from '../config/environment';
-
 /**
  * Factory for creating providers based on environment
  * Centralizes provider creation logic and logging
@@ -33,26 +29,26 @@ export class ProviderFactory {
   /**
    * Create peer provider based on environment
    */
-  static createPeerProvider(shouldUseMock: boolean, logger: Logger): PeerProvider {
+  static createPeerProvider(shouldUseMock: boolean, logger: Logger) {
     if (shouldUseMock) {
-      debugLog('Using InMemoryPeerProvider for development');
+      logger.info('ProviderFactory', 'Creating InMemoryPeerProvider for development');
       return new InMemoryPeerProvider({ logger });
     }
-    
-    prodLog('Using BLEPeerProvider for production');
+
+    logger.info('ProviderFactory', 'Creating BLEPeerProvider for production');
     return new BLEPeerProvider({ logger });
   }
 
   /**
    * Create vault provider based on environment
    */
-  static createVaultProvider(shouldUseMock: boolean): VaultProvider {
+  static createVaultProvider(shouldUseMock: boolean, logger: Logger): VaultProvider {
     if (shouldUseMock) {
-      debugLog('Using InMemoryVaultProvider for development');
+      logger.info('ProviderFactory', 'Creating InMemoryVaultProvider for development');
       return new InMemoryVaultProvider();
     }
-    
-    prodLog('Using SimpleIOSKeychainVaultProvider for production');
+
+    logger.info('ProviderFactory', 'Creating SimpleIOSKeychainVaultProvider for production');
     return new SimpleIOSKeychainVaultProvider();
   }
 
@@ -61,11 +57,11 @@ export class ProviderFactory {
    */
   static createPermissionProvider(shouldUseMock: boolean, logger: Logger): PermissionProvider {
     if (shouldUseMock) {
-      debugLog('Using GrantedPermissionProvider for development');
+      logger.info('ProviderFactory', 'Creating GrantedPermissionProvider for development');
       return new GrantedPermissionProvider();
     }
-    
-    prodLog('Using NativePermissionProvider for production');
+
+    logger.info('ProviderFactory', 'Creating NativePermissionProvider for production');
     return NativePermissionProvider.create(Platform.OS, logger);
   }
 
@@ -73,33 +69,38 @@ export class ProviderFactory {
    * Create identity ID generator
    * Uses secure UUID v4 generator for production, basic for development/tests
    */
-  static createIdentityIdGenerator(shouldUseMock: boolean = false): IdentityIdGenerator {
+  static createIdentityIdGenerator(shouldUseMock: boolean, logger: Logger): IdentityIdGenerator {
     if (shouldUseMock) {
-      debugLog('Using BasicIdentityGenerator for development');
+      logger.info('ProviderFactory', 'Creating BasicIdentityGenerator for development');
       return new BasicIdentityGenerator();
     }
-    prodLog('Using SecureIdentityGenerator for production');
+    logger.info('ProviderFactory', 'Creating SecureIdentityGenerator for production');
     return new SecureIdentityGenerator();
   }
 
   /**
    * Create key generator
-   * Always uses production implementation as it's stateless
+   * Uses production implementation for production, basic for development/tests
    */
-  static createKeyGenerator(): KeyGenerator {
+  static createKeyGenerator(shouldUseMock: boolean, logger: Logger): KeyGenerator {
+    if (shouldUseMock) {
+      logger.info('ProviderFactory', 'Creating BasicKeyGenerator for development');
+      return new BasicKeyGenerator();
+    }
+    logger.info('ProviderFactory', 'Creating BasicKeyGenerator for production (no secure version available yet)');
     return new BasicKeyGenerator();
   }
 
   /**
    * Create storage provider based on environment
    */
-  static createStorageProvider(shouldUseMock: boolean): AsyncStorageProvider {
+  static createStorageProvider(shouldUseMock: boolean, logger: Logger): AsyncStorageProvider {
     if (shouldUseMock) {
-      debugLog('Using InMemoryAsyncStorageProvider for development');
+      logger.info('ProviderFactory', 'Creating InMemoryAsyncStorageProvider for development');
       return new InMemoryAsyncStorageProvider();
     }
-    
-    prodLog('Using RNAsyncStorageProvider for production');
+
+    logger.info('ProviderFactory', 'Creating RNAsyncStorageProvider for production');
     return new RNAsyncStorageProvider();
   }
 
@@ -108,14 +109,19 @@ export class ProviderFactory {
    * Convenience method for creating all providers
    */
   static createAllDependencies(shouldUseMock: boolean, logger: Logger) {
-    return {
+    logger.info('ProviderFactory', `Creating all dependencies (mock: ${shouldUseMock})`);
+    
+    const dependencies = {
       logger,
       peerProvider: this.createPeerProvider(shouldUseMock, logger),
-      vaultProvider: this.createVaultProvider(shouldUseMock),
+      vaultProvider: this.createVaultProvider(shouldUseMock, logger),
       permissionProvider: this.createPermissionProvider(shouldUseMock, logger),
-      identityIdGenerator: this.createIdentityIdGenerator(shouldUseMock),
-      keyGenerator: this.createKeyGenerator(),
-      storageProvider: this.createStorageProvider(shouldUseMock),
+      identityIdGenerator: this.createIdentityIdGenerator(shouldUseMock, logger),
+      keyGenerator: this.createKeyGenerator(shouldUseMock, logger),
+      storageProvider: this.createStorageProvider(shouldUseMock, logger),
     };
+
+    logger.info('ProviderFactory', 'All dependencies created successfully');
+    return dependencies;
   }
 }
