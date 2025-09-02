@@ -1,10 +1,10 @@
-import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { selectPeerById } from '../../core/peers/store/peers.slice';
-import { PairedPeerStatus, selectActivePairedPeers, selectPairedPeerError } from '../../core/peers/store/paired-peer.slice';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { selectPeerById } from '../../../core/peers/store/peers.slice';
+import { PairedPeerStatus, selectActivePairedPeers, selectPairedPeerError } from '../../../core/peers/store/paired-peer.slice';
 import { createSelector } from '@reduxjs/toolkit';
 import { useState, useCallback } from 'react';
-import { LogEntry } from '../../core/logger/store/log.slice';
-import { unpairPeer } from '../../core/peers/usecases/unpair-peer.usecase';
+import { LogEntry } from '../../../core/logger/store/log.slice';
+import { unpairPeer } from '../../../core/peers/usecases/unpair-peer.usecase';
 
 export interface ActivePairingViewModel {
   id: string;

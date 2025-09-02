@@ -4,11 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
-import { useSettingsViewModel, type LogEntryViewModel } from './settings/settings-screen.viewmodel';
-import { useAppDispatch } from '../store/hooks';
-import { clearLogs } from '../../core/logger/store/log.slice';
-import { SettingsIdentitySection } from '../components/SettingsIdentitySection';
-import { SettingsScreenActivePeer } from './settings/SettingsActivePeer';
+import { useSettingsViewModel, type LogEntryViewModel } from './settings-screen.viewmodel';
+import { useAppDispatch } from '../../store/hooks';
+import { clearLogs } from '../../../core/logger/store/log.slice';
+import { SettingsIdentitySection } from '../../components/SettingsIdentitySection';
+import { SettingsScreenActivePeer } from './SettingsActivePeer';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
