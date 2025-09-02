@@ -59,6 +59,11 @@ Carpe is not a finished product but an exploration:
 
 ---
 
+## 📚 Documentation
+
+- **[Technical Whitepaper](CARPEAPP_WHITEPAPER.md)** — Architecture technique, contraintes LoRa, protocoles et principes de conception
+- **LoRa Module** — Firmware en développement dans [`amallo/carpe-module`](https://github.com/amallo/carpe-module)
+
 ## 🛠️ Current Status
 
 Work in progress — and fun! 🎉  
