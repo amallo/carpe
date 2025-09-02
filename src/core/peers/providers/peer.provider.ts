@@ -72,6 +72,7 @@ export interface PeerProvider{
     onScanStopped(callback: () => void): void;
     onScanStarted(callback: () => void): void;
     onPeerFound(callback: (peer: PeerFound) => void): void;
+    onPeerConnected(callback: (peerId: string) => void): void;
     /**
      * Disconnect a peer physically (must be implemented)
      */

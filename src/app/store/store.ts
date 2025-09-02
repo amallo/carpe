@@ -3,7 +3,7 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
 import peerReducer from '../../core/peers/store/peers.slice';
-import pairedPeerReducer from '../../core/peers/store/paired-peer.slice';
+import pairedPeerReducer, { peerWasConnected } from '../../core/peers/store/paired-peer.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
 import connectivityReducer from '../../core/connectivity/store/connectivity.slice';
 import appReducer from '../../core/app/store/app.slice';
@@ -27,6 +27,11 @@ export const createStore = (
     const persistConfig = customPersistConfig || createIdentityPersistConfig(dependencies.storageProvider);
     // Create persisted identity reducer
     const persistedIdentityReducer = persistReducer(persistConfig, identityReducer);
+
+    // Listen to peer connected events
+    dependencies.peerProvider.onPeerConnected((peerId) => {
+        store.dispatch(peerWasConnected(peerId));
+    });
 
     const store = configureStore({
         reducer: {

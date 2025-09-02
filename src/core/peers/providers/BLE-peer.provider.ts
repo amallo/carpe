@@ -7,6 +7,7 @@ export class BLEPeerProvider implements PeerProvider{
     private scanStartedCallback: (() => void) | null = null;
     private scanStoppedCallback: (() => void) | null = null;
     private peerFoundCallback: ((peer: PeerFound) => void) | null = null;
+    private peerConnectedCallback: ((peerId: string) => void) | null = null;
     private isScanning: boolean = false;
 
     constructor(params?: { logger?: Logger }) {
@@ -63,6 +64,11 @@ export class BLEPeerProvider implements PeerProvider{
                 firmware: loraData.firmware,
                 batteryLevel: loraData.batteryLevel,
             });
+        }
+    });
+    private onDidConnectPeri = BleManager.onConnectPeripheral((p: any) => {
+        if (this.peerConnectedCallback) {
+            this.peerConnectedCallback(p.id);
         }
     });
     onScanStarted(callback: () => void): void {
@@ -161,8 +167,13 @@ export class BLEPeerProvider implements PeerProvider{
         this.logger?.debug('BLE', 'onScanStopped() callback registered');
         this.scanStoppedCallback = callback;
     }
+    onPeerConnected(callback: (peerId: string) => void): void {
+        this.logger?.debug('BLE', 'onPeerConnected() callback registered');
+        this.peerConnectedCallback = callback;
+    }
     destroy(): void {
         this.onStopListener.remove();
         this.onDidDiscoverPeri.remove();
+        this.onDidConnectPeri.remove();
     }
 }

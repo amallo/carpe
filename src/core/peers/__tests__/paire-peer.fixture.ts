@@ -1,8 +1,7 @@
 import { FakePeerProvider } from '../providers/test/fake-peer.provider';
 import { pairPeer } from '../usecases/pair-peer.usecase';
-import { scanPeers } from '../usecases/scan-peers.usecase';
 import { createStateBuilder, StateBuilder } from '../../store/state.builder';
-import { PeerError, PeerFound } from '../providers/peer.provider';
+import { PeerError } from '../providers/peer.provider';
 import { FakePermissionProvider } from '../../permission/providers/test/fake-permission.provider';
 import { createTestStore, Store } from '../../../app/store/store';
 import { FeatureRequest } from '../../permission/providers/permission.provider';
@@ -120,6 +119,7 @@ export class PairedPeerFixture {
     return this;
   }
 
+
   expectPeerConnected(peerId: string): this {
     const store = this.getOrCreateStore();
     const expectedState = createStateBuilder()
@@ -148,15 +148,15 @@ export class PairedPeerFixture {
   expectPairedPeer(peerId: string): this {
     const store = this.getOrCreateStore();
     const state = store.getState();
-    
+
     // Verify peer is connected in pairedPeer slice
     expect(state.pairedPeer.entities[peerId]).toBeDefined();
     expect(state.pairedPeer.entities[peerId]?.status).toBe('connected');
     expect(state.pairedPeer.ids).toContain(peerId);
-    
+
     // Verify permissions are granted
     expect(state.permission.entities['connect-bluetooth']?.status).toBe('granted');
-    
+
     return this;
   }
 
@@ -216,54 +216,48 @@ export class PairedPeerFixture {
     return this.getOrCreateStore();
   }
 
-  getPeerProvider(): FakePeerProvider {
-    return this.peerProvider;
-  }
 
-  getPermissionProvider(): FakePermissionProvider {
-    return this.permissionProvider;
-  }
 
   // Auto-reconnection testing methods
   async simulatePeerFoundDuringScann(peerId: string): Promise<this> {
     const store = this.getOrCreateStore();
-    
+
     const fakePeer: PeerEntity = {
       id: peerId,
       name: peerId,
       isConnectable: true,
       signalStrength: 85,
-      lastSeen: new Date().toISOString()
+      lastSeen: new Date().toISOString(),
     };
-    
+
     // Trigger scanHit → middleware → auto-reconnection
     store.dispatch(scanHit(fakePeer));
-    
+
     // Wait for all middleware thunks to resolve completely
     // setImmediate ensures we wait after all current promises
     await new Promise(resolve => setImmediate(resolve));
-    
+
     return this;
   }
 
   async requestConnectivityScan(): Promise<this> {
     const store = this.getOrCreateStore();
-    
+
     // Trigger connectivity scan request → middleware → scan for paired peers
     store.dispatch(scanRequested());
-    
+
     // Wait for all middleware thunks to resolve completely
     await new Promise(resolve => setImmediate(resolve));
-    
+
     return this;
   }
 
   async appForeground(): Promise<this> {
     const store = this.getOrCreateStore();
-    
+
     // Trigger app foreground → useAppState hook → scanRequested
     store.dispatch(appForeground());
-    
+
     return this;
   }
 
@@ -273,11 +267,11 @@ export class PairedPeerFixture {
     const store = this.getOrCreateStore();
     const state = store.getState();
     const pairedPeer = state.pairedPeer.entities[peerId];
-    
+
     expect(pairedPeer).toBeDefined();
     // If pairPeer was called, status should not be 'disconnected' anymore
     expect(pairedPeer?.status).not.toBe('disconnected');
-    
+
     return this;
   }
 
@@ -286,11 +280,11 @@ export class PairedPeerFixture {
     // Let's verify this by checking that the scan completed (scanLoading would be false after completion)
     const store = this.getOrCreateStore();
     const state = store.getState();
-    
+
     // After scan completion, scanLoading should be false (completed)
     // The presence of the log "[SCAN] Début du scan de peers" proves scan was called
     expect(state.peer.scanLoading).toBe(false); // Scan completed
-    
+
     return this;
   }
 }

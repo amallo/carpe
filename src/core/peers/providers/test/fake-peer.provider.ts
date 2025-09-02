@@ -10,6 +10,7 @@ export class FakePeerProvider implements PeerProvider{
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
     private _unpairCallTracker = new CallTracker();
+    private _peerConnectedCallback: ((peerId: string) => void) | null = null;
     schedulePeerFound(peer: PeerFound){
         this._peerScaaned.push(peer);
     }
@@ -26,28 +27,30 @@ export class FakePeerProvider implements PeerProvider{
     }
     async connect(peerId: string): Promise<void> {
         this._connectToPeerCallTracker.recordCall();
-        
+
         // Simuler les erreurs possibles selon l'interface
         if (peerId === 'non-existent-peer') {
             throw new Error(PeerError.PEER_NOT_FOUND);
         }
-        
+
         if (peerId === 'timeout-peer' || peerId === 'timeout-peer-id') {
             throw new Error(PeerError.CONNECTION_TIMEOUT);
         }
-        
+
         if (peerId === 'already-connected-peer') {
             throw new Error(PeerError.PEER_ALREADY_CONNECTED);
         }
-        
+
         if (peerId === 'not-connectable-peer') {
             throw new Error(PeerError.PEER_NOT_CONNECTABLE);
         }
-        
+
         if (peerId === 'secured-peer') {
             throw new Error(PeerError.SECURITY_REQUIRED);
         }
-        
+
+        this._peerConnectedCallback?.(peerId);
+
         return Promise.resolve();
     }
     disconnect(peerId: string): Promise<void> {
@@ -80,5 +83,8 @@ export class FakePeerProvider implements PeerProvider{
     }
     onScanStarted(callback: () => void): void {
         this._scanStartedCallback = callback;
+    }
+    onPeerConnected(callback: (peerId: string) => void): void {
+        this._peerConnectedCallback = callback;
     }
 }

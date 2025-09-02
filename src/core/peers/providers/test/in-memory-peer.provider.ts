@@ -38,6 +38,7 @@ export class InMemoryPeerProvider implements PeerProvider{
     private _callback: ((peer: PeerFound) => void) | null = null;
     private _scanStoppedCallback: (() => void) | null = null;
     private _scanStartedCallback: (() => void) | null = null;
+    private _peerConnectedCallback: ((peerId: string) => void) | null = null;
     private _pairedPeerIds: Set<string> = new Set();
 
     constructor(params?: { logger?: Logger }) {
@@ -96,6 +97,7 @@ export class InMemoryPeerProvider implements PeerProvider{
         }
         this._pairedPeerIds.add(peerId);
         this.logger?.debug('INMEMORY', `connect() success: peer ${peerId} connected`);
+        this._peerConnectedCallback?.(peerId);
         return Promise.resolve();
     }
     async disconnect(peerId: string): Promise<void> {
@@ -119,5 +121,9 @@ export class InMemoryPeerProvider implements PeerProvider{
     onScanStarted(callback: () => void): void {
         this.logger?.debug('INMEMORY', 'onScanStarted() callback registered');
         this._scanStartedCallback = callback;
+    }
+    onPeerConnected(callback: (peerId: string) => void): void {
+        this.logger?.debug('INMEMORY', 'onPeerConnected() callback registered');
+        this._peerConnectedCallback = callback;
     }
 }

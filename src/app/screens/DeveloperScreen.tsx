@@ -26,10 +26,10 @@ export default function DeveloperScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.header}>🛠️ Outils Développeur</Text>
-        
+
         {/* Identity Persistence Debug */}
         <IdentityPersistenceDebug />
-        
+
         {/* Add other development tools here */}
         <View style={styles.placeholder}>
           <Text style={styles.placeholderText}>

@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { pairPeer } from '../usecases/pair-peer.usecase';
 import { disconnectPairedPeer } from '../usecases/disconnect-paired-peer.usecase';
 
@@ -25,7 +25,11 @@ export const getPairedPeerInitialState = (): PairedPeerState => ({
 const pairedPeerSlice = createSlice({
     name: 'pairedPeer',
     initialState: getPairedPeerInitialState(),
-    reducers: {},
+    reducers: {
+        peerWasConnected: (state, action: PayloadAction<string>) => {
+            state.entities[action.payload].status = 'connected';
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(pairPeer.pending, (state, action) => {
             state.error = null;
@@ -34,14 +38,15 @@ const pairedPeerSlice = createSlice({
                 status: 'pending',
             });
         });
-        builder.addCase(pairPeer.fulfilled, (state, action) => {
+        /*builder.addCase(pairPeer.fulfilled, (state, action) => {
             pairedPeerAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {
-                    status: 'connected'
-                }
+                    status: 'connected',
+                },
             });
-        });
+        });*/
+        
         builder.addCase(pairPeer.rejected, (state, action) => {
             state.error = action.error.message || 'Connection failed';
             // Keep the peer in the list but mark it as disconnected
@@ -49,8 +54,8 @@ const pairedPeerSlice = createSlice({
             pairedPeerAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {
-                    status: 'disconnected'
-                }
+                    status: 'disconnected',
+                },
             });
         });
         builder.addCase(disconnectPairedPeer.fulfilled, (state, action) => {
@@ -59,8 +64,8 @@ const pairedPeerSlice = createSlice({
             pairedPeerAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {
-                    status: 'disconnected'
-                }
+                    status: 'disconnected',
+                },
             });
         });
     },
@@ -70,7 +75,7 @@ export const selectActivePairedPeers = (state: { pairedPeer: PairedPeerState })=
 
 export const selectPairedPeerError = (state: { pairedPeer: PairedPeerState })=>state.pairedPeer.error;
 
-export const selectPairedPeerById = (state: { pairedPeer: PairedPeerState }, id: string) => 
+export const selectPairedPeerById = (state: { pairedPeer: PairedPeerState }, id: string) =>
     pairedPeerAdapter.getSelectors().selectById(state.pairedPeer, id);
 
 export const selectConnectedPairedPeers = (state: { pairedPeer: PairedPeerState }) =>
@@ -80,3 +85,5 @@ export const selectDisconnectedPairedPeers = (state: { pairedPeer: PairedPeerSta
     pairedPeerAdapter.getSelectors().selectAll(state.pairedPeer).filter(peer => peer.status === 'disconnected');
 
 export default pairedPeerSlice.reducer;
+
+export const { peerWasConnected } = pairedPeerSlice.actions;
