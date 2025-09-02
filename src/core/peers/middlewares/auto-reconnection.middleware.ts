@@ -8,7 +8,7 @@ import { scanPeers } from '../usecases/scan-peers.usecase';
 import type { RootState } from '../../../app/store/store';
 
 export const createAutoReconnectionMiddleware = (dependencies: Dependencies) => {
-  return (store: any) => (next: any) => (action: UnknownAction) => {
+  return (store: any) => (next: any) => (action: any) => {
     const result = next(action);
 
     // Auto-reconnection on scan hit

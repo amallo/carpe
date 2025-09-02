@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
-import { setMultiplePermissionForFeature } from '../../permission/store/permission.slice';
 import { scanHit, setPeerScanning, PeerEntity } from '../store/peers.slice';
 import { PeerFound } from '../providers/peer.provider';
 import { checkPermissionService } from '../../permission/services/check-permission.service';

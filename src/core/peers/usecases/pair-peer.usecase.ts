@@ -19,4 +19,4 @@ export const pairPeer = createAsyncThunk<
         const { peerProvider } = extra;
         await peerProvider.connect(peerId);
     }
-); 
+);
