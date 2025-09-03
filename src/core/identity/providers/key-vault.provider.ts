@@ -1,6 +1,6 @@
 import { KeyPair } from '../generators/key.generator';
 
-export interface VaultProvider {
+export interface KeyVaultProvider {
     /**
      * Save a key pair securely
      * @param service - The service identifier for the key pair

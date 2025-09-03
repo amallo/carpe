@@ -1,11 +1,11 @@
-import { VaultProvider } from './vault.provider';
+import { KeyVaultProvider } from './key-vault.provider';
 import { KeyPair } from '../generators/key.generator';
 
 /**
  * Simple iOS Keychain implementation of VaultProvider
  * Uses basic setGenericPassword instead of setInternetCredentials for better compatibility
  */
-export class SimpleIOSKeychainVaultProvider implements VaultProvider {
+export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
     private readonly keychainService: string;
 
     constructor(keychainService: string = 'com.carpeapp.identity') {

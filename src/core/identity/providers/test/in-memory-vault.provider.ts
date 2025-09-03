@@ -1,11 +1,11 @@
-import { VaultProvider } from '../vault.provider';
+import { KeyVaultProvider } from '../key-vault.provider';
 import { KeyPair } from '../../generators/key.generator';
 
 /**
  * In-memory implementation of VaultProvider for testing purposes
  * Stores key pairs in memory (NOT for production use)
  */
-export class InMemoryVaultProvider implements VaultProvider {
+export class InMemoryVaultProvider implements KeyVaultProvider {
     private keyPairs: Map<string, KeyPair> = new Map();
 
     /**

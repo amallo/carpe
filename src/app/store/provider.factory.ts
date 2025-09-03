@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import { Logger } from '../../core/logger/providers/logger.interface';
 import { PermissionProvider } from '../../core/permission/providers/permission.provider';
-import { VaultProvider } from '../../core/identity/providers/vault.provider';
+import { KeyVaultProvider } from '../../core/identity/providers/key-vault.provider';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
 import { KeyGenerator } from '../../core/identity/generators/key.generator';
 import { AsyncStorageProvider } from '../../core/storage/providers/async-storage.provider';
@@ -9,7 +9,7 @@ import { AsyncStorageProvider } from '../../core/storage/providers/async-storage
 // Production providers
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
-import { SimpleIOSKeychainVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
+import { SimpleIOSKeychainKeyVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
 import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
 import { SecureIdentityGenerator } from '../../core/identity/generators/secure-identity-id.generator';
 import { BasicKeyGenerator } from '../../core/identity/generators/fake/basic-key.generator';
@@ -44,14 +44,14 @@ export class ProviderFactory {
   /**
    * Create vault provider based on environment
    */
-  static createVaultProvider(shouldUseMock: boolean, logger: Logger): VaultProvider {
+  static createVaultProvider(shouldUseMock: boolean, logger: Logger): KeyVaultProvider {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating InMemoryVaultProvider for development');
       return new InMemoryVaultProvider();
     }
 
     logger.info('ProviderFactory', 'Creating SimpleIOSKeychainVaultProvider for production');
-    return new SimpleIOSKeychainVaultProvider();
+    return new SimpleIOSKeychainKeyVaultProvider();
   }
 
   /**

@@ -1,8 +1,8 @@
-import { VaultProvider } from '../vault.provider';
+import { KeyVaultProvider } from '../key-vault.provider';
 import { KeyPair } from '../../generators/key.generator';
 import { CallTracker } from '../../../test/call-tracker';
 
-export class FakeVaultProvider implements VaultProvider {
+export class FakeVaultProvider implements KeyVaultProvider {
     private _storedKeyPairs: Map<string, KeyPair> = new Map();
     private _saveKeyPairCallTracker = new CallTracker();
     private _getKeyPairCallTracker = new CallTracker();
