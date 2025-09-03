@@ -1,5 +1,5 @@
-import { KeyVaultProvider } from './key-vault.provider';
-import { KeyPair } from '../generators/key.generator';
+import { KeyVaultProvider } from '../key-vault.provider';
+import { IdentityKeyPair } from '../../generators/identity-key-pair.generator';
 
 /**
  * Simple iOS Keychain implementation of VaultProvider
@@ -17,10 +17,10 @@ export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
      * @param service - The service identifier for the key pair
      * @param keyPair - The key pair to save
      */
-    async saveKeyPair(service: string, keyPair: KeyPair): Promise<void> {
+    async store(service: string, keyPair: IdentityKeyPair): Promise<void> {
         try {
             const Keychain = require('react-native-keychain');
-            
+
             // Create a combined data structure for both keys
             const keyData = {
                 publicKey: keyPair.publicKey,
@@ -51,10 +51,10 @@ export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
      * @param service - The service identifier for the key pair
      * @returns The stored key pair or null if none exists
      */
-    async getKeyPair(service: string): Promise<KeyPair | null> {
+    async retrieve(service: string): Promise<IdentityKeyPair | null> {
         try {
             const Keychain = require('react-native-keychain');
-            
+
             const credentials = await Keychain.getGenericPassword({
                 service: `${this.keychainService}.${service}`,
             });
@@ -65,7 +65,7 @@ export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
 
             // Parse the stored JSON data
             const keyData = JSON.parse(credentials.password);
-            
+
             return {
                 publicKey: keyData.publicKey,
                 privateKey: keyData.privateKey,
@@ -73,7 +73,7 @@ export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
         } catch (error) {
             // If the key doesn't exist or there's an authentication error, return null
             if (error instanceof Error && (
-                error.message.includes('not found') || 
+                error.message.includes('not found') ||
                 error.message.includes('No credentials stored')
             )) {
                 return null;
@@ -83,41 +83,4 @@ export class SimpleIOSKeychainKeyVaultProvider implements KeyVaultProvider {
         }
     }
 
-    /**
-     * Check if a key pair exists in iOS Keychain
-     * @param service - The service identifier for the key pair
-     * @returns True if a key pair is stored
-     */
-    async hasKeyPair(service: string): Promise<boolean> {
-        try {
-            const keyPair = await this.getKeyPair(service);
-            return keyPair !== null;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    /**
-     * Delete the stored key pair from iOS Keychain
-     * @param service - The service identifier for the key pair
-     */
-    async deleteKeyPair(service: string): Promise<void> {
-        try {
-            const Keychain = require('react-native-keychain');
-            
-            await Keychain.resetGenericPassword({
-                service: `${this.keychainService}.${service}`,
-            });
-        } catch (error) {
-            // Ignore errors if the key doesn't exist
-            if (error instanceof Error && (
-                error.message.includes('not found') ||
-                error.message.includes('No credentials stored')
-            )) {
-                return;
-            }
-            console.error('Simple Keychain delete error details:', error);
-            throw new Error(`Failed to delete key pair from iOS Keychain: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-    }
 }

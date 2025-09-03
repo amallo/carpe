@@ -11,9 +11,9 @@ import appReducer from '../../core/app/store/app.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
-import { FakeIdentityIdGenerator } from '../../core/identity/generators/fake/fake-identity-id.generator';
-import { FakeKeyGenerator } from '../../core/identity/generators/fake/fake-key.generator';
-import { FakeVaultProvider } from '../../core/identity/providers/test/fake-vault.provider';
+import { FakeIdentityIdGenerator } from '../../core/identity/generators/infra/fake-identity-id.generator';
+import { FakeIdentityKeyPairGenerator } from '../../core/identity/generators/infra/fake-identity-key-pair.generator';
+import { FakeKeyVaultProvider } from '../../core/identity/providers/infra/fake-key-vault.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import identityReducer from '../../core/identity/store/identity.slice';
 import { createIdentityPersistConfig } from './persistence.factory';
@@ -72,8 +72,8 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         permissionProvider: new GrantedPermissionProvider(),
         logger: new ConsoleLogger(),
         identityIdGenerator: new FakeIdentityIdGenerator(),
-        keyGenerator: new FakeKeyGenerator(),
-        vaultProvider: new FakeVaultProvider(),
+        keyGenerator: new FakeIdentityKeyPairGenerator(),
+        vaultProvider: new FakeKeyVaultProvider(),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
         ...dependencies,

@@ -1,8 +1,8 @@
 import { createTestStore, Store } from '../../../app/store/store';
 import { createStateBuilder } from '../../store/state.builder';
-import { FakeIdentityIdGenerator } from '../generators/fake/fake-identity-id.generator';
-import { FakeKeyGenerator } from '../generators/fake/fake-key.generator';
-import { FakeVaultProvider } from '../providers/test/fake-vault.provider';
+import { FakeIdentityIdGenerator } from '../generators/infra/fake-identity-id.generator';
+import { FakeIdentityKeyPairGenerator } from '../generators/infra/fake-identity-key-pair.generator';
+import { FakeKeyVaultProvider } from '../providers/infra/fake-key-vault.provider';
 import { createIdentity } from '../usecases/create-identity.usecase';
 
 /**
@@ -10,18 +10,18 @@ import { createIdentity } from '../usecases/create-identity.usecase';
  */
 export class IdentityFixture {
   private identityIdGenerator: FakeIdentityIdGenerator;
-  private keyGenerator: FakeKeyGenerator;
-  private vaultProvider: FakeVaultProvider;
+  private keyGenerator: FakeIdentityKeyPairGenerator;
+  private vaultProvider: FakeKeyVaultProvider;
   private store: Store;
 
   constructor(dependencies: {
     identityIdGenerator?: FakeIdentityIdGenerator;
-    keyGenerator?: FakeKeyGenerator;
-    vaultProvider?: FakeVaultProvider;
+    keyGenerator?: FakeIdentityKeyPairGenerator;
+    vaultProvider?: FakeKeyVaultProvider;
   } = {}) {
     this.identityIdGenerator = dependencies.identityIdGenerator || new FakeIdentityIdGenerator();
-    this.keyGenerator = dependencies.keyGenerator || new FakeKeyGenerator();
-    this.vaultProvider = dependencies.vaultProvider || new FakeVaultProvider();
+    this.keyGenerator = dependencies.keyGenerator || new FakeIdentityKeyPairGenerator();
+    this.vaultProvider = dependencies.vaultProvider || new FakeKeyVaultProvider();
     
     this.store = createTestStore({
       identityIdGenerator: this.identityIdGenerator,
@@ -85,7 +85,7 @@ export class IdentityFixture {
     return this.store;
   }
 
-  getVaultProvider(): FakeVaultProvider {
+  getVaultProvider(): FakeKeyVaultProvider {
     return this.vaultProvider;
   }
 
@@ -93,7 +93,7 @@ export class IdentityFixture {
     return this.identityIdGenerator;
   }
 
-  getKeyGenerator(): FakeKeyGenerator {
+  getKeyGenerator(): FakeIdentityKeyPairGenerator {
     return this.keyGenerator;
   }
 }

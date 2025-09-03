@@ -1,12 +1,12 @@
-export interface KeyPair {
+export interface IdentityKeyPair {
     publicKey: string;
     privateKey: string;
 }
 
-export interface KeyGenerator {
+export interface IdentityKeyPairGenerator {
     /**
      * Generate a public/private key pair
      * @returns A key pair with public and private keys
      */
-    generate(): Promise<KeyPair>;
+    generate(): Promise<IdentityKeyPair>;
 }

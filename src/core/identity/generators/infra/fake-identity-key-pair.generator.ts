@@ -1,14 +1,14 @@
-import { KeyGenerator, KeyPair } from '../key.generator';
+import { IdentityKeyPairGenerator, IdentityKeyPair } from '../identity-key-pair.generator';
 
-export class FakeKeyGenerator implements KeyGenerator {
-    private _keyPairs: KeyPair[] = [];
+export class FakeIdentityKeyPairGenerator implements IdentityKeyPairGenerator {
+    private _keyPairs: IdentityKeyPair[] = [];
     private _errors: string[] = [];
 
     /**
      * Schedule the next key pair to be generated
      * @param keyPair - The key pair to be returned on next generate() call
      */
-    scheduleKeyPairGenerated(keyPair: KeyPair) {
+    scheduleKeyPairGenerated(keyPair: IdentityKeyPair) {
         this._keyPairs.push(keyPair);
     }
 
@@ -24,7 +24,7 @@ export class FakeKeyGenerator implements KeyGenerator {
      * Generate the next scheduled key pair or throw error if none scheduled
      * @returns The next scheduled key pair
      */
-    async generate(): Promise<KeyPair> {
+    async generate(): Promise<IdentityKeyPair> {
         // Check if there's a scheduled error first
         const scheduledError = this._errors.shift();
         if (scheduledError) {

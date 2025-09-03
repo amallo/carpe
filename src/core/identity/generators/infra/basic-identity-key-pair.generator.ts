@@ -1,6 +1,6 @@
-import { KeyGenerator, KeyPair } from '../key.generator';
+import { IdentityKeyPairGenerator, IdentityKeyPair } from '../identity-key-pair.generator';
 
-export class BasicKeyGenerator implements KeyGenerator {
+export class BasicIdentityKeyPairGenerator implements IdentityKeyPairGenerator {
     private counter = 0;
 
     private async simulateLatency(): Promise<void> {
@@ -8,7 +8,7 @@ export class BasicKeyGenerator implements KeyGenerator {
         await new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    async generate(): Promise<KeyPair> {
+    async generate(): Promise<IdentityKeyPair> {
         await this.simulateLatency();
         this.counter++;
         return {

@@ -18,7 +18,7 @@ export const createIdentity = createAsyncThunk<
         const { identityIdGenerator, keyGenerator, vaultProvider } = extra;
         const generatedIdentityId = identityIdGenerator.generate({nickname});
         const generatedKeyPair = await keyGenerator.generate();
-        await vaultProvider.saveKeyPair('identity', generatedKeyPair);
+        await vaultProvider.store('identity', generatedKeyPair);
 
         return {
             id: generatedIdentityId,

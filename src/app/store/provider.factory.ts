@@ -3,22 +3,22 @@ import { Logger } from '../../core/logger/providers/logger.interface';
 import { PermissionProvider } from '../../core/permission/providers/permission.provider';
 import { KeyVaultProvider } from '../../core/identity/providers/key-vault.provider';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
-import { KeyGenerator } from '../../core/identity/generators/key.generator';
+import { IdentityKeyPairGenerator } from '../../core/identity/generators/identity-key-pair.generator';
 import { AsyncStorageProvider } from '../../core/storage/providers/async-storage.provider';
 
 // Production providers
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
-import { SimpleIOSKeychainKeyVaultProvider } from '../../core/identity/providers/simple-ios-keychain-vault.provider';
-import { BasicIdentityGenerator } from '../../core/identity/generators/basic-identity-id.generator';
-import { SecureIdentityGenerator } from '../../core/identity/generators/secure-identity-id.generator';
-import { BasicKeyGenerator } from '../../core/identity/generators/fake/basic-key.generator';
+import { SimpleIOSKeychainKeyVaultProvider } from '../../core/identity/providers/infra/simple-ios-keychain-key-vault.provider';
+import { BasicIdentityIdGenerator } from '../../core/identity/generators/infra/basic-identity-id.generator';
+import { UUIDIdentitIdGenerator } from '../../core/identity/generators/infra/uuid-identity-id.generator';
+import { BasicIdentityKeyPairGenerator } from '../../core/identity/generators/infra/basic-identity-key-pair.generator';
 import { RNAsyncStorageProvider } from '../../core/storage/providers/rn-async-storage.provider';
 
 // Test providers
 import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-peer.provider';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
-import { InMemoryVaultProvider } from '../../core/identity/providers/test/in-memory-vault.provider';
+import { InMemoryKeysVaultProvider } from '../../core/identity/providers/infra/in-memory-key-vault.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
@@ -47,7 +47,7 @@ export class ProviderFactory {
   static createVaultProvider(shouldUseMock: boolean, logger: Logger): KeyVaultProvider {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating InMemoryVaultProvider for development');
-      return new InMemoryVaultProvider();
+      return new InMemoryKeysVaultProvider();
     }
 
     logger.info('ProviderFactory', 'Creating SimpleIOSKeychainVaultProvider for production');
@@ -74,23 +74,23 @@ export class ProviderFactory {
   static createIdentityIdGenerator(shouldUseMock: boolean, logger: Logger): IdentityIdGenerator {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating BasicIdentityGenerator for development');
-      return new BasicIdentityGenerator();
+      return new BasicIdentityIdGenerator();
     }
     logger.info('ProviderFactory', 'Creating SecureIdentityGenerator for production');
-    return new SecureIdentityGenerator();
+    return new UUIDIdentitIdGenerator();
   }
 
   /**
    * Create key generator
    * Uses production implementation for production, basic for development/tests
    */
-  static createKeyGenerator(shouldUseMock: boolean, logger: Logger): KeyGenerator {
+  static createKeyGenerator(shouldUseMock: boolean, logger: Logger): IdentityKeyPairGenerator {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating BasicKeyGenerator for development');
-      return new BasicKeyGenerator();
+      return new BasicIdentityKeyPairGenerator();
     }
     logger.info('ProviderFactory', 'Creating BasicKeyGenerator for production (no secure version available yet)');
-    return new BasicKeyGenerator();
+    return new BasicIdentityKeyPairGenerator();
   }
 
   /**
