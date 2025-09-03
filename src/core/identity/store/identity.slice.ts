@@ -8,15 +8,16 @@ interface IdentityState {
     error: string | null;
 }
 
-const initialState: IdentityState = {
+
+export const getIdentityInitialState = (): IdentityState => ({
     current: null,
     isLoading: false,
     error: null,
-};
+});
 
 const identitySlice = createSlice({
     name: 'identity',
-    initialState,
+    initialState : getIdentityInitialState(),
     reducers: {
         clearCurrentIdentity: (state) => {
             state.current = null;

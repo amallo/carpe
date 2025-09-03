@@ -10,6 +10,8 @@ import { initialState as logInitialState } from '../logger/store/log.slice';
 import { getConnectivityInitialState } from '../connectivity/store/connectivity.slice';
 import { getAppInitialState } from '../app/store/app.slice';
 import { Identity } from '../identity/entities/identity.entity';
+import { getMessageInitialState, MessageEntity, messageAdapter } from '../message/store/message.slice';
+import { getIdentityInitialState } from '../identity/store/identity.slice';
 
 
 export class StateBuilder {
@@ -54,6 +56,16 @@ export class StateBuilder {
         });
         return this;
     }
+    withBroadcastedMessage(message: MessageEntity) {
+        this._state.message = {...this._state.message, 
+            broadcasted: messageAdapter.addOne(this._state.message.broadcasted, message),
+        };
+        return this;
+    }
+    withEmptyPendingMessages() {
+        this._state.message = {...this._state.message, pending: messageAdapter.getInitialState()};
+        return this;
+    }
     withCurrentIdentity(identity: Identity) {
         this._state.identity = {
             ...this._state.identity,
@@ -74,11 +86,8 @@ export const createStateBuilder = (initialState: RootState = {
     log: logInitialState,
     connectivity: getConnectivityInitialState(),
     app: getAppInitialState(),
-    identity: {
-        current: null,
-        isLoading: false,
-        error: null,
-    },
+    message: getMessageInitialState(),
+    identity: getIdentityInitialState(),
 }) => {
     return new StateBuilder(initialState);
 };

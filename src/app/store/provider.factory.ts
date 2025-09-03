@@ -20,6 +20,8 @@ import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import { InMemoryVaultProvider } from '../../core/identity/providers/test/in-memory-vault.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
+import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
+import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 
 /**
  * Factory for creating providers based on environment
@@ -103,14 +105,37 @@ export class ProviderFactory {
     logger.info('ProviderFactory', 'Creating RNAsyncStorageProvider for production');
     return new RNAsyncStorageProvider();
   }
+  /**
+   * Create message provider based on environment
+   */
+  static createMessageProvider(shouldUseMock: boolean, logger: Logger) {
+    if (shouldUseMock) {
+      logger.info('ProviderFactory', 'Creating FakeMessageProvider for development');
+      return new FakeMessageProvider();
+    }
+    logger.info('ProviderFactory', 'Creating MessageProvider for production');
+    throw new Error('Not ready');
+  }
+  /**
+   * Create message id generator based on environment
+   */
+  static createMessageIdGenerator(shouldUseMock: boolean, logger: Logger): MessageIdGenerator {
+    if (shouldUseMock) {
+      logger.info('ProviderFactory', 'Creating FakeMessageIdGenerator for development');
+      return new FakeMessageIdGenerator();
+    }
+    logger.info('ProviderFactory', 'Creating MessageIdGenerator for production');
+    throw new Error('Not ready');
+  }
+
 
   /**
    * Create all dependencies at once
    * Convenience method for creating all providers
    */
-  static createAllDependencies(shouldUseMock: boolean, logger: Logger) {
+  static createAllDependencies(shouldUseMock: boolean, logger: Logger)  {
     logger.info('ProviderFactory', `Creating all dependencies (mock: ${shouldUseMock})`);
-    
+
     const dependencies = {
       logger,
       peerProvider: this.createPeerProvider(shouldUseMock, logger),
@@ -119,6 +144,8 @@ export class ProviderFactory {
       identityIdGenerator: this.createIdentityIdGenerator(shouldUseMock, logger),
       keyGenerator: this.createKeyGenerator(shouldUseMock, logger),
       storageProvider: this.createStorageProvider(shouldUseMock, logger),
+      messageProvider: this.createMessageProvider(shouldUseMock, logger),
+      messageIdGenerator: this.createMessageIdGenerator(shouldUseMock, logger),
     };
 
     logger.info('ProviderFactory', 'All dependencies created successfully');

@@ -3,6 +3,7 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
 import peerReducer from '../../core/peers/store/peers.slice';
+import messageReducer from '../../core/message/store/message.slice';
 import pairedPeerReducer, { peerWasConnected } from '../../core/peers/store/paired-peer.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
 import connectivityReducer from '../../core/connectivity/store/connectivity.slice';
@@ -17,6 +18,8 @@ import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/
 import identityReducer from '../../core/identity/store/identity.slice';
 import { createIdentityPersistConfig } from './persistence.factory';
 import { createAutoReconnectionMiddleware } from '../../core/peers/middlewares/auto-reconnection.middleware';
+import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
+import { createSendNextMessageMiddleware } from '../../core/message/store/send-next-message.middleware';
 
 export const createStore = (
     dependencies: Dependencies,
@@ -41,6 +44,7 @@ export const createStore = (
             log: logReducer,
             connectivity: connectivityReducer,
             app: appReducer,
+            message: messageReducer,
             identity: persistedIdentityReducer,
         },
         preloadedState: initialState,
@@ -52,7 +56,9 @@ export const createStore = (
                 serializableCheck: {
                     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
                 },
-            }).concat(createAutoReconnectionMiddleware(dependencies)),
+            })
+            .concat(createAutoReconnectionMiddleware(dependencies))
+            .concat(createSendNextMessageMiddleware(dependencies)),
         devTools: true,
     });
 
@@ -69,6 +75,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         keyGenerator: new FakeKeyGenerator(),
         vaultProvider: new FakeVaultProvider(),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
+        messageProvider: new FakeMessageProvider(),
         ...dependencies,
     };
     // Create test store - persistence config will be created automatically using InMemoryAsyncStorageProvider
