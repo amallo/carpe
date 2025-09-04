@@ -1,29 +1,31 @@
-import { IdentityKeyPairStorage } from '../vault.storage';
 import { IdentityKeyPair } from '../../generators/identity-key-pair.generator';
+import { IdentityKeyPairProvider } from '../identity-key-pair.provider';
 
 /**
  * In-memory implementation of VaultProvider for testing purposes
  * Stores key pairs in memory (NOT for production use)
  */
-export class InMemoryIdentityKeyPairStorage implements IdentityKeyPairStorage {
+export class InMemoryIdentityKeyPairStorage implements IdentityKeyPairProvider {
     private keyPairs: Map<string, IdentityKeyPair> = new Map();
+
+    constructor(private readonly keyName: string) {
+    }
 
     /**
      * Save a key pair in memory
-     * @param service - The service identifier for the key pair
+     * @param keyPair - The keyPair identifier for the key pair
      * @param keyPair - The key pair to save
      */
-    async store(service: string, keyPair: IdentityKeyPair): Promise<void> {
-        this.keyPairs.set(service, { ...keyPair });
+    async store(keyPair: IdentityKeyPair): Promise<void> {
+        this.keyPairs.set(this.keyName, { ...keyPair });
     }
 
     /**
      * Retrieve the stored key pair from memory
-     * @param service - The service identifier for the key pair
      * @returns The stored key pair or null if none exists
      */
-    async retrieve(service: string): Promise<IdentityKeyPair | null> {
-        const keyPair = this.keyPairs.get(service);
+    async retrieve(): Promise<IdentityKeyPair | null> {
+        const keyPair = this.keyPairs.get(this.keyName);
         return keyPair ? { ...keyPair } : null;
     }
 }

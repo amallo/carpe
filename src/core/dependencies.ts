@@ -4,7 +4,7 @@ import { PermissionProvider } from './permission/providers/permission.provider';
 import { Logger } from '../core/logger/providers/logger.interface';
 import { IdentityIdGenerator } from './identity/generators/identity-id.generator';
 import { IdentityKeyPairGenerator } from './identity/generators/identity-key-pair.generator';
-import { IdentityKeyPairStorage } from './identity/providers/vault.storage';
+import { IdentityKeyPairStorage } from './identity/providers/storage';
 import { AsyncStorageProvider } from './storage/providers/async-storage.provider';
 import { MessageProvider } from './message/providers/message.provider';
 import { MessageIdGenerator } from './message/providers/message-id.generator';

@@ -1,20 +1,25 @@
+import { Storage } from '../storage';
 /**
  * Generic iOS Keychain storage implementation
  * Provides secure storage using react-native-keychain with generic password approach
  */
-export class IOSKeychainStorage {
+export class IOSKeychainStorage<T> implements Storage<T> {
     private readonly keychainService: string;
 
-    constructor(keychainService: string = 'com.carpeapp.default') {
+    constructor(keychainService: string) {
         this.keychainService = keychainService;
+    }
+
+    getServiceName(): string {
+        return this.keychainService;
     }
 
     /**
      * Store data securely in iOS Keychain using generic password
-     * @param service - The service identifier for the data
+     * @param key - The service identifier for the data
      * @param data - The data to store (will be JSON stringified)
      */
-    async store<T>(service: string, data: T): Promise<void> {
+    async store(key: string, data: T): Promise<void> {
         try {
             const Keychain = require('react-native-keychain');
 
@@ -29,10 +34,10 @@ export class IOSKeychainStorage {
 
             // Use simple generic password storage
             await Keychain.setGenericPassword(
-                service, // username = service identifier
+                key, // username = service identifier
                 dataString, // password = our data
                 {
-                    service: `${this.keychainService}.${service}`,
+                    service: `${this.keychainService}.${key}`,
                     accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
                 }
             );
@@ -44,15 +49,15 @@ export class IOSKeychainStorage {
 
     /**
      * Retrieve data from iOS Keychain
-     * @param service - The service identifier for the data
+     * @param key - The service identifier for the data
      * @returns The stored data or null if none exists
      */
-    async retrieve<T>(service: string): Promise<T | null> {
+    async retrieve(key: string): Promise<T | null> {
         try {
             const Keychain = require('react-native-keychain');
 
             const credentials = await Keychain.getGenericPassword({
-                service: `${this.keychainService}.${service}`,
+                service: `${this.keychainService}.${key}`,
             });
 
             if (!credentials || !credentials.password) {
@@ -73,27 +78,6 @@ export class IOSKeychainStorage {
             }
             console.error('iOS Keychain retrieve error:', error);
             throw new Error(`Failed to retrieve data from iOS Keychain: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-    }
-
-    /**
-     * Remove data from iOS Keychain
-     * @param service - The service identifier for the data
-     */
-    async remove(service: string): Promise<void> {
-        try {
-            const Keychain = require('react-native-keychain');
-
-            await Keychain.resetGenericPassword({
-                service: `${this.keychainService}.${service}`,
-            });
-        } catch (error) {
-            // Ignore error if item doesn't exist
-            if (error instanceof Error && error.message.includes('not found')) {
-                return;
-            }
-            console.error('iOS Keychain remove error:', error);
-            throw new Error(`Failed to remove data from iOS Keychain: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 }

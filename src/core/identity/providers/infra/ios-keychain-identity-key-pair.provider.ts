@@ -1,15 +1,15 @@
-import { IdentityKeyPairStorage } from '../vault.storage';
 import { IdentityKeyPair } from '../../generators/identity-key-pair.generator';
 import { IOSKeychainStorage } from './ios-keychain.storage';
+import { IdentityKeyPairProvider } from '../identity-key-pair.provider';
 
 /**
  * iOS Keychain implementation for storing Identity Key Pairs
  * Uses IOSKeychainStorage by composition for actual keychain operations
  */
-export class IOSKeychainIdentityKeyPairStorage implements IdentityKeyPairStorage {
-    private readonly keychainStorage: IOSKeychainStorage;
+export class IOSKeychainIdentityKeyProvider implements IdentityKeyPairProvider {
+    private readonly keychainStorage: IOSKeychainStorage<IdentityKeyPair>;
 
-    constructor(keychainStorage: IOSKeychainStorage) {
+    constructor(keychainStorage: IOSKeychainStorage<IdentityKeyPair>, private readonly keyName: string) {
         this.keychainStorage = keychainStorage;
     }
 
@@ -20,8 +20,8 @@ export class IOSKeychainIdentityKeyPairStorage implements IdentityKeyPairStorage
      * @param service - The service identifier for the key pair
      * @param keyPair - The key pair to save
      */
-    async store(service: string, keyPair: IdentityKeyPair): Promise<void> {
-        await this.keychainStorage.store(service, keyPair);
+    async store(keyPair: IdentityKeyPair): Promise<void> {
+        await this.keychainStorage.store(this.keyName, keyPair);
     }
 
     /**
@@ -29,7 +29,7 @@ export class IOSKeychainIdentityKeyPairStorage implements IdentityKeyPairStorage
      * @param service - The service identifier for the key pair
      * @returns The stored key pair or null if none exists
      */
-    async retrieve(service: string): Promise<IdentityKeyPair | null> {
-        return await this.keychainStorage.retrieve<IdentityKeyPair>(service);
+    retrieve(): Promise<IdentityKeyPair | null> {
+        return this.keychainStorage.retrieve(this.keyName);
     }
 }

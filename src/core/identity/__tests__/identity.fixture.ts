@@ -1,8 +1,9 @@
 import { createTestStore, Store } from '../../../app/store/store';
 import { createStateBuilder } from '../../store/state.builder';
+import { IdentityKeyPair } from '../generators/identity-key-pair.generator';
 import { FakeIdentityIdGenerator } from '../generators/infra/fake-identity-id.generator';
 import { FakeIdentityKeyPairGenerator } from '../generators/infra/fake-identity-key-pair.generator';
-import { FakeIdentityKeyPairVaultStorage } from '../providers/infra/fake-identity-key-pair.storage';
+import { FakeIdentityKeyPairProvider } from '../providers/infra/fake-identity-key-pair.provider';
 import { createIdentity } from '../usecases/create-identity.usecase';
 
 /**
@@ -11,18 +12,18 @@ import { createIdentity } from '../usecases/create-identity.usecase';
 export class IdentityFixture {
   private identityIdGenerator: FakeIdentityIdGenerator;
   private keyGenerator: FakeIdentityKeyPairGenerator;
-  private vaultProvider: FakeIdentityKeyPairVaultStorage;
+  private vaultProvider: FakeIdentityKeyPairProvider;
   private store: Store;
 
   constructor(dependencies: {
     identityIdGenerator?: FakeIdentityIdGenerator;
     keyGenerator?: FakeIdentityKeyPairGenerator;
-    vaultProvider?: FakeIdentityKeyPairVaultStorage;
+    vaultProvider?: FakeIdentityKeyPairProvider;
   } = {}) {
     this.identityIdGenerator = dependencies.identityIdGenerator || new FakeIdentityIdGenerator();
     this.keyGenerator = dependencies.keyGenerator || new FakeIdentityKeyPairGenerator();
-    this.vaultProvider = dependencies.vaultProvider || new FakeIdentityKeyPairVaultStorage();
-    
+    this.vaultProvider = dependencies.vaultProvider || new FakeIdentityKeyPairProvider('identity');
+
     this.store = createTestStore({
       identityIdGenerator: this.identityIdGenerator,
       keyGenerator: this.keyGenerator,
@@ -50,8 +51,8 @@ export class IdentityFixture {
     return this;
   }
 
-  expectKeyPairSaved(publicKey: string, privateKey: string): this {
-    expect(this.vaultProvider.storeWasCalledWith('identity', { publicKey, privateKey })).toBe(true);
+  expectKeyPairStored(keyPair: IdentityKeyPair): this {
+    expect(this.vaultProvider.storeWasCalledWith(keyPair)).toBe(true);
     return this;
   }
 
@@ -85,7 +86,7 @@ export class IdentityFixture {
     return this.store;
   }
 
-  getVaultProvider(): FakeIdentityKeyPairVaultStorage {
+  getVaultProvider(): FakeIdentityKeyPairProvider {
     return this.vaultProvider;
   }
 

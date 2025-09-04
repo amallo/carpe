@@ -9,7 +9,7 @@ describe('FEATURE: User creates an identity', () => {
     await fixture.createIdentity('JohnDoe');
 
     fixture
-      .expectKeyPairSaved('publicKey-123', 'privateKey-123')
+      .expectKeyPairStored({ publicKey: 'publicKey-123', privateKey: 'privateKey-123' })
       .expectIdentityCreated('id-123', 'JohnDoe', 'publicKey-123');
   });
 

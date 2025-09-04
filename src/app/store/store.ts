@@ -13,7 +13,7 @@ import logReducer from '../../core/logger/store/log.slice';
 import { ConsoleLogger } from '../../core/logger/providers/console-logger.provider';
 import { FakeIdentityIdGenerator } from '../../core/identity/generators/infra/fake-identity-id.generator';
 import { FakeIdentityKeyPairGenerator } from '../../core/identity/generators/infra/fake-identity-key-pair.generator';
-import { FakeIdentityKeyPairVaultStorage } from '../../core/identity/providers/infra/fake-identity-key-pair.storage';
+import { FakeIdentityKeyPairProvider } from '../../core/identity/providers/infra/fake-identity-key-pair.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import identityReducer from '../../core/identity/store/identity.slice';
 import { createIdentityPersistConfig } from './persistence.factory';
@@ -73,7 +73,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         logger: new ConsoleLogger(),
         identityIdGenerator: new FakeIdentityIdGenerator(),
         keyGenerator: new FakeIdentityKeyPairGenerator(),
-        vaultProvider: new FakeIdentityKeyPairVaultStorage(),
+        vaultProvider: new FakeIdentityKeyPairProvider(),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
         ...dependencies,
