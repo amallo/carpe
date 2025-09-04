@@ -44,10 +44,10 @@ export class RNAsyncStorageProvider implements AsyncStorageProvider {
 
   async getAllKeys(): Promise<string[]> {
     try {
-      return await AsyncStorage.getAllKeys();
+      return Array.from(await AsyncStorage.getAllKeys());
     } catch (error) {
       console.error('Failed to get all keys from AsyncStorage:', error);
-      return [];
+      return Promise.resolve([]);
     }
   }
 }
