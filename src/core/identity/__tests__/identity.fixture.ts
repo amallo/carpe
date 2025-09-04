@@ -81,20 +81,4 @@ export class IdentityFixture {
     expect(currentState.identity.current).toBeNull();
     return this;
   }
-
-  getStore(): Store {
-    return this.store;
-  }
-
-  getVaultProvider(): FakeIdentityKeyPairProvider {
-    return this.vaultProvider;
-  }
-
-  getIdentityIdGenerator(): FakeIdentityIdGenerator {
-    return this.identityIdGenerator;
-  }
-
-  getKeyGenerator(): FakeIdentityKeyPairGenerator {
-    return this.keyGenerator;
-  }
 }
