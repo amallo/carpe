@@ -73,7 +73,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         logger: new ConsoleLogger(),
         identityIdGenerator: new FakeIdentityIdGenerator(),
         keyGenerator: new FakeIdentityKeyPairGenerator(),
-        vaultProvider: new FakeIdentityKeyPairProvider(),
+        vaultProvider: new FakeIdentityKeyPairProvider('identity'),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
         ...dependencies,

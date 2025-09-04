@@ -1,9 +1,8 @@
 import { Platform } from 'react-native';
 import { Logger } from '../../core/logger/providers/logger.interface';
 import { PermissionProvider } from '../../core/permission/providers/permission.provider';
-import { IdentityKeyPairStorage } from '../../core/identity/providers/storage';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
-import { IdentityKeyPairGenerator } from '../../core/identity/generators/identity-key-pair.generator';
+import { IdentityKeyPair, IdentityKeyPairGenerator } from '../../core/identity/generators/identity-key-pair.generator';
 import { AsyncStorageProvider } from '../../core/storage/providers/async-storage.provider';
 
 // Production providers
@@ -24,6 +23,7 @@ import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/
 import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { MessageIdGenerator } from '../../core/message/providers/message-id.generator';
+import { IdentityKeyPairProvider } from '../../core/identity/providers/identity-key-pair.provider';
 
 /**
  * Factory for creating providers based on environment
@@ -46,15 +46,15 @@ export class ProviderFactory {
   /**
    * Create vault provider based on environment
    */
-  static createIdentityKeyPairStorage(shouldUseMock: boolean, logger: Logger): IdentityKeyPairStorage {
+  static createIdentityKeyPairProvider(shouldUseMock: boolean, logger: Logger): IdentityKeyPairProvider {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating InMemoryVaultProvider for development');
-      return new InMemoryIdentityKeyPairStorage();
+      return new InMemoryIdentityKeyPairStorage('identity');
     }
 
     logger.info('ProviderFactory', 'Creating IOSKeychainIdentityKeyPairStorage for production');
-    const keychainStorage = new IOSKeychainStorage('com.carpeapp.identity');
-    return new IOSKeychainIdentityKeyProvider(keychainStorage);
+    const keychainStorage = new IOSKeychainStorage<IdentityKeyPair>('com.carpeapp.identity');
+    return new IOSKeychainIdentityKeyProvider(keychainStorage, 'identity');
   }
 
   /**
@@ -142,7 +142,7 @@ export class ProviderFactory {
     const dependencies = {
       logger,
       peerProvider: this.createPeerProvider(shouldUseMock, logger),
-      vaultProvider: this.createIdentityKeyPairStorage(shouldUseMock, logger),
+      vaultProvider: this.createIdentityKeyPairProvider(shouldUseMock, logger),
       permissionProvider: this.createPermissionProvider(shouldUseMock, logger),
       identityIdGenerator: this.createIdentityIdGenerator(shouldUseMock, logger),
       keyGenerator: this.createKeyGenerator(shouldUseMock, logger),
