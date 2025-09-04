@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import { Logger } from '../../core/logger/providers/logger.interface';
 import { PermissionProvider } from '../../core/permission/providers/permission.provider';
-import { KeyVaultProvider } from '../../core/identity/providers/key-vault.provider';
+import { IdentityKeyPairStorage } from '../../core/identity/providers/vault.storage';
 import { IdentityIdGenerator } from '../../core/identity/generators/identity-id.generator';
 import { IdentityKeyPairGenerator } from '../../core/identity/generators/identity-key-pair.generator';
 import { AsyncStorageProvider } from '../../core/storage/providers/async-storage.provider';
@@ -9,7 +9,8 @@ import { AsyncStorageProvider } from '../../core/storage/providers/async-storage
 // Production providers
 import { BLEPeerProvider } from '../../core/peers/providers/BLE-peer.provider';
 import { NativePermissionProvider } from '../../core/permission/providers/native/native-permission.provider';
-import { SimpleIOSKeychainKeyVaultProvider } from '../../core/identity/providers/infra/simple-ios-keychain-key-vault.provider';
+import { IOSKeychainIdentityKeyPairStorage } from '../../core/identity/providers/infra/ios-keychain-identity-key-pair.storage';
+import { IOSKeychainStorage } from '../../core/identity/providers/infra/ios-keychain.storage';
 import { BasicIdentityIdGenerator } from '../../core/identity/generators/infra/basic-identity-id.generator';
 import { UUIDIdentitIdGenerator } from '../../core/identity/generators/infra/uuid-identity-id.generator';
 import { BasicIdentityKeyPairGenerator } from '../../core/identity/generators/infra/basic-identity-key-pair.generator';
@@ -18,10 +19,11 @@ import { RNAsyncStorageProvider } from '../../core/storage/providers/rn-async-st
 // Test providers
 import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-peer.provider';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
-import { InMemoryKeysVaultProvider } from '../../core/identity/providers/infra/in-memory-key-vault.provider';
+import { InMemoryIdentityKeyPairStorage } from '../../core/identity/providers/infra/in-memory-identity-key-pair.storage';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
+import { MessageIdGenerator } from '../../core/message/providers/message-id.generator';
 
 /**
  * Factory for creating providers based on environment
@@ -44,14 +46,15 @@ export class ProviderFactory {
   /**
    * Create vault provider based on environment
    */
-  static createVaultProvider(shouldUseMock: boolean, logger: Logger): KeyVaultProvider {
+  static createVaultProvider(shouldUseMock: boolean, logger: Logger): IdentityKeyPairStorage {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating InMemoryVaultProvider for development');
-      return new InMemoryKeysVaultProvider();
+      return new InMemoryIdentityKeyPairStorage();
     }
 
-    logger.info('ProviderFactory', 'Creating SimpleIOSKeychainVaultProvider for production');
-    return new SimpleIOSKeychainKeyVaultProvider();
+    logger.info('ProviderFactory', 'Creating IOSKeychainIdentityKeyPairStorage for production');
+    const keychainStorage = new IOSKeychainStorage('com.carpeapp.identity');
+    return new IOSKeychainIdentityKeyPairStorage(keychainStorage);
   }
 
   /**

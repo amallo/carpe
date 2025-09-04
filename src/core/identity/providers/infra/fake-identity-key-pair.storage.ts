@@ -1,13 +1,11 @@
-import { KeyVaultProvider } from '../key-vault.provider';
+import { IdentityKeyPairStorage } from '../vault.storage';
 import { IdentityKeyPair } from '../../generators/identity-key-pair.generator';
 import { CallTracker } from '../../../test/call-tracker';
 
-export class FakeKeyVaultProvider implements KeyVaultProvider {
+export class FakeIdentityKeyPairVaultStorage implements IdentityKeyPairStorage {
     private _storedKeyPairs: Map<string, IdentityKeyPair> = new Map();
-    private _saveKeyPairCallTracker = new CallTracker();
-    private _getKeyPairCallTracker = new CallTracker();
-    private _hasKeyPairCallTracker = new CallTracker();
-    private _deleteKeyPairCallTracker = new CallTracker();
+    private _storeKeyPairCallTracker = new CallTracker();
+    private _retrieveKeyPairCallTracker = new CallTracker();
 
     /**
      * Save a key pair (in-memory for testing)
@@ -15,7 +13,7 @@ export class FakeKeyVaultProvider implements KeyVaultProvider {
      * @param keyPair - The key pair to save
      */
     async store(service: string, keyPair: IdentityKeyPair): Promise<void> {
-        this._saveKeyPairCallTracker.recordCall({ service, keyPair });
+        this._storeKeyPairCallTracker.recordCall({ service, keyPair });
         this._storedKeyPairs.set(service, keyPair);
     }
 
@@ -25,8 +23,12 @@ export class FakeKeyVaultProvider implements KeyVaultProvider {
      * @returns The stored key pair or null if none exists
      */
     async retrieve(service: string): Promise<IdentityKeyPair | null> {
-        this._getKeyPairCallTracker.recordCall(service);
+        this._retrieveKeyPairCallTracker.recordCall(service);
         return this._storedKeyPairs.get(service) || null;
+    }
+
+    storeWasCalledWith(service: string, keyPair: IdentityKeyPair): boolean {
+        return this._storeKeyPairCallTracker.wasCalledWith({ service, keyPair });
     }
 
 }
