@@ -1,7 +1,5 @@
-import { Dispatch, Store, UnknownAction } from '@reduxjs/toolkit';
 import { Dependencies } from '../../dependencies';
 import { scanHit } from '../store/peers.slice';
-import { scanRequested } from '../../connectivity/store/connectivity.slice';
 import { selectPairedPeerById } from '../store/paired-peer.slice';
 import { pairPeer } from '../usecases/pair-peer.usecase';
 import { scanPeers } from '../usecases/scan-peers.usecase';
@@ -24,11 +22,6 @@ export const createAutoReconnectionMiddleware = (dependencies: Dependencies) => 
       }
     }
 
-    // Auto-scan on connectivity scan request
-    if (scanRequested.match(action)) {
-      dependencies.logger.info('auto-reconnection', 'Connectivity scan requested: starting scan for paired peers');
-      store.dispatch(scanPeers({ timeout: 30000 })); // Empty object as scanPeers expects { timeout?: number }
-    }
 
     return result;
   };

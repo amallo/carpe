@@ -6,7 +6,6 @@ import peerReducer from '../../core/peers/store/peers.slice';
 import messageReducer from '../../core/message/store/message.slice';
 import pairedPeerReducer, { peerWasConnected } from '../../core/peers/store/paired-peer.slice';
 import permissionReducer from '../../core/permission/store/permission.slice';
-import connectivityReducer from '../../core/connectivity/store/connectivity.slice';
 import appReducer from '../../core/app/store/app.slice';
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import logReducer from '../../core/logger/store/log.slice';
@@ -42,7 +41,6 @@ export const createStore = (
             permission: permissionReducer,
             pairedPeer: pairedPeerReducer,
             log: logReducer,
-            connectivity: connectivityReducer,
             app: appReducer,
             message: messageReducer,
             identity: persistedIdentityReducer,

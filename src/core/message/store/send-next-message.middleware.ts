@@ -1,21 +1,21 @@
-import { Dependencies } from '../../dependencies';
-import { schedulingSendMessageAction } from '../usecases/schedule-broadcast-message.usecase';
+import { messageWasSubmitted } from '../usecases/submit-broadcast-message.usecase';
 import { sendMessage } from '../usecases/send-message.usecase';
-import { selectNextPendingMessage } from './message.slice';
+import { selectNextSubmittedMessage } from './message.slice';
 
-export const createSendNextMessageMiddleware = (dependencies: Dependencies) => {
+export const createSendNextMessageMiddleware = () => {
     return (store: any) => (next: any) => (action: any) => {
         const result = next(action);
         // Déclencher envoi quand nouveau message en queue
-        if (schedulingSendMessageAction.match(action)) {
-            scheduleNextMessage(store, dependencies);
+        if (messageWasSubmitted.match(action)) {
+            return sendNextSubmittedMessage(store);
         }
         return result;
     };
 };
 
-export const scheduleNextMessage = (store: any, dependencies: Dependencies) => {
+export const sendNextSubmittedMessage = (store: any) => {
     const state = store.getState();
-    const pendingMessage  = selectNextPendingMessage(state);
-    store.dispatch(sendMessage(pendingMessage!.id));
+    const nextSubmittedMessage  = selectNextSubmittedMessage(state);
+    console.log('nextSubmittedMessage', nextSubmittedMessage!.id);
+    store.dispatch(sendMessage(nextSubmittedMessage!.id));
 };

@@ -7,7 +7,6 @@ import { RootState } from '../../app/store/store';
 import { getPermissionInitialState } from '../permission/store/permission.slice';
 import { getPairedPeerInitialState, pairedPeerAdapter } from '../peers/store/paired-peer.slice';
 import { initialState as logInitialState } from '../logger/store/log.slice';
-import { getConnectivityInitialState } from '../connectivity/store/connectivity.slice';
 import { getAppInitialState } from '../app/store/app.slice';
 import { Identity } from '../identity/entities/identity.entity';
 import { getMessageInitialState, MessageEntity, messageAdapter } from '../message/store/message.slice';
@@ -58,12 +57,12 @@ export class StateBuilder {
     }
     withBroadcastedMessage(message: MessageEntity) {
         this._state.message = {...this._state.message, 
-            broadcasted: messageAdapter.addOne(this._state.message.broadcasted, message),
+            broadcastedMessages: messageAdapter.addOne(this._state.message.broadcastedMessages, message),
         };
         return this;
     }
     withEmptyPendingMessages() {
-        this._state.message = {...this._state.message, pending: messageAdapter.getInitialState()};
+        this._state.message = {...this._state.message, submittedMessages: messageAdapter.getInitialState()};
         return this;
     }
     withCurrentIdentity(identity: Identity) {
@@ -84,7 +83,6 @@ export const createStateBuilder = (initialState: RootState = {
     permission: getPermissionInitialState(),
     pairedPeer: getPairedPeerInitialState(),
     log: logInitialState,
-    connectivity: getConnectivityInitialState(),
     app: getAppInitialState(),
     message: getMessageInitialState(),
     identity: getIdentityInitialState(),

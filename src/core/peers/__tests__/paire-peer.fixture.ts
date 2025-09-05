@@ -7,7 +7,6 @@ import { createTestStore, Store } from '../../../app/store/store';
 import { FeatureRequest } from '../../permission/providers/permission.provider';
 import { Identity } from '../../identity/entities/identity.entity';
 import { scanHit } from '../store/peers.slice';
-import { scanRequested } from '../../connectivity/store/connectivity.slice';
 import { appForeground } from '../../app/store/app.slice';
 import { PeerEntity } from '../store/peers.slice';
 
@@ -240,15 +239,9 @@ export class PairedPeerFixture {
     return this;
   }
 
-  async requestConnectivityScan(): Promise<this> {
+  async whenAppBecomesForeground(): Promise<this> {
     const store = this.getOrCreateStore();
-
-    // Trigger connectivity scan request → middleware → scan for paired peers
-    store.dispatch(scanRequested());
-
-    // Wait for all middleware thunks to resolve completely
-    await new Promise(resolve => setImmediate(resolve));
-
+    store.dispatch(appForeground());
     return this;
   }
 

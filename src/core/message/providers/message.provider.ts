@@ -3,8 +3,8 @@ export interface SendMessageRequest {
     content: string;
     type: 'public';
     sentBy: string;
+    sentAt: string;
 }
 export interface MessageProvider {
-    broadcastMessage(message: string): Promise<void>;
     send(message: SendMessageRequest): Promise<void>;
 }

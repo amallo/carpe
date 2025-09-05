@@ -8,8 +8,10 @@ import { AsyncStorageProvider } from './storage/providers/async-storage.provider
 import { MessageProvider } from './message/providers/message.provider';
 import { MessageIdGenerator } from './message/providers/message-id.generator';
 import { IdentityKeyPairProvider } from './identity/providers/identity-key-pair.provider';
+import { DateProvider } from './common/date/providers/date.provider';
 
 export interface Dependencies {
+    dateProvider: DateProvider;
     peerProvider: PeerProvider;
     permissionProvider: PermissionProvider;
     logger: Logger;

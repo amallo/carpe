@@ -24,6 +24,8 @@ import { FakeMessageProvider } from '../../core/message/providers/infra/fake-mes
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { MessageIdGenerator } from '../../core/message/providers/message-id.generator';
 import { IdentityKeyPairProvider } from '../../core/identity/providers/identity-key-pair.provider';
+import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
+import { RealDateProvider } from '../../core/common/date/providers/infra/real-date.providers';
 
 /**
  * Factory for creating providers based on environment
@@ -130,6 +132,17 @@ export class ProviderFactory {
     logger.info('ProviderFactory', 'Creating MessageIdGenerator for production');
     throw new Error('Not ready');
   }
+  /**
+   * Create date provider based on environment
+   */
+  static createDateProvider(shouldUseMock: boolean, logger: Logger): DateProvider {
+    if (shouldUseMock) {
+      logger.info('ProviderFactory', 'Creating FakeDateProvider for development');
+      return new FakeDateProvider();
+    }
+    logger.info('ProviderFactory', 'Creating DateProvider for production');
+    return new RealDateProvider();
+  }
 
 
   /**
@@ -149,6 +162,7 @@ export class ProviderFactory {
       storageProvider: this.createStorageProvider(shouldUseMock, logger),
       messageProvider: this.createMessageProvider(shouldUseMock, logger),
       messageIdGenerator: this.createMessageIdGenerator(shouldUseMock, logger),
+      dateProvider: this.createDateProvider(shouldUseMock, logger),
     };
 
     logger.info('ProviderFactory', 'All dependencies created successfully');

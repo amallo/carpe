@@ -64,18 +64,18 @@ describe('FEATURE: Auto-reconnection to paired devices', () => {
         .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
       // User returns to app (triggers connectivity scan request)
-      await fixture.requestConnectivityScan();
+      await fixture.whenAppBecomesForeground();
 
       // Should trigger scan to find paired devices
       fixture.expectScanWasTriggered();
     });
 
-    it('should scan even if no paired devices exist', async () => {
+    it('should scan even when app comes to foreground', async () => {
       const fixture = new PairedPeerFixture()
         .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
       // Directly trigger connectivity scan (simulate app foreground with no paired devices)
-      await fixture.requestConnectivityScan();
+      await fixture.whenAppBecomesForeground();
 
       // Middleware should still trigger scan (scanRequested always triggers scan)
       // This is correct behavior - let the scan discover any new devices

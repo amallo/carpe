@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
-import { scheduleBroadcastMessage, schedulingSendMessageAction } from '../usecases/schedule-broadcast-message.usecase';
+import {  messageWasSubmitted } from '../usecases/submit-broadcast-message.usecase';
 import { RootState } from '../../../app/store/store';
 import { sendMessage } from '../usecases/send-message.usecase';
 
@@ -8,25 +8,27 @@ export interface MessageEntity {
     content: string;
     type: 'public';
     sentBy: string;
+    sentAt: string;
 }
 
-const createMessageEntity = ({id, content, type, sentBy}: {id: string, content: string, type: 'public', sentBy: string} ): MessageEntity => ({
+const createMessageEntity = ({id, content, type, sentBy, sentAt}: {id: string, content: string, type: 'public', sentBy: string, sentAt: string} ): MessageEntity => ({
     id,
     content,
     type,
     sentBy,
+    sentAt,
 });
 
 export type MessageState = {
-    pending: EntityState<MessageEntity, string>;
-    broadcasted: EntityState<MessageEntity, string>;
+    submittedMessages: EntityState<MessageEntity, string>;
+    broadcastedMessages: EntityState<MessageEntity, string>;
 }
 
 export const messageAdapter = createEntityAdapter<MessageEntity>();
 
 export const getMessageInitialState = (): MessageState => ({
-    pending: messageAdapter.getInitialState(),
-    broadcasted: messageAdapter.getInitialState(),
+    submittedMessages: messageAdapter.getInitialState(),
+    broadcastedMessages: messageAdapter.getInitialState(),
 });
 
 const messageSlice = createSlice({
@@ -35,25 +37,30 @@ const messageSlice = createSlice({
     reducers: {
     },
     extraReducers: (builder) => {
-        builder.addCase(scheduleBroadcastMessage.fulfilled, (state, action) => {
-            messageAdapter.addOne(state.pending, createMessageEntity({id: 'mesage-1', content: action.meta.arg, type: 'public', sentBy: 'audie'}));
+        builder.addCase(messageWasSubmitted, (state, action) => {
+            messageAdapter.addOne(state.submittedMessages, action.payload);
         });
-        builder.addCase(schedulingSendMessageAction, (state, action) => {
-            const willSendMessage = action.payload;
-            messageAdapter.removeOne(state.pending, willSendMessage.id);
-            messageAdapter.addOne(state.broadcasted, willSendMessage);
+        builder.addCase(sendMessage.fulfilled, (state, action) => {
+            const willSendMessageId = action.meta.arg;
+            const willSendMessage = messageAdapter.getSelectors().selectById(state.submittedMessages, willSendMessageId);
+            messageAdapter.removeOne(state.submittedMessages, willSendMessage.id);
+            messageAdapter.addOne(state.broadcastedMessages, willSendMessage);
         });
     },
 })
 
-export const selectNextPendingMessage = (state: RootState) : MessageEntity | null => {
-    const pendingMessageIds = state.message.pending.ids;
-    if (pendingMessageIds.length === 0) {
+export const selectNextSubmittedMessage = (state: RootState) : MessageEntity | null => {
+    const submittedMessageIds = state.message.submittedMessages.ids;
+    console.log('submittedMessageIds', submittedMessageIds);
+    if (submittedMessageIds.length === 0) {
         return null;
     }
-    const nextMessageId = pendingMessageIds[0];
-    return state.message.pending.entities[nextMessageId] || null;
+    const nextMessageId = submittedMessageIds[0];
+    return state.message.submittedMessages.entities[nextMessageId] || null;
+};
 
+export const selectSubmittedMessageById = (state: RootState, messageId: string) : MessageEntity | null => {
+    return state.message.submittedMessages.entities[messageId] || null;
 };
 
 export default messageSlice.reducer;
