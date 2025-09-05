@@ -9,7 +9,7 @@ import { getPairedPeerInitialState, pairedPeerAdapter } from '../peers/store/pai
 import { initialState as logInitialState } from '../logger/store/log.slice';
 import { getAppInitialState } from '../app/store/app.slice';
 import { Identity } from '../identity/entities/identity.entity';
-import { getMessageInitialState, MessageEntity, messageAdapter } from '../message/store/message.slice';
+import { getMessageInitialState, messageAdapter, MessageEntity } from '../message/store/message.slice';
 import { getIdentityInitialState } from '../identity/store/identity.slice';
 
 
@@ -56,13 +56,15 @@ export class StateBuilder {
         return this;
     }
     withBroadcastedMessage(message: MessageEntity) {
-        this._state.message = {...this._state.message, 
-            broadcastedMessages: messageAdapter.addOne(this._state.message.broadcastedMessages, message),
+        this._state.message = {
+            ...this._state.message, 
+            ...messageAdapter.addOne(this._state.message, message),
+            broadcasted: [...this._state.message.broadcasted, message.id]
         };
         return this;
     }
-    withEmptyPendingMessages() {
-        this._state.message = {...this._state.message, submittedMessages: messageAdapter.getInitialState()};
+    withNoSubmittedMessages() {
+        this._state.message = {...this._state.message,  submitted: [], submittedById: {}};
         return this;
     }
     withCurrentIdentity(identity: Identity) {

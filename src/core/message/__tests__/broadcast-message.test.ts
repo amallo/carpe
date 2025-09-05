@@ -18,7 +18,7 @@ describe('Audie broadcasts messages', () => {
                 nickname: 'audie',
                 publicKey: 'public-key',
             })
-            .withEmptyPendingMessages()
+            .withNoSubmittedMessages()
             .build();
         const store = createTestStore({ messageProvider, messageIdGenerator, dateProvider }, initialState);
         await store.dispatch(submitBroadcastMessage('Hello, world!' ));
@@ -35,7 +35,7 @@ describe('Audie broadcasts messages', () => {
                 nickname: 'audie',
                 publicKey: 'public-key',
             })
-            .withEmptyPendingMessages()
+            .withNoSubmittedMessages()
             .withBroadcastedMessage({
                 id: 'message-1',
                 content: 'Hello, world!',

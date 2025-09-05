@@ -2,7 +2,6 @@ import { Dependencies } from '../../dependencies';
 import { scanHit } from '../store/peers.slice';
 import { selectPairedPeerById } from '../store/paired-peer.slice';
 import { pairPeer } from '../usecases/pair-peer.usecase';
-import { scanPeers } from '../usecases/scan-peers.usecase';
 import type { RootState } from '../../../app/store/store';
 
 export const createAutoReconnectionMiddleware = (dependencies: Dependencies) => {

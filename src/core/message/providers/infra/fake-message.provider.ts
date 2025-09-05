@@ -3,7 +3,6 @@ import { CallTracker } from '../../../test/call-tracker';
 export class FakeMessageProvider implements MessageProvider {
     private _sendMessageCallTracker = new CallTracker();
     send(message: SendMessageRequest): Promise<void> {
-        console.log('send', message);
         this._sendMessageCallTracker.recordCall(message );
         return Promise.resolve();
     }

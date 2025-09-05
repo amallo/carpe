@@ -11,56 +11,48 @@ export interface MessageEntity {
     sentAt: string;
 }
 
-const createMessageEntity = ({id, content, type, sentBy, sentAt}: {id: string, content: string, type: 'public', sentBy: string, sentAt: string} ): MessageEntity => ({
-    id,
-    content,
-    type,
-    sentBy,
-    sentAt,
-});
-
-export type MessageState = {
-    submittedMessages: EntityState<MessageEntity, string>;
-    broadcastedMessages: EntityState<MessageEntity, string>;
+export type MessageState = EntityState<MessageEntity, string> & {
+    broadcasted: string[];
+    submittedById: {[messageId: string] : string};
+    submitted: string[];
 }
 
 export const messageAdapter = createEntityAdapter<MessageEntity>();
 
 export const getMessageInitialState = (): MessageState => ({
-    submittedMessages: messageAdapter.getInitialState(),
-    broadcastedMessages: messageAdapter.getInitialState(),
+
+    ...messageAdapter.getInitialState(),
+    broadcasted:  [],
+    submittedById: {},
+    submitted: [],
 });
 
 const messageSlice = createSlice({
     name: 'message',
     initialState : getMessageInitialState(),
-    reducers: {
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(messageWasSubmitted, (state, action) => {
-            messageAdapter.addOne(state.submittedMessages, action.payload);
+            messageAdapter.addOne(state, action.payload);
+            state.submittedById[action.payload.id] = action.payload.id;
+            state.submitted.push(action.payload.id);
         });
         builder.addCase(sendMessage.fulfilled, (state, action) => {
             const willSendMessageId = action.meta.arg;
-            const willSendMessage = messageAdapter.getSelectors().selectById(state.submittedMessages, willSendMessageId);
-            messageAdapter.removeOne(state.submittedMessages, willSendMessage.id);
-            messageAdapter.addOne(state.broadcastedMessages, willSendMessage);
+            delete state.submittedById[willSendMessageId];
+            state.submitted = state.submitted.filter(id => id !== willSendMessageId);
+            state.broadcasted.push(willSendMessageId);
         });
     },
-})
+});
 
 export const selectNextSubmittedMessage = (state: RootState) : MessageEntity | null => {
-    const submittedMessageIds = state.message.submittedMessages.ids;
-    console.log('submittedMessageIds', submittedMessageIds);
-    if (submittedMessageIds.length === 0) {
-        return null;
-    }
-    const nextMessageId = submittedMessageIds[0];
-    return state.message.submittedMessages.entities[nextMessageId] || null;
+    const nextSubmittedMessageId = state.message.submitted.length > 0 ? state.message.submitted[0] : null;
+    return messageAdapter.getSelectors().selectById(state.message, nextSubmittedMessageId!) || null;
 };
 
-export const selectSubmittedMessageById = (state: RootState, messageId: string) : MessageEntity | null => {
-    return state.message.submittedMessages.entities[messageId] || null;
+export const selectMessageById = (state: RootState, messageId: string) : MessageEntity | null => {
+    return messageAdapter.getSelectors().selectById(state.message, messageId) || null;
 };
 
 export default messageSlice.reducer;

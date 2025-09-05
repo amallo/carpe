@@ -16,6 +16,5 @@ export const createSendNextMessageMiddleware = () => {
 export const sendNextSubmittedMessage = (store: any) => {
     const state = store.getState();
     const nextSubmittedMessage  = selectNextSubmittedMessage(state);
-    console.log('nextSubmittedMessage', nextSubmittedMessage!.id);
     store.dispatch(sendMessage(nextSubmittedMessage!.id));
 };
