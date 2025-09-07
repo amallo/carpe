@@ -1,0 +1,5 @@
+{
+  "cursor.general.enableHooks": true,
+  "cursor.hooks.configFile": ".cursor-hooks/hooks.json",
+  "cursor.hooks.workingDirectory": ".cursor-hooks"
+}

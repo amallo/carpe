@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "enforceTestFirst": true,
+    "minimalImplementation": true,
+    "requireFailingTest": true,
+    "preventOverImplementation": true
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "build/**",
+    "dist/**",
+    "*.md",
+    "*.json"
+  ],
+  "customInstructions": "Follow hexagonal architecture principles. Core layer cannot import from app layer. Use Mother Objects for test data creation. All business logic must be in core layer."
+}

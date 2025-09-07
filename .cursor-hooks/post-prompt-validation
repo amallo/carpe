@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "🚀 Post-Prompt: Validating changes..."
+npm test -- --passWithNoTests --watchAll=false --silent
+if [ $? -eq 0 ]; then
+  echo "✅ Post-Prompt: All tests passing after changes"
+else
+  echo "❌ Post-Prompt: Tests failing after changes"
+fi

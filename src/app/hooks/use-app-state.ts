@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useAppDispatch } from '../store/hooks';
 import { appForeground, appBackground } from '../../core/app/store/app.slice';
-i
+
 export const useAppState = () => {
   const dispatch = useAppDispatch();
   

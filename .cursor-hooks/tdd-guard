@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "🧪 TDD Guard: Running tests before prompt..."
+npm test -- --passWithNoTests --watchAll=false --silent
+if [ $? -ne 0 ]; then
+  echo "❌ TDD Guard: Tests failing - prompt may be blocked"
+  exit 1
+fi
+echo "✅ TDD Guard: All tests passing"

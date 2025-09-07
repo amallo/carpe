@@ -1,0 +1,7 @@
+#!/bin/sh
+echo "🏗️ Architecture Guard: Validating hexagonal architecture..."
+if grep -r "from.*src/app" src/core/ 2>/dev/null; then
+  echo "❌ Architecture Guard: core importing from app - prompt blocked"
+  exit 1
+fi
+echo "✅ Architecture Guard: Architecture OK"

@@ -9,4 +9,13 @@ module.exports = {
     '**/?(*.)+(spec|test).ts',
     '**/?(*.)+(spec|test).tsx',
   ],
+  reporters: [
+    'default',
+    [
+      'tdd-guard-jest',
+      {
+        projectRoot: __dirname,
+      },
+    ],
+  ],
 };
