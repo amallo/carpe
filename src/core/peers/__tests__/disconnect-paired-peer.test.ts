@@ -17,7 +17,7 @@ describe('disconnectPairedPeer', () => {
     const initialState = createStateBuilder()
       .withExistingPairedPeer('sensor-1', 'connected')
       .build();
-    
+
     store = createTestStore({ peerProvider }, initialState);
 
     // When: Disconnecting the peer

@@ -1,21 +1,48 @@
 import { scanHit } from '../store/peers.slice';
 import { selectPairedPeerById } from '../store/paired-peer.slice';
-import { pairPeer } from '../usecases/pair-peer.usecase';
 import { startAppListening } from '../../../app/store/middlewares/listener.middleware';
+import { ReconnectionStrategyFactory } from '../strategies/reconnection-strategy.factory';
+import { ReconnectionContext } from '../strategies/reconnection.strategy.interface';
+import { hasBeenDisconnected } from '../store/paired-peer.slice';
+import { pairPeer } from '../usecases/pair-peer.usecase';
+import { Dependencies } from '../../dependencies';
 
-export const listeningAutoReconnection = (dependencies: { logger: any }) => {
+export const listeningAutoReconnection = (dependencies: Dependencies) => {
+  // Listen for scan hits to evaluate reconnection strategy
   startAppListening({
     actionCreator: scanHit,
-    effect: (action, { dispatch, getState }) => {
+    effect: async (action, { dispatch, getState }) => {
       const state = getState();
       const scannedPeerId = action.payload.id;
       const pairedPeer = selectPairedPeerById(state, scannedPeerId);
 
-      // If it's a disconnected paired peer, attempt reconnection
-      if (pairedPeer && pairedPeer.status === 'disconnected') {
-        dependencies.logger.info('auto-reconnection', `Auto-reconnecting to paired peer: ${scannedPeerId}`);
-        dispatch(pairPeer({ peerId: scannedPeerId }));
+      if (pairedPeer) {
+        // Create reconnection context
+        const context: ReconnectionContext = {
+          connectionAttempts: 0, // Could be tracked in state
+          timeSinceLastConnection: 0, // Could be calculated from last connection time
+        };
+
+        // Get appropriate reconnection strategy
+        const strategy = ReconnectionStrategyFactory.createStrategy();
+
+        // Check if reconnection should be attempted
+        if (strategy.shouldReconnect(pairedPeer, context)) {
+          // Dispatch hasBeenDisconnected event
+          dispatch(hasBeenDisconnected(scannedPeerId));
+        }
       }
+    },
+  });
+
+  // Listen for hasBeenDisconnected to actually perform the reconnection
+  startAppListening({
+    actionCreator: hasBeenDisconnected,
+    effect: async (action, { dispatch }) => {
+      const peerId = action.payload;
+      dependencies.logger.info('auto-reconnection', `Attempting reconnection to peer: ${peerId}`);
+      // Perform the actual reconnection
+      await dispatch(pairPeer({ peerId }));
     },
   });
 };

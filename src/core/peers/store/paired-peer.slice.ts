@@ -1,6 +1,11 @@
-import { createSlice, createEntityAdapter, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter, EntityState, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { pairPeer } from '../usecases/pair-peer.usecase';
 import { disconnectPairedPeer } from '../usecases/disconnect-paired-peer.usecase';
+
+/**
+ * Event when a peer has been disconnected and needs reconnection
+ */
+export const hasBeenDisconnected = createAction<string>('peers/hasBeenDisconnected');
 
 export type PairedPeerStatus = 'pending' | 'connected' | 'disconnected'
 
@@ -46,7 +51,6 @@ const pairedPeerSlice = createSlice({
                 },
             });
         });*/
-        
         builder.addCase(pairPeer.rejected, (state, action) => {
             state.error = action.error.message || 'Connection failed';
             // Keep the peer in the list but mark it as disconnected
