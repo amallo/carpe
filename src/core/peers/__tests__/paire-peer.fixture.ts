@@ -80,7 +80,7 @@ export class PairedPeerFixture {
   /**
    * Configure initial available peer in the state
    */
-  withInitialAvailablePeer(peer: { id: string; name: string; [key: string]: any }): this {
+  withInitialAvailablePeer(peer: { id: string; name: string; [key: string]: any }) {
     this.stateBuilder.withAvailablePeerPeer(peer);
     return this;
   }
@@ -96,7 +96,7 @@ export class PairedPeerFixture {
   /**
    * Configure existing paired peer in the state
    */
-  withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected'): this {
+  withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected') {
     this.stateBuilder.withExistingPairedPeer(peerId, status);
     return this;
   }
@@ -104,7 +104,7 @@ export class PairedPeerFixture {
   /**
    * Configure reconnection strategy for testing
    */
-  withReconnectionStrategy(strategy: ReconnectionStrategy): this {
+  withReconnectionStrategy(strategy: ReconnectionStrategy) {
     this.reconnectionStrategy = strategy;
     return this;
   }
