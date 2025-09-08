@@ -16,9 +16,9 @@ import { FakeIdentityKeyPairProvider } from '../../core/identity/providers/infra
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
 import identityReducer from '../../core/identity/store/identity.slice';
 import { createIdentityPersistConfig } from './persistence.factory';
-import { createAutoReconnectionMiddleware } from '../../core/peers/middlewares/auto-reconnection.middleware';
+import { listeningAutoReconnection } from '../../core/peers/middlewares/auto-reconnection.middleware';
 import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
-import { listenToSendNextMessageOnMessageSubmitted } from '../../core/message/store/send-next-message.middleware';
+import { listeningSubmittedMessages } from '../../core/message/store/send-next-message.middleware';
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { listenerMiddleware } from './middlewares/listener.middleware';
@@ -39,7 +39,10 @@ export const createStore = (
     });
 
     // Initialize message listeners
-    listenToSendNextMessageOnMessageSubmitted();
+    listeningSubmittedMessages();
+
+    // Initialize auto-reconnection listeners
+    listeningAutoReconnection(dependencies);
 
     const store = configureStore({
         reducer: {
@@ -61,7 +64,6 @@ export const createStore = (
                     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
                 },
             })
-            .concat(createAutoReconnectionMiddleware(dependencies))
             .concat(listenerMiddleware.middleware),
         devTools: true,
     });

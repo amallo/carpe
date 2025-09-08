@@ -3,7 +3,7 @@ import { sendMessage } from '../usecases/send-message.usecase';
 import { selectNextSubmittedMessage } from './message.slice';
 import { startAppListening } from '../../../app/store/middlewares/listener.middleware';
 
-export const listenToSendNextMessageOnMessageSubmitted = () => {
+export const listeningSubmittedMessages = () => {
     startAppListening({
         actionCreator: messageWasSubmitted,
         effect: (_, { dispatch, getState }) => {
