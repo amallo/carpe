@@ -9,6 +9,7 @@ import { Identity } from '../../identity/entities/identity.entity';
 import { scanHit } from '../store/peers.slice';
 import { appForeground } from '../../app/store/app.slice';
 import { PeerEntity } from '../store/peers.slice';
+import { ReconnectionStrategy } from '../strategies/reconnection.strategy';
 
 /**
  * @jest-environment node
@@ -16,6 +17,7 @@ import { PeerEntity } from '../store/peers.slice';
 export class PairedPeerFixture {
   private peerProvider: FakePeerProvider;
   private permissionProvider: FakePermissionProvider;
+  private reconnectionStrategy?: ReconnectionStrategy;
   private stateBuilder: StateBuilder;
   private store?: Store; // Store created lazily
 
@@ -23,11 +25,13 @@ export class PairedPeerFixture {
     dependencies: {
       peerProvider?: FakePeerProvider;
       permissionProvider?: FakePermissionProvider;
+      reconnectionStrategy?: ReconnectionStrategy;
     } = {},
     initialStateBuilder?: StateBuilder
   ) {
     this.peerProvider = dependencies.peerProvider || new FakePeerProvider();
     this.permissionProvider = dependencies.permissionProvider || new FakePermissionProvider();
+    this.reconnectionStrategy = dependencies.reconnectionStrategy;
 
     // Use provided StateBuilder or create a new one
     this.stateBuilder = initialStateBuilder || createStateBuilder();
@@ -98,6 +102,14 @@ export class PairedPeerFixture {
   }
 
   /**
+   * Configure reconnection strategy for testing
+   */
+  withReconnectionStrategy(strategy: ReconnectionStrategy): this {
+    this.reconnectionStrategy = strategy;
+    return this;
+  }
+
+  /**
    * Get or create the store with configured initial state
    * Store is created lazily when first needed
    */
@@ -107,6 +119,7 @@ export class PairedPeerFixture {
       this.store = createTestStore({
         peerProvider: this.peerProvider,
         permissionProvider: this.permissionProvider,
+        ...(this.reconnectionStrategy && { reconnectionStrategy: this.reconnectionStrategy }),
       } as any, initialState);
     }
     return this.store;

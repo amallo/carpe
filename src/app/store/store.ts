@@ -22,6 +22,7 @@ import { listeningSubmittedMessages } from '../../core/message/store/send-next-m
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { listenerMiddleware } from './middlewares/listener.middleware';
+import { ImmediateReconnectionStrategy } from '../../core/peers/strategies/immediate-reconnection.strategy';
 
 export const createStore = (
     dependencies: Dependencies,
@@ -84,6 +85,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         vaultProvider: new FakeIdentityKeyPairProvider('identity'),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
+        reconnectionStrategy: new ImmediateReconnectionStrategy(),
         ...dependencies,
     };
     // Create test store - persistence config will be created automatically using InMemoryAsyncStorageProvider

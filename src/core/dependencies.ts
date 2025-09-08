@@ -9,6 +9,7 @@ import { MessageProvider } from './message/providers/message.provider';
 import { MessageIdGenerator } from './message/providers/message-id.generator';
 import { IdentityKeyPairProvider } from './identity/providers/identity-key-pair.provider';
 import { DateProvider } from './common/date/providers/date.provider';
+import { ReconnectionStrategy } from './peers/strategies/reconnection.strategy';
 
 export interface Dependencies {
     dateProvider: DateProvider;
@@ -21,4 +22,5 @@ export interface Dependencies {
     storageProvider: AsyncStorageProvider;
     messageProvider: MessageProvider;
     messageIdGenerator: MessageIdGenerator;
+    reconnectionStrategy: ReconnectionStrategy;
 }

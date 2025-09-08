@@ -96,5 +96,6 @@ describe('FEATURE: Auto-reconnection to paired devices', () => {
       fixture.expectPairPeerWasCalled('temperature-probe');
       fixture.expectPairedPeer('temperature-probe');
     });
+
   });
 });

@@ -1,8 +1,7 @@
 import { scanHit } from '../store/peers.slice';
 import { selectPairedPeerById } from '../store/paired-peer.slice';
 import { startAppListening } from '../../../app/store/middlewares/listener.middleware';
-import { ReconnectionStrategyFactory } from '../strategies/reconnection-strategy.factory';
-import { ReconnectionContext } from '../strategies/reconnection.strategy.interface';
+import { ReconnectionContext } from '../strategies/reconnection.strategy';
 import { hasBeenDisconnected } from '../store/paired-peer.slice';
 import { pairPeer } from '../usecases/pair-peer.usecase';
 import { Dependencies } from '../../dependencies';
@@ -23,8 +22,8 @@ export const listeningAutoReconnection = (dependencies: Dependencies) => {
           timeSinceLastConnection: 0, // Could be calculated from last connection time
         };
 
-        // Get appropriate reconnection strategy
-        const strategy = ReconnectionStrategyFactory.createStrategy();
+        // Get reconnection strategy from dependencies
+        const strategy = dependencies.reconnectionStrategy;
 
         // Check if reconnection should be attempted
         if (strategy.shouldReconnect(pairedPeer, context)) {

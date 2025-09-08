@@ -1,4 +1,4 @@
-import { ReconnectionStrategy, ReconnectionContext } from './reconnection.strategy.interface';
+import { ReconnectionStrategy, ReconnectionContext } from './reconnection.strategy';
 import { PairedPeerEntity } from '../store/paired-peer.slice';
 
 /**
@@ -6,7 +6,8 @@ import { PairedPeerEntity } from '../store/paired-peer.slice';
  * Always attempts reconnection for disconnected peers
  */
 export class ImmediateReconnectionStrategy implements ReconnectionStrategy {
-  shouldReconnect(peer: PairedPeerEntity, context: ReconnectionContext): boolean {
+
+  shouldReconnect(peer: PairedPeerEntity, _: ReconnectionContext): boolean {
     // Always attempt reconnection for disconnected peers
     return peer.status === 'disconnected';
   }
