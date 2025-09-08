@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { AnyAction, configureStore, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, PersistConfig } from 'redux-persist';
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
@@ -19,6 +19,8 @@ import { createIdentityPersistConfig } from './persistence.factory';
 import { createAutoReconnectionMiddleware } from '../../core/peers/middlewares/auto-reconnection.middleware';
 import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
 import { createSendNextMessageMiddleware } from '../../core/message/store/send-next-message.middleware';
+import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
+import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 
 export const createStore = (
     dependencies: Dependencies,
@@ -56,7 +58,7 @@ export const createStore = (
                 },
             })
             .concat(createAutoReconnectionMiddleware(dependencies))
-            .concat(createSendNextMessageMiddleware(dependencies)),
+            .concat(createSendNextMessageMiddleware()),
         devTools: true,
     });
 
@@ -69,7 +71,9 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         peerProvider: new FakePeerProvider(),
         permissionProvider: new GrantedPermissionProvider(),
         logger: new ConsoleLogger(),
+        dateProvider: new FakeDateProvider(),
         identityIdGenerator: new FakeIdentityIdGenerator(),
+        messageIdGenerator: new FakeMessageIdGenerator(),
         keyGenerator: new FakeIdentityKeyPairGenerator(),
         vaultProvider: new FakeIdentityKeyPairProvider('identity'),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
@@ -83,7 +87,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
 
 export type Store = ReturnType<typeof createStore>;
 export type RootState = ReturnType<Store['getState']>;
-export type AppDispatch = Store['dispatch'];
+export type AppDispatch = ThunkDispatch<RootState, Dependencies, UnknownAction>;
 
 /**
  * Create persistor for the store
