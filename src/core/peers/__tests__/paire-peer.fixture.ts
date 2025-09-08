@@ -10,6 +10,8 @@ import { scanHit } from '../store/peers.slice';
 import { appForeground } from '../../app/store/app.slice';
 import { PeerEntity } from '../store/peers.slice';
 import { ReconnectionStrategy } from '../strategies/reconnection.strategy';
+import { FakeDateProvider } from '../../common/date/providers/infra/fake-date.provider';
+import { PairedPeerMother } from './paired-peer.mother';
 
 /**
  * @jest-environment node
@@ -17,6 +19,7 @@ import { ReconnectionStrategy } from '../strategies/reconnection.strategy';
 export class PairedPeerFixture {
   private peerProvider: FakePeerProvider;
   private permissionProvider: FakePermissionProvider;
+  private dateProvider: FakeDateProvider;
   private reconnectionStrategy?: ReconnectionStrategy;
   private stateBuilder: StateBuilder;
   private store?: Store; // Store created lazily
@@ -25,12 +28,14 @@ export class PairedPeerFixture {
     dependencies: {
       peerProvider?: FakePeerProvider;
       permissionProvider?: FakePermissionProvider;
+      dateProvider?: FakeDateProvider;
       reconnectionStrategy?: ReconnectionStrategy;
     } = {},
     initialStateBuilder?: StateBuilder
   ) {
     this.peerProvider = dependencies.peerProvider || new FakePeerProvider();
     this.permissionProvider = dependencies.permissionProvider || new FakePermissionProvider();
+    this.dateProvider = dependencies.dateProvider || new FakeDateProvider();
     this.reconnectionStrategy = dependencies.reconnectionStrategy;
 
     // Use provided StateBuilder or create a new one
@@ -96,8 +101,8 @@ export class PairedPeerFixture {
   /**
    * Configure existing paired peer in the state
    */
-  withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected') {
-    this.stateBuilder.withExistingPairedPeer(peerId, status);
+  withExistingPairedPeer(peer: { id: string; status: 'pending' | 'connected' | 'disconnected'; connectionAttempts: number; lastConnectionTime?: string }) {
+    this.stateBuilder.withExistingPairedPeer(peer);
     return this;
   }
 
@@ -106,6 +111,14 @@ export class PairedPeerFixture {
    */
   withReconnectionStrategy(strategy: ReconnectionStrategy) {
     this.reconnectionStrategy = strategy;
+    return this;
+  }
+
+  /**
+   * Configure fake date for testing
+   */
+  withFakeDate(date: string) {
+    this.dateProvider.willGenerateNow(date);
     return this;
   }
 
@@ -119,6 +132,7 @@ export class PairedPeerFixture {
       this.store = createTestStore({
         peerProvider: this.peerProvider,
         permissionProvider: this.permissionProvider,
+        dateProvider: this.dateProvider,
         ...(this.reconnectionStrategy && { reconnectionStrategy: this.reconnectionStrategy }),
       } as any, initialState);
     }

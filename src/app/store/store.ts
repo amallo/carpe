@@ -22,7 +22,7 @@ import { listeningSubmittedMessages } from '../../core/message/store/send-next-m
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { listenerMiddleware } from './middlewares/listener.middleware';
-import { ImmediateReconnectionStrategy } from '../../core/peers/strategies/immediate-reconnection.strategy';
+import { ReconnectionStrategyFactory } from '../../core/peers/strategies/reconnection-strategy.factory';
 
 export const createStore = (
     dependencies: Dependencies,
@@ -33,17 +33,6 @@ export const createStore = (
     const persistConfig = customPersistConfig || createIdentityPersistConfig(dependencies.storageProvider);
     // Create persisted identity reducer
     const persistedIdentityReducer = persistReducer(persistConfig, identityReducer);
-
-    // Listen to peer connected events
-    dependencies.peerProvider.onPeerConnected((peerId) => {
-        store.dispatch(peerWasConnected(peerId));
-    });
-
-    // Initialize message listeners
-    listeningSubmittedMessages();
-
-    // Initialize auto-reconnection listeners
-    listeningAutoReconnection(dependencies);
 
     const store = configureStore({
         reducer: {
@@ -69,12 +58,23 @@ export const createStore = (
         devTools: true,
     });
 
+    // Listen to peer connected events
+    dependencies.peerProvider.onPeerConnected((peerId) => {
+        store.dispatch(peerWasConnected({ peerId, timestamp: dependencies.dateProvider.now() }));
+    });
+
+    // Initialize message listeners
+    listeningSubmittedMessages();
+
+    // Initialize auto-reconnection listeners
+    listeningAutoReconnection(dependencies);
+
     return store;
 };
 
 
 export const createTestStore = (dependencies: Partial<Dependencies>, initialState?: object) => {
-    const deps: Dependencies = {
+    const defaultDeps = {
         peerProvider: new FakePeerProvider(),
         permissionProvider: new GrantedPermissionProvider(),
         logger: new ConsoleLogger(),
@@ -85,9 +85,14 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
         vaultProvider: new FakeIdentityKeyPairProvider('identity'),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
-        reconnectionStrategy: new ImmediateReconnectionStrategy(),
-        ...dependencies,
     };
+    
+    const deps: Dependencies = {
+        ...defaultDeps,
+        ...dependencies,
+        reconnectionStrategy: ReconnectionStrategyFactory.createStrategy('test', (dependencies.dateProvider || defaultDeps.dateProvider)),
+    };
+    
     // Create test store - persistence config will be created automatically using InMemoryAsyncStorageProvider
     const store = createStore(deps, undefined, initialState);
     return store;

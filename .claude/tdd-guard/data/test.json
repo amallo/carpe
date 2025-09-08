@@ -1,6 +1,16 @@
 {
   "testModules": [
     {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "tests": [
+        {
+          "name": "should disconnect a connected paired peer",
+          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
+          "state": "passed"
+        }
+      ]
+    },
+    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/auto-reconnection.test.ts",
       "tests": [
         {
@@ -76,31 +86,11 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
-      "tests": [
-        {
-          "name": "should disconnect a connected paired peer",
-          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
-          "state": "passed"
-        }
-      ]
-    },
-    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
       "tests": [
         {
           "name": "should broadcast a public message successfully",
           "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
-          "state": "passed"
-        }
-      ]
-    },
-    {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
-      "tests": [
-        {
-          "name": "Audie accept request to scan bluetooth",
-          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
           "state": "passed"
         }
       ]
@@ -131,6 +121,71 @@
         {
           "name": "should do nothing if peer is not found",
           "fullName": "FEATURE: Audie unpairs a peer should do nothing if peer is not found",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
+      "tests": [
+        {
+          "name": "Audie accept request to scan bluetooth",
+          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/strategies/__tests__/delayed-reconnection.strategy.test.ts",
+      "tests": [
+        {
+          "name": "should return true for disconnected peer with no previous attempts and enough time passed",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return true for disconnected peer with no previous attempts and enough time passed",
+          "state": "passed"
+        },
+        {
+          "name": "should return false for connected peer",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return false for connected peer",
+          "state": "passed"
+        },
+        {
+          "name": "should return false for pending peer",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return false for pending peer",
+          "state": "passed"
+        },
+        {
+          "name": "should return false when maximum attempts reached",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return false when maximum attempts reached",
+          "state": "passed"
+        },
+        {
+          "name": "should return false when not enough time has passed",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return false when not enough time has passed",
+          "state": "passed"
+        },
+        {
+          "name": "should return true when exactly at delay threshold",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return true when exactly at delay threshold",
+          "state": "passed"
+        },
+        {
+          "name": "should return true for attempts within limit",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return true for attempts within limit",
+          "state": "passed"
+        },
+        {
+          "name": "should return false when exactly at max attempts",
+          "fullName": "DelayedReconnectionStrategy shouldReconnect should return false when exactly at max attempts",
+          "state": "passed"
+        },
+        {
+          "name": "should return 2000 milliseconds",
+          "fullName": "DelayedReconnectionStrategy getDelayMs should return 2000 milliseconds",
+          "state": "passed"
+        },
+        {
+          "name": "should return 5 attempts",
+          "fullName": "DelayedReconnectionStrategy getMaxAttempts should return 5 attempts",
           "state": "passed"
         }
       ]

@@ -1,21 +1,37 @@
 import { PairedPeerFixture } from './paire-peer.fixture';
 import { PeerError } from '../providers/peer.provider';
 import { createStateBuilder } from '../../store/state.builder';
+import { PairedPeerMother } from './paired-peer.mother';
 
 /**
  * @jest-environment node
  */
 describe('FEATURE: Audie pair with a peer', () => {
     test('should pair and connect with a peer successfully', async () => {
+        const fixedDate = '2024-01-15T10:30:45.123Z';
         const fixture = new PairedPeerFixture()
-            .withPermissionGranted('connect-peers', 'connect-bluetooth');
+            .withPermissionGranted('connect-peers', 'connect-bluetooth')
+            .withFakeDate(fixedDate)
+            .withFakeDate(fixedDate); // Second call for peerWasConnected
 
         await fixture.pairPeer('peer-001');
 
-        fixture
-            .expectConnectToPeerWasCalled()
-            .expectPeerConnected('peer-001')
-            .expectPairedPeer('peer-001');
+        // Expected state after successful connection
+        const expectedState = createStateBuilder()
+            .withPermissionByFeature('connect-peers', {
+                id: 'connect-bluetooth',
+                status: 'granted',
+            })
+            .withExistingPairedPeer(PairedPeerMother.connected('peer-001', 1, fixedDate))
+            .build();
+
+        // Verify the actual state matches expected state
+        const store = fixture.getStore();
+        const actualState = store.getState();
+        expect(actualState).toEqual(expectedState);
+        
+        // Also verify that connect was called
+        fixture.expectConnectToPeerWasCalled();
     });
 
     test('should not be paired if peer is not found', async () => {
@@ -29,26 +45,36 @@ describe('FEATURE: Audie pair with a peer', () => {
     });
 
     test('paired peer should remains pairable when connection fails', async () => {
+        const fixedDate = '2024-01-15T10:30:45.123Z';
+        
         // Initialize fixture with an existing paired peer
         const initialState = createStateBuilder()
-            .withExistingPairedPeer('timeout-peer', 'disconnected')
+            .withExistingPairedPeer(PairedPeerMother.disconnected('timeout-peer'))
             .withPermissionByFeature('connect-peers', {
                 id: 'connect-bluetooth',
                 status: 'granted',
             });
 
         const fixture = new PairedPeerFixture({}, initialState)
-            .withPermissionGranted('connect-peers', 'connect-bluetooth');
+            .withPermissionGranted('connect-peers', 'connect-bluetooth')
+            .withFakeDate(fixedDate);
 
         await fixture.pairPeer('timeout-peer');
 
-        // Verify peer exists and is disconnected (paired peers persist)
-        fixture.expectDisconnectedPairedPeer('timeout-peer');
+        // Expected state after failed connection attempt
+        const expectedState = createStateBuilder()
+            .withPermissionByFeature('connect-peers', {
+                id: 'connect-bluetooth',
+                status: 'granted',
+            })
+            .withPairingError('Connection timeout')
+            .withExistingPairedPeer(PairedPeerMother.disconnected('timeout-peer', 1, fixedDate))
+            .build();
 
-        // Verify error state
+        // Verify the actual state matches expected state
         const store = fixture.getStore();
-        const state = store.getState();
-        expect(state.pairedPeer.error).toBe(PeerError.CONNECTION_TIMEOUT);
+        const actualState = store.getState();
+        expect(actualState).toEqual(expectedState);
     });
 
     test('should fail when permission is denied', async () => {

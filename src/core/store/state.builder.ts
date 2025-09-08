@@ -45,13 +45,17 @@ export class StateBuilder {
         this._state.pairedPeer = pairedPeerAdapter.addOne(this._state.pairedPeer, {
             id: peerId,
             status: 'connected',
+            connectionAttempts: 1,
+            lastConnectionTime: new Date().toISOString(),
         });
         return this;
     }
-    withExistingPairedPeer(peerId: string, status: 'pending' | 'connected' | 'disconnected' = 'disconnected'){
+    withExistingPairedPeer(peer: { id: string; status: 'pending' | 'connected' | 'disconnected'; connectionAttempts: number; lastConnectionTime?: string }){
         this._state.pairedPeer = pairedPeerAdapter.addOne(this._state.pairedPeer, {
-            id: peerId,
-            status: status,
+            id: peer.id,
+            status: peer.status,
+            connectionAttempts: peer.connectionAttempts,
+            lastConnectionTime: peer.lastConnectionTime || new Date().toISOString(),
         });
         return this;
     }

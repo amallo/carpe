@@ -14,22 +14,21 @@ export const listeningAutoReconnection = (dependencies: Dependencies) => {
       const state = getState();
       const scannedPeerId = action.payload.id;
       const pairedPeer = selectPairedPeerById(state, scannedPeerId);
-      if (!pairedPeer) {
-        return;
-      }
-      // Create reconnection context
-      const context: ReconnectionContext = {
-        connectionAttempts: 0, // Could be tracked in state
-        timeSinceLastConnection: 0, // Could be calculated from last connection time
-      };
 
-      // Get reconnection strategy from dependencies
-      const strategy = dependencies.reconnectionStrategy;
+      if (pairedPeer) {
+        // Create reconnection context
+        const context: ReconnectionContext = {
+          connectionAttempts: pairedPeer.connectionAttempts,
+        };
 
-      // Check if reconnection should be attempted
-      if (strategy.shouldReconnect(pairedPeer, context)) {
-        // Dispatch hasBeenDisconnected event
-        dispatch(hasBeenDisconnected(scannedPeerId));
+        // Get reconnection strategy from dependencies
+        const strategy = dependencies.reconnectionStrategy;
+
+        // Check if reconnection should be attempted
+        if (strategy.shouldReconnect(pairedPeer, context)) {
+          // Dispatch hasBeenDisconnected event
+          dispatch(hasBeenDisconnected(scannedPeerId));
+        }
       }
     },
   });

@@ -1,4 +1,5 @@
 import { PairedPeerFixture } from './paire-peer.fixture';
+import { PairedPeerMother } from './paired-peer.mother';
 
 /**
  * @jest-environment node
@@ -7,7 +8,7 @@ describe('FEATURE: Auto-reconnection to paired devices', () => {
   describe('WHEN a known device becomes available again', () => {
     it('should automatically reconnect to maintain seamless communication', async () => {
       const fixture = new PairedPeerFixture()
-        .withExistingPairedPeer('my-lora-sensor', 'disconnected')
+        .withExistingPairedPeer(PairedPeerMother.disconnected('my-lora-sensor'))
         .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
       // Device becomes visible during scan
@@ -38,7 +39,7 @@ describe('FEATURE: Auto-reconnection to paired devices', () => {
 
     it('should not reconnect to already connected paired devices', async () => {
       const fixture = new PairedPeerFixture()
-        .withExistingPairedPeer('connected-sensor', 'connected')
+        .withExistingPairedPeer(PairedPeerMother.connected('connected-sensor'))
         .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
       // Already connected device is discovered again
@@ -86,7 +87,7 @@ describe('FEATURE: Auto-reconnection to paired devices', () => {
   describe('WHEN device connection is lost unexpectedly', () => {
     it('should attempt to reconnect when device is rediscovered', async () => {
       const fixture = new PairedPeerFixture()
-        .withExistingPairedPeer('temperature-probe', 'disconnected')
+        .withExistingPairedPeer(PairedPeerMother.disconnected('temperature-probe'))
         .withPermissionGranted('connect-peers', 'connect-bluetooth');
 
       // Device comes back after restart/connection loss

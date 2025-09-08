@@ -18,5 +18,13 @@ export const pairPeer = createAsyncThunk<
 
         const { peerProvider } = extra;
         await peerProvider.connect(peerId);
+    },
+    {
+        getPendingMeta: ({ peerId }, { extra }) => ({
+            arg: { peerId },
+            requestId: '',
+            requestStatus: 'pending' as const,
+            timestamp: extra.dateProvider.now(),
+        }),
     }
 );

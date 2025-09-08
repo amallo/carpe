@@ -16,6 +16,8 @@ type PairedPeerState = EntityState<PairedPeerEntity, string> & {
 export type PairedPeerEntity = {
     id: string;
     status: PairedPeerStatus;
+    connectionAttempts: number;
+    lastConnectionTime?: string; // ISO string of last connection attempt
 }
 
 export const pairedPeerAdapter = createEntityAdapter<PairedPeerEntity>();
@@ -31,17 +33,38 @@ const pairedPeerSlice = createSlice({
     name: 'pairedPeer',
     initialState: getPairedPeerInitialState(),
     reducers: {
-        peerWasConnected: (state, action: PayloadAction<string>) => {
-            state.entities[action.payload].status = 'connected';
+        peerWasConnected: (state, action: PayloadAction<{ peerId: string; timestamp?: string }>) => {
+            const peer = state.entities[action.payload.peerId];
+            if (peer) {
+                peer.status = 'connected';
+                peer.lastConnectionTime = action.payload.timestamp || new Date().toISOString();
+            }
         },
     },
     extraReducers: (builder) => {
         builder.addCase(pairPeer.pending, (state, action) => {
             state.error = null;
-            pairedPeerAdapter.addOne(state, {
-                id: action.meta.arg.peerId,
-                status: 'pending',
-            });
+            const currentTime = (action.meta as any).timestamp || new Date().toISOString();
+            const existingPeer = state.entities[action.meta.arg.peerId];
+            if (existingPeer) {
+                // Increment connection attempts for existing peer
+                pairedPeerAdapter.updateOne(state, {
+                    id: action.meta.arg.peerId,
+                    changes: {
+                        status: 'pending',
+                        connectionAttempts: existingPeer.connectionAttempts + 1,
+                        lastConnectionTime: currentTime,
+                    },
+                });
+            } else {
+                // Add new peer with initial connection attempt
+                pairedPeerAdapter.addOne(state, {
+                    id: action.meta.arg.peerId,
+                    status: 'pending',
+                    connectionAttempts: 1,
+                    lastConnectionTime: currentTime,
+                });
+            }
         });
         /*builder.addCase(pairPeer.fulfilled, (state, action) => {
             pairedPeerAdapter.updateOne(state, {
@@ -54,7 +77,7 @@ const pairedPeerSlice = createSlice({
         builder.addCase(pairPeer.rejected, (state, action) => {
             state.error = action.error.message || 'Connection failed';
             // Keep the peer in the list but mark it as disconnected
-            // This allows paired peers to persist even when connection fails
+            // Connection attempts are already incremented in pending state
             pairedPeerAdapter.updateOne(state, {
                 id: action.meta.arg.peerId,
                 changes: {

@@ -3,6 +3,7 @@ import { FakePeerProvider } from '../providers/test/fake-peer.provider';
 import { createStateBuilder } from '../../store/state.builder';
 import { createTestStore, Store } from '../../../app/store/store';
 import { disconnectPairedPeer } from '../usecases/disconnect-paired-peer.usecase';
+import { PairedPeerMother } from './paired-peer.mother';
 
 describe('disconnectPairedPeer', () => {
   let store: Store;
@@ -15,7 +16,7 @@ describe('disconnectPairedPeer', () => {
   test('should disconnect a connected paired peer', async () => {
     // Given: A connected paired peer
     const initialState = createStateBuilder()
-      .withExistingPairedPeer('sensor-1', 'connected')
+      .withExistingPairedPeer(PairedPeerMother.connected('sensor-1'))
       .build();
 
     store = createTestStore({ peerProvider }, initialState);
