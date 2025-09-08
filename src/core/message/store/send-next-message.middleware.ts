@@ -1,20 +1,19 @@
 import { messageWasSubmitted } from '../usecases/submit-broadcast-message.usecase';
 import { sendMessage } from '../usecases/send-message.usecase';
 import { selectNextSubmittedMessage } from './message.slice';
+import { startAppListening } from '../../../app/store/middlewares/listener.middleware';
 
-export const createSendNextMessageMiddleware = () => {
-    return (store: any) => (next: any) => (action: any) => {
-        const result = next(action);
-        // Déclencher envoi quand nouveau message en queue
-        if (messageWasSubmitted.match(action)) {
-            return sendNextSubmittedMessage(store);
-        }
-        return result;
-    };
-};
+export const listenToSendNextMessageOnMessageSubmitted = () => {
+    startAppListening({
+        actionCreator: messageWasSubmitted,
+        effect: (_, { dispatch, getState }) => {
+            const state = getState();
+            const nextSubmittedMessage = selectNextSubmittedMessage(state);
 
-export const sendNextSubmittedMessage = (store: any) => {
-    const state = store.getState();
-    const nextSubmittedMessage  = selectNextSubmittedMessage(state);
-    store.dispatch(sendMessage(nextSubmittedMessage!.id));
+            if (nextSubmittedMessage) {
+                // Send the next message in the queue
+                dispatch(sendMessage(nextSubmittedMessage.id));
+            }
+        },
+    });
 };
