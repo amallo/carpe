@@ -8,6 +8,10 @@ import { toast } from 'sonner-native';
 import { useAppSelector } from '../store/hooks';
 import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
 import { PublicMessagesStatusBar } from '../components/message/PublicMessagesStatusBar';
+import { MessagesMapView } from '../components/message/MessagesMapView';
+import { PublicMessagesHeader } from '../components/message/PublicMessagesHeader';
+import { MessagesDistanceFilterBar } from '../components/message/MessagesDistanceFilterBar';
+import { PublicMessageItem } from '../components/message/PublicMessageItem';
 
 const { width, height } = Dimensions.get('window');
 
@@ -232,173 +236,32 @@ export default function PublicMessagesScreen() {
   };
 
   const renderMessageItem = ({ item }: { item: PublicMessage }) => (
-    <View style={[styles.messageCard, item.isMe && styles.myMessageCard]}>
-      <View style={styles.messageHeader}>
-        <View style={styles.senderInfo}>
-          <View style={[styles.senderAvatar, item.isMe && styles.myAvatar]}>
-            <Text style={styles.avatarText}>{item.senderAvatar}</Text>
-          </View>
-          <View style={styles.senderDetails}>
-            <Text style={[styles.senderName, item.isMe && styles.mySenderName]}>
-              {item.isMe ? 'Moi' : item.sender}
-            </Text>
-            <Text style={styles.locationText}>📍 {item.location.name}</Text>
-          </View>
-        </View>
-
-        <View style={styles.messageMetadata}>
-          <Text style={styles.messageTime}>{item.timestamp}</Text>
-          <View style={styles.signalContainer}>
-            <View style={styles.signalBars}>
-              {[1, 2, 3, 4].map(bar => (
-                <View
-                  key={bar}
-                  style={[
-                    styles.signalBar,
-                    {
-                      backgroundColor: bar <= getSignalBars(item.signalStrength)
-                        ? getRangeColor(item.range)
-                        : '#e5e7eb',
-                      height: bar * 2 + 2,
-                    },
-                  ]}
-                />
-              ))}
-            </View>
-            <Text style={styles.signalText}>{item.signalStrength}%</Text>
-          </View>
-        </View>
-      </View>
-
-      <Text style={[styles.messageText, item.isMe && styles.myMessageText]}>
-        {item.message}
-      </Text>
-
-      <View style={styles.messageFooter}>
-        <View style={[styles.rangeTag, { backgroundColor: getRangeColor(item.range) }]}>
-          <Text style={styles.rangeTagText}>{getRangeLabel(item.range)}</Text>
-        </View>
-        {item.isMe ? (
-          <View style={styles.myMessageIndicator}>
-            <Ionicons name="checkmark-circle" size={16} color="#10b981" />
-            <Text style={styles.myMessageIndicatorText}>Diffusé</Text>
-          </View>
-        ) : (
-          <Text style={styles.distanceText}>{formatDistance(item.distance)}</Text>
-        )}
-      </View>
-    </View>
+    <PublicMessageItem
+      item={item}
+      getSignalBars={getSignalBars}
+      getRangeColor={getRangeColor}
+      getRangeLabel={getRangeLabel}
+      formatDistance={formatDistance}
+    />
   );
 
-  const renderMapUser = (user: MapUser) => {
-    const isSelected = selectedUser === user.id;
-    const latestMessage = user.messages[0];
-
-    return (
-      <View key={user.id}>
-        {/* User Point */}
-        <TouchableOpacity
-          style={[
-            styles.mapUserPoint,
-            {
-              left: user.x - 20,
-              top: user.y - 20,
-              backgroundColor: user.isActive ? '#4f46e5' : '#94a3b8',
-              transform: [{ scale: isSelected ? 1.2 : 1 }],
-            },
-          ]}
-          onPress={() => handleUserPress(user.id)}
-        >
-          <Text style={styles.mapUserAvatar}>{user.avatar}</Text>
-          {user.isActive && <View style={styles.activeIndicator} />}
-        </TouchableOpacity>
-
-        {/* Message Bubble */}
-        {isSelected && latestMessage && (
-          <View style={[
-            styles.messageBubble,
-            {
-              left: user.x - 100,
-              top: user.y - 80,
-            },
-          ]}>
-            <View style={styles.bubbleContent}>
-              <Text style={styles.bubbleSender}>{user.name}</Text>
-              <Text style={styles.bubbleMessage} numberOfLines={2}>
-                {latestMessage.message}
-              </Text>
-              <View style={styles.bubbleFooter}>
-                <Text style={styles.bubbleTime}>{latestMessage.timestamp}</Text>
-                <Text style={styles.bubbleDistance}>
-                  {formatDistance(latestMessage.distance)}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.bubbleArrow} />
-          </View>
-        )}
-
-        {/* Range Circle */}
-        {isSelected && (
-          <View style={[
-            styles.rangeCircle,
-            {
-              left: user.x - 50,
-              top: user.y - 50,
-              borderColor: getRangeColor(latestMessage.range),
-            },
-          ]} />
-        )}
-      </View>
-    );
-  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#111827" />
-        </TouchableOpacity>
-
-        <Text style={styles.title}>Messages publics</Text>
-
-        <TouchableOpacity style={styles.viewToggle} onPress={toggleViewMode}>
-          <Ionicons
-            name={viewMode === 'list' ? 'map' : 'list'}
-            size={24}
-            color="#4f46e5"
-          />
-        </TouchableOpacity>
-      </View>
+      <PublicMessagesHeader
+        viewMode={viewMode}
+        onBack={handleBack}
+        onToggleViewMode={toggleViewMode}
+      />
 
       {/* Filter Bar */}
-      <View style={styles.filterBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {(['all', 'local', 'medium', 'long'] as const).map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              style={[
-                styles.filterChip,
-                filterDistance === filter && styles.filterChipActive,
-                filter !== 'all' && {
-                  borderColor: getRangeColor(filter),
-                  backgroundColor: filterDistance === filter ? getRangeColor(filter) : 'transparent',
-                },
-              ]}
-              onPress={() => setFilterDistance(filter)}
-            >
-              <Text style={[
-                styles.filterChipText,
-                filterDistance === filter && styles.filterChipTextActive,
-                filter !== 'all' && filterDistance === filter && { color: '#ffffff' },
-              ]}>
-                {filter === 'all' ? 'Tous' : getRangeLabel(filter)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+      <MessagesDistanceFilterBar
+        filterDistance={filterDistance}
+        onFilterChange={setFilterDistance}
+        getRangeColor={getRangeColor}
+        getRangeLabel={getRangeLabel}
+      />
 
       {/* Content */}
       <View style={styles.content}>
@@ -423,42 +286,13 @@ export default function PublicMessagesScreen() {
             />
           </>
         ) : (
-          <>
-            {/* Map View */}
-            <View style={styles.mapContainer}>
-              <View style={styles.mapBackground}>
-                {/* Background Grid */}
-                <View style={styles.mapGrid} />
-
-                {/* Center Point (You) */}
-                <View style={styles.centerPoint}>
-                  <View style={styles.centerCircle}>
-                    <Ionicons name="radio" size={16} color="#4f46e5" />
-                  </View>
-                  <Text style={styles.centerLabel}>Vous</Text>
-                </View>
-
-                {/* Map Users */}
-                {mapUsers.map(renderMapUser)}
-              </View>
-            </View>
-
-            {/* Map Legend */}
-            <View style={styles.mapLegend}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#10b981' }]} />
-                <Text style={styles.legendText}>Local (500m)</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#f59e0b' }]} />
-                <Text style={styles.legendText}>Moyen (2km)</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#ef4444' }]} />
-                <Text style={styles.legendText}>Long (10km)</Text>
-              </View>
-            </View>
-          </>
+          <MessagesMapView
+            mapUsers={mapUsers}
+            selectedUser={selectedUser}
+            onUserPress={handleUserPress}
+            getRangeColor={getRangeColor}
+            formatDistance={formatDistance}
+          />
         )}
       </View>
 
@@ -516,64 +350,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  viewToggle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterBar: {
-    backgroundColor: '#ffffff',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  filterChipActive: {
-    backgroundColor: '#4f46e5',
-  },
-  filterChipText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#6b7280',
-  },
-  filterChipTextActive: {
-    color: '#ffffff',
-  },
   content: {
     flex: 1,
   },
@@ -602,132 +378,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 32,
-  },
-  messageCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  myMessageCard: {
-    backgroundColor: '#f0f9ff',
-    borderWidth: 1,
-    borderColor: '#0ea5e9',
-  },
-  messageHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  senderInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  senderAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#4f46e5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  myAvatar: {
-    backgroundColor: '#0ea5e9',
-  },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  senderDetails: {
-    flex: 1,
-  },
-  senderName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  mySenderName: {
-    color: '#0ea5e9',
-  },
-  locationText: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  messageMetadata: {
-    alignItems: 'flex-end',
-  },
-  messageTime: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  signalContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  signalBars: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginRight: 4,
-  },
-  signalBar: {
-    width: 3,
-    marginHorizontal: 1,
-    borderRadius: 1,
-  },
-  signalText: {
-    fontSize: 10,
-    color: '#6b7280',
-    fontWeight: '500',
-  },
-  messageText: {
-    fontSize: 14,
-    color: '#374151',
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  myMessageText: {
-    color: '#0c4a6e',
-  },
-  messageFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rangeTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  rangeTagText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  distanceText: {
-    fontSize: 12,
-    color: '#6b7280',
-    fontWeight: '500',
-  },
-  myMessageIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  myMessageIndicatorText: {
-    fontSize: 10,
-    color: '#10b981',
-    marginLeft: 4,
-    fontWeight: '500',
   },
   inputContainer: {
     backgroundColor: '#ffffff',
@@ -772,178 +422,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     marginLeft: 4,
-  },
-  mapContainer: {
-    flex: 1,
-    margin: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  mapBackground: {
-    flex: 1,
-    position: 'relative',
-    backgroundColor: '#f8f9fa',
-  },
-  mapGrid: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.1,
-    backgroundColor: 'repeating-linear-gradient(0deg, #4f46e5, #4f46e5 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #4f46e5, #4f46e5 1px, transparent 1px, transparent 20px)',
-  },
-  centerPoint: {
-    position: 'absolute',
-    left: width / 2 - 30,
-    top: height / 2 - 100,
-    alignItems: 'center',
-  },
-  centerCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#ffffff',
-    borderWidth: 3,
-    borderColor: '#4f46e5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#4f46e5',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  centerLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4f46e5',
-    marginTop: 4,
-  },
-  mapUserPoint: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  mapUserAvatar: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#22c55e',
-    borderWidth: 2,
-    borderColor: '#ffffff',
-  },
-  messageBubble: {
-    position: 'absolute',
-    width: 200,
-    zIndex: 10,
-  },
-  bubbleContent: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-  },
-  bubbleSender: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4f46e5',
-    marginBottom: 4,
-  },
-  bubbleMessage: {
-    fontSize: 12,
-    color: '#374151',
-    lineHeight: 16,
-    marginBottom: 6,
-  },
-  bubbleFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  bubbleTime: {
-    fontSize: 10,
-    color: '#6b7280',
-  },
-  bubbleDistance: {
-    fontSize: 10,
-    color: '#10b981',
-    fontWeight: '500',
-  },
-  bubbleArrow: {
-    position: 'absolute',
-    bottom: -8,
-    left: '50%',
-    marginLeft: -8,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 8,
-    borderRightWidth: 8,
-    borderTopWidth: 8,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#ffffff',
-  },
-  rangeCircle: {
-    position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    opacity: 0.5,
-  },
-  mapLegend: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 12,
-  },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
-  },
-  legendText: {
-    fontSize: 12,
-    color: '#6b7280',
   },
   closeButton: {
     position: 'absolute',
