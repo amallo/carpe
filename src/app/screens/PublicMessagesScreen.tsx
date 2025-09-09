@@ -11,7 +11,7 @@ import { PublicMessagesStatusBar } from '../components/message/PublicMessagesSta
 import { MessagesMapView } from '../components/message/MessagesMapView';
 import { PublicMessagesHeader } from '../components/message/PublicMessagesHeader';
 import { MessagesDistanceFilterBar } from '../components/message/MessagesDistanceFilterBar';
-import { PublicMessageItem } from '../components/message/PublicMessageItem';
+import { PublicMessageList } from '../components/message/PublicMessageList';
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,7 +51,7 @@ export default function PublicMessagesScreen() {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlatList<PublicMessage>>(null);
 
   const [publicMessages, setPublicMessages] = useState<PublicMessage[]>([
     {
@@ -235,15 +235,6 @@ export default function PublicMessagesScreen() {
     setSelectedUser(selectedUser === userId ? null : userId);
   };
 
-  const renderMessageItem = ({ item }: { item: PublicMessage }) => (
-    <PublicMessageItem
-      item={item}
-      getSignalBars={getSignalBars}
-      getRangeColor={getRangeColor}
-      getRangeLabel={getRangeLabel}
-      formatDistance={formatDistance}
-    />
-  );
 
 
   return (
@@ -275,14 +266,13 @@ export default function PublicMessagesScreen() {
             />
 
             {/* Messages List */}
-            <FlatList
-              ref={flatListRef}
-              data={filteredMessages}
-              keyExtractor={(item) => item.id}
-              renderItem={renderMessageItem}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.messagesList}
-              inverted
+            <PublicMessageList
+              messages={filteredMessages}
+              flatListRef={flatListRef}
+              getSignalBars={getSignalBars}
+              getRangeColor={getRangeColor}
+              getRangeLabel={getRangeLabel}
+              formatDistance={formatDistance}
             />
           </>
         ) : (
@@ -373,11 +363,6 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     color: '#6b7280',
-  },
-  messagesList: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 32,
   },
   inputContainer: {
     backgroundColor: '#ffffff',
