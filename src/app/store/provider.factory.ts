@@ -129,7 +129,7 @@ export class ProviderFactory {
   static createMessageIdGenerator(shouldUseMock: boolean, logger: Logger): MessageIdGenerator {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating SimpleMessageIdGenerator for development');
-      return new SimpleMessageIdGenerator();
+      return new UUIdMessageIdGenerator();
     }
     logger.info('ProviderFactory', 'Creating UUIdMessageIdGenerator for production');
     return new UUIdMessageIdGenerator();

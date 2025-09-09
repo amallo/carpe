@@ -10,7 +10,7 @@ export class InMemoryMessageProvider implements MessageProvider {
     this.logger.info(`[InMemoryMessageProvider] Sending message: ${message.id}`);
 
     // Simulate network latency between 1 and 5 seconds
-    const latency = Math.random() * 4000 + 1000; // 1000ms to 5000ms
+    const latency = Math.random() * 6000 + 1000; // 1000ms to 5000ms
     this.logger.info(`[InMemoryMessageProvider] Simulating ${latency.toFixed(0)}ms latency`);
 
     await new Promise(resolve => setTimeout(resolve, latency));

@@ -230,7 +230,6 @@ export default function PublicMessagesScreen() {
 
             {/* Messages List */}
             <PublicMessageList
-              messages={filteredMessages}
               flatListRef={flatListRef}
               getSignalBars={getSignalBars}
               getRangeColor={getRangeColor}
@@ -253,9 +252,9 @@ export default function PublicMessagesScreen() {
       {viewMode === 'list' && (
         <MessageInput
           onMessageSent={() => {
-            // Scroll to top to show new message
+            // Scroll to bottom to show new message
             setTimeout(() => {
-              flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+              flatListRef.current?.scrollToEnd({ animated: true });
             }, 100);
           }}
         />

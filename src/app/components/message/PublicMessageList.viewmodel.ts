@@ -3,11 +3,12 @@ import { messageAdapter, selectBroadcastedById, selectSubmittedById, selectPubli
 import { selectCurrentIdentity } from '../../../core/identity/store/identity.slice';
 import { useAppSelector } from '../../store/hooks';
 
+export type PublicMessageStatus = 'submitted' | 'broadcasted' | 'unknown';
 
 export interface PublicMessageViewModel {
   id: string;
   content: string;
-  status: 'submitted' | 'broadcasted' | 'unknown';
+  status: PublicMessageStatus;
   sentBy: string;
   timestamp: string;
   distance: number;
@@ -38,7 +39,7 @@ export const selectPublicMessagesWithStatus = createSelector(
         id: id,
         content: message.content,
         status: submittedById[id] ? 'submitted' : broadcastedById[id] ? 'broadcasted' : 'unknown',
-        sentBy: message.sentBy,
+        sentBy: message.sentBy === currentIdentity?.id ? 'Moi' : (currentIdentity?.nickname ? currentIdentity.nickname.substring(0, 2).toUpperCase() : 'UN'),
         timestamp: message.sentAt,
         distance: 0,
         signalStrength: 0,

@@ -3,23 +3,6 @@ import { FlatList, StyleSheet } from 'react-native';
 import { PublicMessageItem } from './PublicMessageItem';
 import { PublicMessageViewModel, usePublicMessageListViewModel } from './PublicMessageList.viewmodel';
 
-interface PublicMessage {
-  id: string;
-  sender: string;
-  senderAvatar: string;
-  message: string;
-  timestamp: string;
-  distance: number;
-  signalStrength: number;
-  location: {
-    latitude: number;
-    longitude: number;
-    name: string;
-  };
-  range: 'local' | 'medium' | 'long';
-  isMe?: boolean;
-}
-
 interface PublicMessageListProps {
   flatListRef: React.RefObject<FlatList<PublicMessageViewModel> | null>;
   getSignalBars: (signalStrength: number) => number;
@@ -54,7 +37,7 @@ export function PublicMessageList({
       renderItem={renderMessageItem}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.messagesList}
-      inverted
+
     />
   );
 }

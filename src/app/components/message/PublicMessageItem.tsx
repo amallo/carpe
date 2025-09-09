@@ -1,24 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from '@react-native-vector-icons/ionicons';
 import { PublicMessageViewModel } from './PublicMessageList.viewmodel';
-
-interface PublicMessage {
-  id: string;
-  sender: string;
-  senderAvatar: string;
-  message: string;
-  timestamp: string;
-  distance: number;
-  signalStrength: number;
-  location: {
-    latitude: number;
-    longitude: number;
-    name: string;
-  };
-  range: 'local' | 'medium' | 'long';
-  isMe?: boolean;
-}
+import { MessageIndicator } from './MessageIndicator';
 
 interface PublicMessageItemProps {
   item: PublicMessageViewModel;
@@ -33,7 +16,7 @@ export function PublicMessageItem({
   getSignalBars,
   getRangeColor,
   getRangeLabel,
-  formatDistance,
+  formatDistance: _formatDistance,
 }: PublicMessageItemProps) {
   return (
     <View style={[styles.messageCard, item.isMe && styles.myMessageCard]}>
@@ -82,14 +65,7 @@ export function PublicMessageItem({
         <View style={[styles.rangeTag, { backgroundColor: getRangeColor(item.range) }]}>
           <Text style={styles.rangeTagText}>{getRangeLabel(item.range)}</Text>
         </View>
-        {item.isMe ? (
-          <View style={styles.myMessageIndicator}>
-            <Ionicons name="checkmark-circle" size={16} color="#10b981" />
-            <Text style={styles.myMessageIndicatorText}>Diffusé</Text>
-          </View>
-        ) : (
-          <Text style={styles.distanceText}>{formatDistance(item.distance)}</Text>
-        )}
+        <MessageIndicator status={item.status} />
       </View>
     </View>
   );
@@ -210,16 +186,6 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 12,
     color: '#6b7280',
-    fontWeight: '500',
-  },
-  myMessageIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  myMessageIndicatorText: {
-    fontSize: 10,
-    color: '#10b981',
-    marginLeft: 4,
     fontWeight: '500',
   },
 });
