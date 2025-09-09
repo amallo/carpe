@@ -11,31 +11,6 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/pair-peer.test.ts",
-      "tests": [
-        {
-          "name": "should pair and connect with a peer successfully",
-          "fullName": "FEATURE: Audie pair with a peer should pair and connect with a peer successfully",
-          "state": "passed"
-        },
-        {
-          "name": "should not be paired if peer is not found",
-          "fullName": "FEATURE: Audie pair with a peer should not be paired if peer is not found",
-          "state": "passed"
-        },
-        {
-          "name": "paired peer should remains pairable when connection fails",
-          "fullName": "FEATURE: Audie pair with a peer paired peer should remains pairable when connection fails",
-          "state": "passed"
-        },
-        {
-          "name": "should fail when permission is denied",
-          "fullName": "FEATURE: Audie pair with a peer should fail when permission is denied",
-          "state": "passed"
-        }
-      ]
-    },
-    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/auto-reconnection.test.ts",
       "tests": [
         {
@@ -71,6 +46,31 @@
       ]
     },
     {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/pair-peer.test.ts",
+      "tests": [
+        {
+          "name": "should pair and connect with a peer successfully",
+          "fullName": "FEATURE: Audie pair with a peer should pair and connect with a peer successfully",
+          "state": "passed"
+        },
+        {
+          "name": "should not be paired if peer is not found",
+          "fullName": "FEATURE: Audie pair with a peer should not be paired if peer is not found",
+          "state": "passed"
+        },
+        {
+          "name": "paired peer should remains pairable when connection fails",
+          "fullName": "FEATURE: Audie pair with a peer paired peer should remains pairable when connection fails",
+          "state": "passed"
+        },
+        {
+          "name": "should fail when permission is denied",
+          "fullName": "FEATURE: Audie pair with a peer should fail when permission is denied",
+          "state": "passed"
+        }
+      ]
+    },
+    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/identity/__tests__/identity.test.ts",
       "tests": [
         {
@@ -101,11 +101,11 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
       "tests": [
         {
-          "name": "should disconnect a connected paired peer",
-          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
+          "name": "Audie accept request to scan bluetooth",
+          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
           "state": "passed"
         }
       ]
@@ -126,11 +126,11 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
       "tests": [
         {
-          "name": "Audie accept request to scan bluetooth",
-          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
+          "name": "should disconnect a connected paired peer",
+          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
           "state": "passed"
         }
       ]

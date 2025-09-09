@@ -20,12 +20,14 @@ import { InMemoryPeerProvider } from '../../core/peers/providers/test/in-memory-
 import { GrantedPermissionProvider } from '../../core/permission/providers/test/granted-permission.provider';
 import { InMemoryIdentityKeyPairStorage } from '../../core/identity/providers/infra/in-memory-identity-key-pair.provider';
 import { InMemoryAsyncStorageProvider } from '../../core/storage/providers/test/in-memory-async-storage.provider';
-import { FakeMessageProvider } from '../../core/message/providers/infra/fake-message.provider';
-import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
+import { InMemoryMessageProvider } from '../../core/message/providers/infra/in-memory-message.provider';
 import { MessageIdGenerator } from '../../core/message/providers/message-id.generator';
 import { IdentityKeyPairProvider } from '../../core/identity/providers/identity-key-pair.provider';
+import { DateProvider } from '../../core/common/date/providers/date.provider';
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { RealDateProvider } from '../../core/common/date/providers/infra/real-date.providers';
+import { SimpleMessageIdGenerator } from '../../core/message/providers/infra/simple-message-id-generator';
+import { UUIdMessageIdGenerator } from '../../core/message/providers/infra/uuid-message-id.generator';
 
 /**
  * Factory for creating providers based on environment
@@ -115,22 +117,22 @@ export class ProviderFactory {
    */
   static createMessageProvider(shouldUseMock: boolean, logger: Logger) {
     if (shouldUseMock) {
-      logger.info('ProviderFactory', 'Creating FakeMessageProvider for development');
-      return new FakeMessageProvider();
+      logger.info('ProviderFactory', 'Creating InMemoryMessageProvider for development');
+      return new InMemoryMessageProvider(logger);
     }
     logger.info('ProviderFactory', 'Creating MessageProvider for production');
-    throw new Error('Not ready');
+    return new InMemoryMessageProvider(logger);
   }
   /**
    * Create message id generator based on environment
    */
   static createMessageIdGenerator(shouldUseMock: boolean, logger: Logger): MessageIdGenerator {
     if (shouldUseMock) {
-      logger.info('ProviderFactory', 'Creating FakeMessageIdGenerator for development');
-      return new FakeMessageIdGenerator();
+      logger.info('ProviderFactory', 'Creating SimpleMessageIdGenerator for development');
+      return new SimpleMessageIdGenerator();
     }
-    logger.info('ProviderFactory', 'Creating MessageIdGenerator for production');
-    throw new Error('Not ready');
+    logger.info('ProviderFactory', 'Creating UUIdMessageIdGenerator for production');
+    return new UUIdMessageIdGenerator();
   }
   /**
    * Create date provider based on environment

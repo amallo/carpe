@@ -21,7 +21,6 @@ interface PublicMessage {
 }
 
 interface PublicMessageListProps {
-  messages: PublicMessage[];
   flatListRef: React.RefObject<FlatList<PublicMessageViewModel> | null>;
   getSignalBars: (signalStrength: number) => number;
   getRangeColor: (range: 'local' | 'medium' | 'long') => string;
@@ -36,8 +35,8 @@ export function PublicMessageList({
   getRangeLabel,
   formatDistance,
 }: PublicMessageListProps) {
-  const viewModel = usePublicMessageListViewModel();
-  const renderMessageItem = ({ item }: { item: PublicMessage }) => (
+  const { messages } = usePublicMessageListViewModel();
+  const renderMessageItem = ({ item }: { item: PublicMessageViewModel }) => (
     <PublicMessageItem
       item={item}
       getSignalBars={getSignalBars}
@@ -50,7 +49,7 @@ export function PublicMessageList({
   return (
     <FlatList
       ref={flatListRef}
-      data={viewModel.messages}
+      data={messages}
       keyExtractor={(item) => item.id}
       renderItem={renderMessageItem}
       showsVerticalScrollIndicator={false}

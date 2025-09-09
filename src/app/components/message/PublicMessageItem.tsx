@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { PublicMessageViewModel } from './PublicMessageList.viewmodel';
 
 interface PublicMessage {
   id: string;
@@ -20,7 +21,7 @@ interface PublicMessage {
 }
 
 interface PublicMessageItemProps {
-  item: PublicMessage;
+  item: PublicMessageViewModel;
   getSignalBars: (signalStrength: number) => number;
   getRangeColor: (range: 'local' | 'medium' | 'long') => string;
   getRangeLabel: (range: 'local' | 'medium' | 'long') => string;
@@ -39,11 +40,11 @@ export function PublicMessageItem({
       <View style={styles.messageHeader}>
         <View style={styles.senderInfo}>
           <View style={[styles.senderAvatar, item.isMe && styles.myAvatar]}>
-            <Text style={styles.avatarText}>{item.senderAvatar}</Text>
+            <Text style={styles.avatarText}>{item.sentBy}</Text>
           </View>
           <View style={styles.senderDetails}>
             <Text style={[styles.senderName, item.isMe && styles.mySenderName]}>
-              {item.isMe ? 'Moi' : item.sender}
+              {item.isMe ? 'Moi' : item.sentBy}
             </Text>
             <Text style={styles.locationText}>📍 {item.location.name}</Text>
           </View>
@@ -74,7 +75,7 @@ export function PublicMessageItem({
       </View>
 
       <Text style={[styles.messageText, item.isMe && styles.myMessageText]}>
-        {item.message}
+        {item.content}
       </Text>
 
       <View style={styles.messageFooter}>
