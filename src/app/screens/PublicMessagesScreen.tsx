@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { toast } from 'sonner-native';
 import { useAppSelector } from '../store/hooks';
 import { selectCurrentIdentity } from '../../core/identity/store/identity.slice';
+import { PublicMessagesStatusBar } from '../components/message/PublicMessagesStatusBar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -404,25 +405,11 @@ export default function PublicMessagesScreen() {
         {viewMode === 'list' ? (
           <>
             {/* Stats Bar */}
-            <View style={styles.statsBar}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{filteredMessages.length}</Text>
-                <Text style={styles.statLabel}>Messages</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{mapUsers.filter(u => u.isActive).length}</Text>
-                <Text style={styles.statLabel}>Actifs</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {filteredMessages.length > 0
-                    ? formatDistance(Math.max(...filteredMessages.map(m => m.distance)))
-                    : '0m'
-                  }
-                </Text>
-                <Text style={styles.statLabel}>Portée max</Text>
-              </View>
-            </View>
+            <PublicMessagesStatusBar
+              filteredMessages={filteredMessages}
+              mapUsers={mapUsers}
+              formatDistance={formatDistance}
+            />
 
             {/* Messages List */}
             <FlatList
