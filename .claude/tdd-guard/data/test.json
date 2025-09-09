@@ -1,11 +1,11 @@
 {
   "testModules": [
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
       "tests": [
         {
-          "name": "should broadcast a public message successfully",
-          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
+          "name": "should disconnect a connected paired peer",
+          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
           "state": "passed"
         }
       ]
@@ -46,6 +46,21 @@
       ]
     },
     {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/identity/__tests__/identity.test.ts",
+      "tests": [
+        {
+          "name": "should create identity with key pair",
+          "fullName": "FEATURE: User creates an identity should create identity with key pair",
+          "state": "passed"
+        },
+        {
+          "name": "should handle error when key generation fails",
+          "fullName": "FEATURE: User creates an identity should handle error when key generation fails",
+          "state": "passed"
+        }
+      ]
+    },
+    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/pair-peer.test.ts",
       "tests": [
         {
@@ -71,16 +86,11 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/identity/__tests__/identity.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
       "tests": [
         {
-          "name": "should create identity with key pair",
-          "fullName": "FEATURE: User creates an identity should create identity with key pair",
-          "state": "passed"
-        },
-        {
-          "name": "should handle error when key generation fails",
-          "fullName": "FEATURE: User creates an identity should handle error when key generation fails",
+          "name": "should broadcast a public message successfully",
+          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
           "state": "passed"
         }
       ]
@@ -101,16 +111,6 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
-      "tests": [
-        {
-          "name": "Audie accept request to scan bluetooth",
-          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
-          "state": "passed"
-        }
-      ]
-    },
-    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/unpair-peer.test.ts",
       "tests": [
         {
@@ -126,11 +126,11 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
       "tests": [
         {
-          "name": "should disconnect a connected paired peer",
-          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
+          "name": "Audie accept request to scan bluetooth",
+          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
           "state": "passed"
         }
       ]

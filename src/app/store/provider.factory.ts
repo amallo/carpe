@@ -27,7 +27,7 @@ import { DateProvider } from '../../core/common/date/providers/date.provider';
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { RealDateProvider } from '../../core/common/date/providers/infra/real-date.providers';
 import { SimpleMessageIdGenerator } from '../../core/message/providers/infra/simple-message-id-generator';
-import { UUIdMessageIdGenerator } from '../../core/message/providers/infra/uuid-message-id.generator';
+import { NanoIdMessageIdGenerator } from '../../core/message/providers/infra/nanoid-message-id.generator';
 
 /**
  * Factory for creating providers based on environment
@@ -129,10 +129,10 @@ export class ProviderFactory {
   static createMessageIdGenerator(shouldUseMock: boolean, logger: Logger): MessageIdGenerator {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating SimpleMessageIdGenerator for development');
-      return new UUIdMessageIdGenerator();
+      return new SimpleMessageIdGenerator();
     }
-    logger.info('ProviderFactory', 'Creating UUIdMessageIdGenerator for production');
-    return new UUIdMessageIdGenerator();
+    logger.info('ProviderFactory', 'Creating NanoIdMessageIdGenerator for production');
+    return new NanoIdMessageIdGenerator();
   }
   /**
    * Create date provider based on environment

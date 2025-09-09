@@ -27,7 +27,7 @@ export function MessageInput({
       toast.success('Message soumis avec succès !');
       onMessageSent?.();
     } catch (error) {
-      console.error('Error submitting message:', error);
+      console.log('Error submitting message:', error);
       toast.error('Erreur lors de la soumission du message');
     } finally {
       setIsSending(false);
