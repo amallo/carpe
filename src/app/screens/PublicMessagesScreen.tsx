@@ -12,6 +12,7 @@ import { MessagesMapView } from '../components/message/MessagesMapView';
 import { PublicMessagesHeader } from '../components/message/PublicMessagesHeader';
 import { MessagesDistanceFilterBar } from '../components/message/MessagesDistanceFilterBar';
 import { PublicMessageList } from '../components/message/PublicMessageList';
+import { PublicMessageViewModel } from '../components/message/PublicMessageList.viewmodel';
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,7 +52,7 @@ export default function PublicMessagesScreen() {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef<FlatList<PublicMessage>>(null);
+  const flatListRef = useRef<FlatList<PublicMessageViewModel>>(null);
 
   const [publicMessages, setPublicMessages] = useState<PublicMessage[]>([
     {

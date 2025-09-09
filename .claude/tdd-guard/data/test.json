@@ -1,11 +1,36 @@
 {
   "testModules": [
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
       "tests": [
         {
-          "name": "should disconnect a connected paired peer",
-          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
+          "name": "should broadcast a public message successfully",
+          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/pair-peer.test.ts",
+      "tests": [
+        {
+          "name": "should pair and connect with a peer successfully",
+          "fullName": "FEATURE: Audie pair with a peer should pair and connect with a peer successfully",
+          "state": "passed"
+        },
+        {
+          "name": "should not be paired if peer is not found",
+          "fullName": "FEATURE: Audie pair with a peer should not be paired if peer is not found",
+          "state": "passed"
+        },
+        {
+          "name": "paired peer should remains pairable when connection fails",
+          "fullName": "FEATURE: Audie pair with a peer paired peer should remains pairable when connection fails",
+          "state": "passed"
+        },
+        {
+          "name": "should fail when permission is denied",
+          "fullName": "FEATURE: Audie pair with a peer should fail when permission is denied",
           "state": "passed"
         }
       ]
@@ -61,41 +86,6 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/pair-peer.test.ts",
-      "tests": [
-        {
-          "name": "should pair and connect with a peer successfully",
-          "fullName": "FEATURE: Audie pair with a peer should pair and connect with a peer successfully",
-          "state": "passed"
-        },
-        {
-          "name": "should not be paired if peer is not found",
-          "fullName": "FEATURE: Audie pair with a peer should not be paired if peer is not found",
-          "state": "passed"
-        },
-        {
-          "name": "paired peer should remains pairable when connection fails",
-          "fullName": "FEATURE: Audie pair with a peer paired peer should remains pairable when connection fails",
-          "state": "passed"
-        },
-        {
-          "name": "should fail when permission is denied",
-          "fullName": "FEATURE: Audie pair with a peer should fail when permission is denied",
-          "state": "passed"
-        }
-      ]
-    },
-    {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
-      "tests": [
-        {
-          "name": "should broadcast a public message successfully",
-          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
-          "state": "passed"
-        }
-      ]
-    },
-    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/scan-peers.test.ts",
       "tests": [
         {
@@ -106,6 +96,16 @@
         {
           "name": "Fail to scan peers when not enough permission",
           "fullName": "FEATURE: Audie connects to a BLE device Fail to scan peers when not enough permission",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "tests": [
+        {
+          "name": "should disconnect a connected paired peer",
+          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
           "state": "passed"
         }
       ]

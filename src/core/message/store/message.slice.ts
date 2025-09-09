@@ -50,8 +50,11 @@ const messageSlice = createSlice({
 });
 
 // Sélecteurs de base
-const selectMessageState = (state: RootState) => state.message;
+export const selectMessageState = (state: RootState) => state.message;
 const selectSubmittedIds = (state: RootState) => state.message.submitted;
+export const selectBroadcastedById = (state: RootState) => state.message.broadcastedById;
+export const selectSubmittedById = (state: RootState) => state.message.submittedById;
+export const selectPublicMessageIds = (state: RootState) => state.message.public;
 
 // Sélecteurs mémorisés
 export const selectNextSubmittedMessage = createSelector(

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { PublicMessageItem } from './PublicMessageItem';
+import { PublicMessageViewModel, usePublicMessageListViewModel } from './PublicMessageList.viewmodel';
 
 interface PublicMessage {
   id: string;
@@ -21,7 +22,7 @@ interface PublicMessage {
 
 interface PublicMessageListProps {
   messages: PublicMessage[];
-  flatListRef: React.RefObject<FlatList<PublicMessage> | null>;
+  flatListRef: React.RefObject<FlatList<PublicMessageViewModel> | null>;
   getSignalBars: (signalStrength: number) => number;
   getRangeColor: (range: 'local' | 'medium' | 'long') => string;
   getRangeLabel: (range: 'local' | 'medium' | 'long') => string;
@@ -29,13 +30,13 @@ interface PublicMessageListProps {
 }
 
 export function PublicMessageList({
-  messages,
   flatListRef,
   getSignalBars,
   getRangeColor,
   getRangeLabel,
   formatDistance,
 }: PublicMessageListProps) {
+  const viewModel = usePublicMessageListViewModel();
   const renderMessageItem = ({ item }: { item: PublicMessage }) => (
     <PublicMessageItem
       item={item}
@@ -49,7 +50,7 @@ export function PublicMessageList({
   return (
     <FlatList
       ref={flatListRef}
-      data={messages}
+      data={viewModel.messages}
       keyExtractor={(item) => item.id}
       renderItem={renderMessageItem}
       showsVerticalScrollIndicator={false}
