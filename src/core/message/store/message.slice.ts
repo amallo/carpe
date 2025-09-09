@@ -1,30 +1,32 @@
 import { createEntityAdapter, createSlice, EntityState, createSelector } from '@reduxjs/toolkit';
-import {  messageWasSubmitted } from '../usecases/submit-broadcast-message.usecase';
+import {  messageWasSubmitted } from '../usecases/submit-message.usecase';
 import { RootState } from '../../../app/store/store';
 import { sendMessage } from '../usecases/send-message.usecase';
 
 export interface MessageEntity {
     id: string;
     content: string;
-    type: 'public';
+    channel: 'public';
     sentBy: string;
     sentAt: string;
 }
 
+
 export type MessageState = EntityState<MessageEntity, string> & {
-    broadcasted: string[];
     submittedById: {[messageId: string] : string};
+    broadcastedById: {[messageId: string] : string};
     submitted: string[];
+    public: string[];
 }
 
 export const messageAdapter = createEntityAdapter<MessageEntity>();
 
 export const getMessageInitialState = (): MessageState => ({
-
     ...messageAdapter.getInitialState(),
-    broadcasted:  [],
+    broadcastedById: {},
     submittedById: {},
     submitted: [],
+    public: [],
 });
 
 const messageSlice = createSlice({
@@ -36,12 +38,13 @@ const messageSlice = createSlice({
             messageAdapter.addOne(state, action.payload);
             state.submittedById[action.payload.id] = action.payload.id;
             state.submitted.push(action.payload.id);
+            state.public.push(action.payload.id);
         });
         builder.addCase(sendMessage.fulfilled, (state, action) => {
             const willSendMessageId = action.meta.arg;
             delete state.submittedById[willSendMessageId];
             state.submitted = state.submitted.filter(id => id !== willSendMessageId);
-            state.broadcasted.push(willSendMessageId);
+            state.broadcastedById[willSendMessageId] = willSendMessageId;
         });
     },
 });
@@ -49,7 +52,6 @@ const messageSlice = createSlice({
 // Sélecteurs de base
 const selectMessageState = (state: RootState) => state.message;
 const selectSubmittedIds = (state: RootState) => state.message.submitted;
-const selectBroadcastedIds = (state: RootState) => state.message.broadcasted;
 
 // Sélecteurs mémorisés
 export const selectNextSubmittedMessage = createSelector(
@@ -65,34 +67,17 @@ export const selectNextSubmittedMessage = createSelector(
 );
 
 export const selectMessageById = createSelector(
-  [selectMessageState, (state: RootState, messageId: string) => messageId],
+  [selectMessageState, (_: RootState, messageId: string) => messageId],
   (messageState, messageId) => {
     return messageAdapter.getSelectors().selectById(messageState, messageId) || null;
   }
 );
 
-export const selectSubmittedMessageById = createSelector(
-  [selectMessageState, (state: RootState, messageId: string) => messageId],
-  (messageState, messageId) => {
-    return messageAdapter.getSelectors().selectById(messageState, messageId) || null;
+export const selectAllPublicMessages = createSelector(
+  [selectMessageState, (state: RootState) => state.message.public],
+  (messageState, publicIds) => {
+    return publicIds.map(id => messageAdapter.getSelectors().selectById(messageState, id)).filter(Boolean);
   }
-);
-
-export const selectBroadcastedMessageById = createSelector(
-  [selectMessageState, (state: RootState, messageId: string) => messageId],
-  (messageState, messageId) => {
-    return messageAdapter.getSelectors().selectById(messageState, messageId) || null;
-  }
-);
-
-// Sélecteur composé pour les statistiques
-export const selectMessageStats = createSelector(
-  [selectSubmittedIds, selectBroadcastedIds],
-  (submittedIds, broadcastedIds) => ({
-    submittedCount: submittedIds.length,
-    broadcastedCount: broadcastedIds.length,
-    totalCount: submittedIds.length + broadcastedIds.length,
-  })
 );
 
 export default messageSlice.reducer;

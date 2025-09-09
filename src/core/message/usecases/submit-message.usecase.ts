@@ -4,7 +4,7 @@ import { MessageEntity } from '../store/message.slice';
 import { AppDispatch, RootState } from '../../../app/store/store';
 import { selectCurrentIdentity } from '../../identity/store/identity.slice';
 
-export const submitBroadcastMessage = createAsyncThunk<void, string, { extra: Dependencies, dispatch: AppDispatch, state: RootState }>('message/willBroadcastMessage',
+export const submitMessage = createAsyncThunk<void, string, { extra: Dependencies, dispatch: AppDispatch, state: RootState }>('message/willBroadcastMessage',
     async (message: string, {  dispatch, extra, getState }: {extra: Dependencies, dispatch: AppDispatch, getState: () => RootState}) => {
         const messageIdGenerator = extra.messageIdGenerator;
         const state = getState();
@@ -15,7 +15,7 @@ export const submitBroadcastMessage = createAsyncThunk<void, string, { extra: De
         const willSubmitMessage : MessageEntity = {
             id: willGenerateMessageId,
             content: message,
-            type: 'public',
+            channel: 'public',
             sentBy: identity!.id,
             sentAt: now,
         };

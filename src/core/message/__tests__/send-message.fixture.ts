@@ -3,8 +3,9 @@ import { createStateBuilder, StateBuilder } from '../../store/state.builder';
 import { FakeDateProvider } from '../../common/date/providers/infra/fake-date.provider';
 import { FakeMessageIdGenerator } from '../providers/infra/fake-message-id.generator';
 import { FakeMessageProvider } from '../providers/infra/fake-message.provider';
-import { submitBroadcastMessage } from '../usecases/submit-broadcast-message.usecase';
+import { submitMessage } from '../usecases/submit-message.usecase';
 import { MessageEntity } from '../store/message.slice';
+import { SendMessageRequest } from '../providers/message.provider';
 
 /**
  * @jest-environment node
@@ -66,13 +67,13 @@ export class SendMessageFixture {
     return this.store;
   }
 
-  async submitBroadcastMessage(content: string): Promise<this> {
+  async submitMessage(content: string): Promise<this> {
     const store = this.getOrCreateStore();
-    await store.dispatch(submitBroadcastMessage(content));
+    await store.dispatch(submitMessage(content));
     return this;
   }
 
-  expectMessageWasSentWith(expectedMessage: MessageEntity): this {
+  expectMessageWasSentWith(expectedMessage: SendMessageRequest): this {
     expect(this.messageProvider.sendWasCalledWith(expectedMessage)).toBe(true);
     return this;
   }

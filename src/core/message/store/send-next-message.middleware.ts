@@ -1,4 +1,4 @@
-import { messageWasSubmitted } from '../usecases/submit-broadcast-message.usecase';
+import { messageWasSubmitted } from '../usecases/submit-message.usecase';
 import { sendMessage } from '../usecases/send-message.usecase';
 import { selectNextSubmittedMessage } from './message.slice';
 import { startAppListening } from '../../../app/store/middlewares/listener.middleware';

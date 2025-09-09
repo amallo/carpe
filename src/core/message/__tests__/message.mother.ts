@@ -17,7 +17,7 @@ export class Message {
     return {
       id: params.id,
       content: params.content,
-      type: 'public',
+      channel: 'public',
       sentBy: params.sentBy,
       sentAt: params.sentAt,
     };

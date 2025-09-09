@@ -63,7 +63,11 @@ export class StateBuilder {
         this._state.message = {
             ...this._state.message, 
             ...messageAdapter.addOne(this._state.message, message),
-            broadcasted: [...this._state.message.broadcasted, message.id]
+            broadcastedById: {
+                ...this._state.message.broadcastedById,
+                [message.id]: message.id,
+            },
+            public: [...this._state.message.public, message.id],
         };
         return this;
     }

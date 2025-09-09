@@ -29,7 +29,7 @@ describe('FEATURE: Audie broadcasts messages', () => {
             dateProvider,
         }, initialStateBuilder);
 
-        await fixture.submitBroadcastMessage('Hello, world!');
+        await fixture.submitMessage('Hello, world!');
 
         const expectedMessage = Message.broadcasted({
             id: 'message-1',
