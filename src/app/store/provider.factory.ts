@@ -26,8 +26,8 @@ import { IdentityKeyPairProvider } from '../../core/identity/providers/identity-
 import { DateProvider } from '../../core/common/date/providers/date.provider';
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { RealDateProvider } from '../../core/common/date/providers/infra/real-date.providers';
-import { SimpleMessageIdGenerator } from '../../core/message/providers/infra/simple-message-id-generator';
 import { NanoIdMessageIdGenerator } from '../../core/message/providers/infra/nanoid-message-id.generator';
+import { ReconnectionStrategyFactory } from '../../core/peers/strategies/infra/reconnection-strategy.factory';
 
 /**
  * Factory for creating providers based on environment
@@ -129,7 +129,7 @@ export class ProviderFactory {
   static createMessageIdGenerator(shouldUseMock: boolean, logger: Logger): MessageIdGenerator {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating SimpleMessageIdGenerator for development');
-      return new SimpleMessageIdGenerator();
+      return new NanoIdMessageIdGenerator();
     }
     logger.info('ProviderFactory', 'Creating NanoIdMessageIdGenerator for production');
     return new NanoIdMessageIdGenerator();
@@ -140,10 +140,21 @@ export class ProviderFactory {
   static createDateProvider(shouldUseMock: boolean, logger: Logger): DateProvider {
     if (shouldUseMock) {
       logger.info('ProviderFactory', 'Creating FakeDateProvider for development');
-      return new FakeDateProvider();
+      return new RealDateProvider();
     }
     logger.info('ProviderFactory', 'Creating DateProvider for production');
     return new RealDateProvider();
+  }
+  /**
+   * Create reconnection strategy based on environment
+   */
+  static createReconnectionStrategy(shouldUseMock: boolean, logger: Logger, dateProvider: DateProvider): ReconnectionStrategy {
+    if (shouldUseMock) {
+      logger.info('ProviderFactory', 'Creating ImmediateReconnectionStrategy for development');
+      return ReconnectionStrategyFactory.createStrategy('test', dateProvider, logger);
+    }
+    logger.info('ProviderFactory', 'Creating DelayedReconnectionStrategy for production');
+    return ReconnectionStrategyFactory.createStrategy('production', dateProvider, logger);
   }
 
 
@@ -154,6 +165,7 @@ export class ProviderFactory {
   static createAllDependencies(shouldUseMock: boolean, logger: Logger)  {
     logger.info('ProviderFactory', `Creating all dependencies (mock: ${shouldUseMock})`);
 
+    const dateProvider =  this.createDateProvider(shouldUseMock, logger);
     const dependencies = {
       logger,
       peerProvider: this.createPeerProvider(shouldUseMock, logger),
@@ -164,7 +176,8 @@ export class ProviderFactory {
       storageProvider: this.createStorageProvider(shouldUseMock, logger),
       messageProvider: this.createMessageProvider(shouldUseMock, logger),
       messageIdGenerator: this.createMessageIdGenerator(shouldUseMock, logger),
-      dateProvider: this.createDateProvider(shouldUseMock, logger),
+      dateProvider,
+      reconnectionStrategy: this.createReconnectionStrategy(shouldUseMock, logger, dateProvider),
     };
 
     logger.info('ProviderFactory', 'All dependencies created successfully');

@@ -19,6 +19,7 @@ export const submitMessage = createAsyncThunk<void, string, { extra: Dependencie
             sentBy: identity!.id,
             sentAt: now,
         };
+        extra.logger.debug('submit-message', `Submitting message: ${JSON.stringify(willSubmitMessage)}`);
         dispatch(messageWasSubmitted(willSubmitMessage));
     });
 

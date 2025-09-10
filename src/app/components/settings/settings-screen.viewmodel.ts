@@ -1,6 +1,7 @@
 import { useAppSelector } from '../../store/hooks';
 import { LogEntry } from '../../../core/logger/store/log.slice';
 import { createSelector } from '@reduxjs/toolkit';
+import { RootState } from '../../store/store';
 
 export interface LogEntryViewModel {
   id: string;
@@ -9,7 +10,7 @@ export interface LogEntryViewModel {
   message: string;
 }
 
-export const selectLogEntries = (state: any) => state.log.logs as LogEntry[];
+export const selectLogEntries = (state: RootState) => state.log.logs as LogEntry[];
 
 export const selectLogEntryViewModels = createSelector(
   [selectLogEntries],

@@ -69,7 +69,7 @@ export class SendMessageFixture {
 
   async submitMessage(content: string): Promise<this> {
     const store = this.getOrCreateStore();
-    await store.dispatch(submitMessage(content));
+    await store.dispatch(submitMessage(content)).unwrap();
     return this;
   }
 

@@ -33,4 +33,4 @@ const logSlice = createSlice({
 
 export const { addLog, clearLogs } = logSlice.actions;
 export default logSlice.reducer;
-export { initialState }; 
+export { initialState };

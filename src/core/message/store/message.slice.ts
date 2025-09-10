@@ -69,6 +69,13 @@ export const selectNextSubmittedMessage = createSelector(
   }
 );
 
+export const selectAllSubmittedMessages = createSelector(
+  [selectMessageState, selectSubmittedIds],
+  (messageState, submittedIds) => {
+    return submittedIds.map(id => messageAdapter.getSelectors().selectById(messageState, id)).filter(Boolean);
+  }
+);
+
 export const selectMessageById = createSelector(
   [selectMessageState, (_: RootState, messageId: string) => messageId],
   (messageState, messageId) => {

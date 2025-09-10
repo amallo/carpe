@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { ReduxLogger } from '../../core/logger/providers/redux-logger.provider';
 import { ProviderFactory } from './provider.factory';
 import {  createStore } from './store';
+import { NanoIdGenerator } from '../../core/common/date/providers/infra/nano-id.generator';
 
 /**
  * Hook for managing provider lifecycle
@@ -10,7 +11,7 @@ import {  createStore } from './store';
 export const useProviderLifecycle = (
   shouldUseMockProviders: boolean,
 ) => {
-  const logger = useMemo(() => new ReduxLogger(), []);
+  const logger = useMemo(() => new ReduxLogger(new NanoIdGenerator()), []);
 
   // Create all dependencies using the factory
   const dependencies = useMemo(() =>

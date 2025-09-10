@@ -1,9 +1,12 @@
 import { Logger, LogSeverity } from './logger.interface';
 import { Dispatch } from 'redux';
 import { addLog } from '../store/log.slice';
+import { IdGenerator } from '../../common/date/providers/id.generator';
 
 export class ReduxLogger implements Logger {
   private dispatch: Dispatch | null = null;
+
+  constructor(private readonly idGenerator: IdGenerator) {}
 
 
   init(dispatch: Dispatch) {
@@ -17,7 +20,7 @@ export class ReduxLogger implements Logger {
     }
     if (this.dispatch) {
       console.log('dispatching log', {
-        id: Date.now().toString(),
+        id: this.idGenerator.generate(),
         date: new Date().toISOString(),
         domaine,
         severity,

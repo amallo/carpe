@@ -74,25 +74,27 @@ export const createStore = (
 
 
 export const createTestStore = (dependencies: Partial<Dependencies>, initialState?: object) => {
-    const defaultDeps = {
+    const dateProvider = dependencies.dateProvider || new FakeDateProvider();
+    const logger = dependencies.logger || new ConsoleLogger();
+    const defaultDeps : Dependencies = {
         peerProvider: new FakePeerProvider(),
         permissionProvider: new GrantedPermissionProvider(),
-        logger: new ConsoleLogger(),
-        dateProvider: new FakeDateProvider(),
+        logger,
+        dateProvider,
         identityIdGenerator: new FakeIdentityIdGenerator(),
         messageIdGenerator: new FakeMessageIdGenerator(),
         keyGenerator: new FakeIdentityKeyPairGenerator(),
         vaultProvider: new FakeIdentityKeyPairProvider('identity'),
         storageProvider: new InMemoryAsyncStorageProvider(), // In-memory storage for tests
         messageProvider: new FakeMessageProvider(),
+        reconnectionStrategy: ReconnectionStrategyFactory.createStrategy('test', dateProvider, logger),
     };
-    
+
     const deps: Dependencies = {
         ...defaultDeps,
         ...dependencies,
-        reconnectionStrategy: ReconnectionStrategyFactory.createStrategy('test', (dependencies.dateProvider || defaultDeps.dateProvider)),
     };
-    
+
     // Create test store - persistence config will be created automatically using InMemoryAsyncStorageProvider
     const store = createStore(deps, undefined, initialState);
     return store;

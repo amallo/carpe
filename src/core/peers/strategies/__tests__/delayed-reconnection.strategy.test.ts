@@ -2,6 +2,8 @@ import { DelayedReconnectionStrategy } from '../infra/delayed-reconnection.strat
 import { PairedPeerEntity } from '../../store/paired-peer.slice';
 import { ReconnectionContext } from '../reconnection.strategy';
 import { FakeDateProvider } from '../../../common/date/providers/infra/fake-date.provider';
+import { Logger } from '../../../logger/providers/logger.interface';
+import { ConsoleLogger } from '../../../logger/providers/console-logger.provider';
 
 /**
  * @jest-environment node
@@ -9,10 +11,12 @@ import { FakeDateProvider } from '../../../common/date/providers/infra/fake-date
 describe('DelayedReconnectionStrategy', () => {
   let strategy: DelayedReconnectionStrategy;
   let dateProvider: FakeDateProvider;
+  let logger: ConsoleLogger;
 
   beforeEach(() => {
     dateProvider = new FakeDateProvider();
-    strategy = new DelayedReconnectionStrategy(dateProvider);
+    logger = new ConsoleLogger();
+    strategy = new DelayedReconnectionStrategy(dateProvider, logger);
   });
 
   describe('shouldReconnect', () => {
