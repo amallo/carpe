@@ -45,6 +45,7 @@ const messageSlice = createSlice({
             delete state.submittedById[willSendMessageId];
             state.submitted = state.submitted.filter(id => id !== willSendMessageId);
             state.broadcastedById[willSendMessageId] = willSendMessageId;
+            // Keep message in public array - don't remove it
         });
     },
 });

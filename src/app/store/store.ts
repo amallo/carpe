@@ -1,4 +1,4 @@
-import { configureStore, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
+import { configureStore, createAsyncThunk, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, PersistConfig } from 'redux-persist';
 import { Dependencies } from '../../core/dependencies';
 import { FakePeerProvider } from '../../core/peers/providers/test/fake-peer.provider';
@@ -103,6 +103,7 @@ export const createTestStore = (dependencies: Partial<Dependencies>, initialStat
 export type Store = ReturnType<typeof createStore>;
 export type RootState = ReturnType<Store['getState']>;
 export type AppDispatch = ThunkDispatch<RootState, Dependencies, UnknownAction>;
+export type AsyncThunkConfig = { extra: Dependencies, dispatch: AppDispatch, state: RootState };
 
 /**
  * Create persistor for the store

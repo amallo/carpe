@@ -12,4 +12,7 @@ export class CallTracker {
         const paramString = JSON.stringify(param);
         return this._calls.some(call => JSON.stringify(call) === paramString);
     }
+    lastCall(): unknown {
+        return this._calls[this._calls.length - 1];
+    }
 }

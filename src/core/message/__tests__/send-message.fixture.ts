@@ -6,6 +6,7 @@ import { FakeMessageProvider } from '../providers/infra/fake-message.provider';
 import { submitMessage } from '../usecases/submit-message.usecase';
 import { MessageEntity } from '../store/message.slice';
 import { SendMessageRequest } from '../providers/message.provider';
+import { appBecameForeground } from '../../app/store/app.slice';
 
 /**
  * @jest-environment node
@@ -67,14 +68,14 @@ export class SendMessageFixture {
     return this.store;
   }
 
-  async submitMessage(content: string): Promise<this> {
+  async submitMessage(content: string) {
     const store = this.getOrCreateStore();
     await store.dispatch(submitMessage(content)).unwrap();
     return this;
   }
 
-  expectMessageWasSentWith(expectedMessage: SendMessageRequest): this {
-    expect(this.messageProvider.sendWasCalledWith(expectedMessage)).toBe(true);
+  expectMessageWasSentWith(expectedMessage: SendMessageRequest) {
+    expect(this.messageProvider.sendLastCall()).toEqual(expectedMessage);
     return this;
   }
 
@@ -86,5 +87,13 @@ export class SendMessageFixture {
 
   getStore(): Store {
     return this.getOrCreateStore();
+  }
+
+  whenAppBecomesForegroundAt(time: string) {
+    const store = this.getOrCreateStore();
+    // Simulate app becoming foreground by dispatching the app state change
+    // This should trigger the message processing middleware
+    store.dispatch(appBecameForeground(time));
+    return this;
   }
 }

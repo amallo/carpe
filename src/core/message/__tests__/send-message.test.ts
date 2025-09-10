@@ -45,7 +45,41 @@ describe('FEATURE: Audie broadcasts messages', () => {
             .build();
 
         fixture
-            .expectMessageWasSentWith(expectedMessage)
+            .expectMessageWasSentWith({
+                id: expectedMessage.id,
+                content: expectedMessage.content,
+                type: expectedMessage.channel,
+                sentBy: expectedMessage.sentBy,
+                sentAt: expectedMessage.sentAt,
+            })
             .expectStateToEqual(expectedState);
+    });
+    it('send all submitted messages on reconnection', async () => {
+        const initialStateBuilder = createStateBuilder()
+            .withCurrentIdentity(Identity.me())
+            .withSubmittedMessages([Message.broadcasted({
+                id: 'message-1',
+                content: 'Hello, world!',
+                sentBy: Identity.me().id,
+                sentAt: Date.nowValue(),
+            })])
+        const fixture = new SendMessageFixture({
+            }, initialStateBuilder);
+        await fixture.whenAppBecomesForegroundAt(Date.nowValue());
+        
+        // Wait for async actions to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const expectedState = createStateBuilder()
+            .withCurrentIdentity(Identity.me())
+            .withAppInForegroundAt(Date.nowValue())
+            .withNoSubmittedMessages()
+            .withBroadcastedMessage(Message.broadcasted({  // ← Le message devrait être broadcasted
+                id: 'message-1',
+                content: 'Hello, world!',
+                sentBy: Identity.me().id,
+                sentAt: Date.nowValue(),
+            }))
+            .build();
+        fixture.expectStateToEqual(expectedState);
     });
 });

@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type AppState = {
   isInForeground: boolean;
-  lastForegroundTime: number | null;
+  lastForegroundTime: string | null;
 };
 
 export const getAppInitialState = (): AppState => ({
@@ -14,18 +14,17 @@ const appSlice = createSlice({
   name: 'app',
   initialState: getAppInitialState(),
   reducers: {
-    appForeground: (state) => {
+    appBecameForeground: (state, action: PayloadAction<string>) => {
       state.isInForeground = true;
-      state.lastForegroundTime = Date.now();
+      state.lastForegroundTime = action.payload;
     },
-    appBackground: (state) => {
+    appBecameBackground: (state) => {
       state.isInForeground = false;
     },
   },
 });
 
-export const { appForeground, appBackground } = appSlice.actions;
-
+export const { appBecameForeground, appBecameBackground } = appSlice.actions;
 // Selectors
 export const selectIsInForeground = (state: { app: AppState }) => state.app.isInForeground;
 export const selectLastForegroundTime = (state: { app: AppState }) => state.app.lastForegroundTime;

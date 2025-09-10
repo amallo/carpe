@@ -75,10 +75,35 @@ export class StateBuilder {
         this._state.message = {...this._state.message,  submitted: [], submittedById: {}};
         return this;
     }
+    withSubmittedMessages(messages: MessageEntity[]) {
+        const submittedIds = messages.map(message => message.id);
+        const submittedById = messages.reduce((acc, message) => {
+            acc[message.id] = message.id;
+            return acc;
+        }, {} as Record<string, string>);
+        
+        this._state.message = {
+            ...this._state.message,
+            ...messageAdapter.addMany(this._state.message, messages),
+            submitted: submittedIds,
+            submittedById,
+            public: [...this._state.message.public, ...submittedIds],
+        };
+        return this;
+    }
     withCurrentIdentity(identity: Identity) {
         this._state.identity = {
             ...this._state.identity,
             current: identity,
+        };
+        return this;
+    }
+
+    withAppInForegroundAt(isoString: string) {
+        this._state.app = {
+            ...this._state.app,
+            isInForeground: true,
+            lastForegroundTime: isoString,
         };
         return this;
     }

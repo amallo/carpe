@@ -7,10 +7,12 @@ import { useMockProviders } from '../config/environment';
 import { useProviderLifecycle } from './use-provider-lifecycle';
 import { Logger } from '../../core/logger/providers/logger.interface';
 import { createPersistor } from './store';
+import { DateProvider } from '../../core/common/date/providers/date.provider';
 
 // Context for accessing dependencies
 interface StoreContextType {
   logger: Logger;
+  dateProvider: DateProvider;
   // Add other dependencies as needed
 }
 
@@ -20,7 +22,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const shouldUseMockProviders = useMockProviders();
 
   // Manage provider lifecycle
-  const { store, logger } = useProviderLifecycle(
+  const { store, logger, dateProvider } = useProviderLifecycle(
     shouldUseMockProviders,
   );
 
@@ -33,8 +35,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   // Context value with dependencies
   const contextValue = useMemo(() => ({
     logger,
+    dateProvider,
     // Add other dependencies as needed
-  }), [logger]);
+  }), [logger, dateProvider]);
 
   return (
     <StoreContext.Provider value={contextValue}>

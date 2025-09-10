@@ -6,7 +6,7 @@ export class FakeMessageProvider implements MessageProvider {
         this._sendMessageCallTracker.recordCall(message );
         return Promise.resolve();
     }
-    sendWasCalledWith(message: SendMessageRequest): boolean {
-        return this._sendMessageCallTracker.wasCalledWith(message);
+    sendLastCall() {
+        return this._sendMessageCallTracker.lastCall();
     }
 }

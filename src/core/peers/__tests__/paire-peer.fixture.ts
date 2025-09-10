@@ -7,7 +7,7 @@ import { createTestStore, Store } from '../../../app/store/store';
 import { FeatureRequest } from '../../permission/providers/permission.provider';
 import { Identity } from '../../identity/entities/identity.entity';
 import { scanHit } from '../store/peers.slice';
-import { appForeground } from '../../app/store/app.slice';
+import { appBecameForeground } from '../../app/store/app.slice';
 import { PeerEntity } from '../store/peers.slice';
 import { ReconnectionStrategy } from '../strategies/reconnection.strategy';
 import { FakeDateProvider } from '../../common/date/providers/infra/fake-date.provider';
@@ -268,7 +268,7 @@ export class PairedPeerFixture {
 
   async whenAppBecomesForeground(): Promise<this> {
     const store = this.getOrCreateStore();
-    store.dispatch(appForeground());
+    store.dispatch(appBecameForeground());
     return this;
   }
 
@@ -276,7 +276,7 @@ export class PairedPeerFixture {
     const store = this.getOrCreateStore();
 
     // Trigger app foreground → useAppState hook → scanRequested
-    store.dispatch(appForeground());
+    store.dispatch(appBecameForeground());
 
     return this;
   }

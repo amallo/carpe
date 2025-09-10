@@ -43,5 +43,5 @@ export const useProviderLifecycle = (
     }
   }, [dependencies.peerProvider, shouldUseMockProviders, dependencies.logger, store.dispatch, logger]);
 
-  return { store, logger };
+  return { store, logger, dateProvider: dependencies.dateProvider };
 };
