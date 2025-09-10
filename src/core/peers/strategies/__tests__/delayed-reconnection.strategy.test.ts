@@ -1,4 +1,4 @@
-import { DelayedReconnectionStrategy } from '../delayed-reconnection.strategy';
+import { DelayedReconnectionStrategy } from '../infra/delayed-reconnection.strategy';
 import { PairedPeerEntity } from '../../store/paired-peer.slice';
 import { ReconnectionContext } from '../reconnection.strategy';
 import { FakeDateProvider } from '../../../common/date/providers/infra/fake-date.provider';

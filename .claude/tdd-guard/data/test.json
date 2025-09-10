@@ -1,11 +1,26 @@
 {
   "testModules": [
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
       "tests": [
         {
-          "name": "should disconnect a connected paired peer",
-          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
+          "name": "should broadcast a public message successfully",
+          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/scan-peers.test.ts",
+      "tests": [
+        {
+          "name": "Scan peers and found device carpe-001",
+          "fullName": "FEATURE: Audie connects to a BLE device Scan peers and found device carpe-001",
+          "state": "passed"
+        },
+        {
+          "name": "Fail to scan peers when not enough permission",
+          "fullName": "FEATURE: Audie connects to a BLE device Fail to scan peers when not enough permission",
           "state": "passed"
         }
       ]
@@ -86,31 +101,6 @@
       ]
     },
     {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/message/__tests__/send-message.test.ts",
-      "tests": [
-        {
-          "name": "should broadcast a public message successfully",
-          "fullName": "FEATURE: Audie broadcasts messages should broadcast a public message successfully",
-          "state": "passed"
-        }
-      ]
-    },
-    {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/scan-peers.test.ts",
-      "tests": [
-        {
-          "name": "Scan peers and found device carpe-001",
-          "fullName": "FEATURE: Audie connects to a BLE device Scan peers and found device carpe-001",
-          "state": "passed"
-        },
-        {
-          "name": "Fail to scan peers when not enough permission",
-          "fullName": "FEATURE: Audie connects to a BLE device Fail to scan peers when not enough permission",
-          "state": "passed"
-        }
-      ]
-    },
-    {
       "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/unpair-peer.test.ts",
       "tests": [
         {
@@ -121,16 +111,6 @@
         {
           "name": "should do nothing if peer is not found",
           "fullName": "FEATURE: Audie unpairs a peer should do nothing if peer is not found",
-          "state": "passed"
-        }
-      ]
-    },
-    {
-      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
-      "tests": [
-        {
-          "name": "Audie accept request to scan bluetooth",
-          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
           "state": "passed"
         }
       ]
@@ -186,6 +166,26 @@
         {
           "name": "should return 5 attempts",
           "fullName": "DelayedReconnectionStrategy getMaxAttempts should return 5 attempts",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/permission/__tests__/request-permission.test.ts",
+      "tests": [
+        {
+          "name": "Audie accept request to scan bluetooth",
+          "fullName": "Audie request permissions Audie accept request to scan bluetooth",
+          "state": "passed"
+        }
+      ]
+    },
+    {
+      "moduleId": "/Users/madfu/Work/carpeApp/src/core/peers/__tests__/disconnect-paired-peer.test.ts",
+      "tests": [
+        {
+          "name": "should disconnect a connected paired peer",
+          "fullName": "disconnectPairedPeer should disconnect a connected paired peer",
           "state": "passed"
         }
       ]

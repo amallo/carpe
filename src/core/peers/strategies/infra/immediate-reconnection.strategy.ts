@@ -1,5 +1,5 @@
-import { ReconnectionStrategy, ReconnectionContext } from './reconnection.strategy';
-import { PairedPeerEntity } from '../store/paired-peer.slice';
+import { ReconnectionStrategy, ReconnectionContext } from '../reconnection.strategy';
+import { PairedPeerEntity } from '../../store/paired-peer.slice';
 
 /**
  * Immediate reconnection strategy

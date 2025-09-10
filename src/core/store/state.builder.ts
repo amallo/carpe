@@ -55,7 +55,7 @@ export class StateBuilder {
             id: peer.id,
             status: peer.status,
             connectionAttempts: peer.connectionAttempts,
-            lastConnectionTime: peer.lastConnectionTime || new Date().toISOString(),
+            lastConnectionTime: peer.lastConnectionTime ,
         });
         return this;
     }

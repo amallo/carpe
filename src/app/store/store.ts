@@ -22,7 +22,7 @@ import { listeningSubmittedMessages } from '../../core/message/store/send-next-m
 import { FakeDateProvider } from '../../core/common/date/providers/infra/fake-date.provider';
 import { FakeMessageIdGenerator } from '../../core/message/providers/infra/fake-message-id.generator';
 import { listenerMiddleware } from './middlewares/listener.middleware';
-import { ReconnectionStrategyFactory } from '../../core/peers/strategies/reconnection-strategy.factory';
+import { ReconnectionStrategyFactory } from '../../core/peers/strategies/infra/reconnection-strategy.factory';
 
 export const createStore = (
     dependencies: Dependencies,

@@ -1,6 +1,6 @@
-import { ReconnectionStrategy, ReconnectionContext } from './reconnection.strategy';
-import { PairedPeerEntity } from '../store/paired-peer.slice';
-import { DateProvider } from '../../common/date/providers/date.provider';
+import { ReconnectionStrategy, ReconnectionContext } from '../reconnection.strategy';
+import { PairedPeerEntity } from '../../store/paired-peer.slice';
+import { DateProvider } from '../../../common/date/providers/date.provider';
 
 export class DelayedReconnectionStrategy implements ReconnectionStrategy {
   private readonly maxAttempts: number = 5;
